@@ -1,0 +1,14 @@
+{{/* 印章 Logo — 朱砂红双模式不变色 (DESIGN.md §4) */}}
+{{ $text := site.Params.seal_text | default "陰陽" }}
+{{ $style := site.Params.seal_style | default "yang" }}
+{{ if eq $style "yin" }}
+<svg class="seal" width="36" height="36" viewBox="0 0 40 40" role="img" aria-label="seal">
+  <rect x="1.5" y="1.5" width="37" height="37" fill="#D92121" stroke="#D92121" stroke-width="2"/>
+  <text x="20" y="25.5" text-anchor="middle" font-size="13" fill="#F8F4F0" font-family="'Noto Serif SC',serif">陰陽</text>
+</svg>
+{{ else }}
+<svg class="seal" width="36" height="36" viewBox="0 0 40 40" role="img" aria-label="seal">
+  <rect x="1.5" y="1.5" width="37" height="37" fill="none" stroke="#D92121" stroke-width="2.5"/>
+  <text x="20" y="25.5" text-anchor="middle" font-size="13" fill="#D92121" font-family="'Noto Serif SC',serif">陰陽</text>
+</svg>
+{{ end }}

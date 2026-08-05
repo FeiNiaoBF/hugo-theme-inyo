@@ -1,0 +1,23 @@
+[home]
+other = "ホーム"
+
+[posts]
+other = "記事"
+
+[about]
+other = "このサイトについて"
+
+[prev]
+other = "前の記事"
+
+[next]
+other = "次の記事"
+
+[read_more]
+other = "続きを読む"
+
+[tag]
+other = "タグ"
+
+[date_format]
+other = "2006年1月2日"

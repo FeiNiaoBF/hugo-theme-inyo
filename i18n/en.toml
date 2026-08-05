@@ -1,0 +1,23 @@
+[home]
+other = "Home"
+
+[posts]
+other = "Posts"
+
+[about]
+other = "About"
+
+[prev]
+other = "Prev"
+
+[next]
+other = "Next"
+
+[read_more]
+other = "Read more"
+
+[tag]
+other = "Tags"
+
+[date_format]
+other = "2006-01-02"

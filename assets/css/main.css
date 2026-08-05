@@ -1,0 +1,312 @@
+/* ============================================================
+   Inyo 陰陽 — main.css
+   设计 token 权威来源: DESIGN.md §2 (742色库点名 + WCAG 实测)
+   纪律: 颜色禁止硬编码; 新色必须查 DESIGN.md §2 并实测对比度
+   ============================================================ */
+
+/* ---------- 1. Token 体系 ---------- */
+:root {
+  /* 亮色模式（纸）— DESIGN.md §2.1 */
+  --paper:        #F8F4F0;  /* 荼蘼白 底色 */
+  --paper-2:      #F9F1DB;  /* 蚌肉白 卡片/引用 */
+  --ink:          #1D1B1C;  /* 墨色 正文 15.66:1 */
+  --cinnabar:     #D92121;  /* 朱砂红 链接/印章 4.58:1 */
+  --camel:        #66462A;  /* 驼色 标签 7.76:1 */
+  --indigo:       #2A3C5C;  /* 黛蓝 代码 10.10:1 */
+  --amber:        #CA6924;  /* 琥珀 装饰(仅大文本) 3.45:1 */
+
+  /* 表面层级（OKLCH 插值） */
+  --srf-1: #E6E4DF;
+  --srf-2: #CCCDC8;
+  --srf-3: #989D9B;
+  --srf-4: #6A6E71;
+  --srf-5: #4D4E52;
+
+  --border:       var(--srf-2);
+  --selection:    rgba(217, 33, 33, 0.15);
+  --code-bg:      var(--paper-2);
+  --code-text:    var(--ink);
+  --btn-bg:       var(--cinnabar);
+  --btn-text:     var(--paper);
+
+  --font-serif: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', Georgia, 'Times New Roman', serif;
+  --font-mono: 'Sarasa Mono SC', 'JetBrains Mono', Consolas, 'Courier New', monospace;
+
+  --fs-base: 16px;
+  --lh-base: 2.0;
+  --ls-base: 0.3px;
+  --container: 40em;
+  --radius: 2px;
+  --spacing: 1.5em;
+}
+
+/* 暗色模式（墨）— DESIGN.md §2.2 剑锋紫基 */
+[data-theme="dark"] {
+  --paper:        #3E3841;  /* 剑锋紫 底色 */
+  --paper-2:      #4C454D;  /* 卡片面 t=0.08 (纪律2: 其上链接用粉红) */
+  --ink:          #F8F4F0;  /* 荼蘼白 正文 10.39:1 */
+  --cinnabar:     #F19790;  /* 舌红 链接 5.18:1 (朱砂在夜墨底的提亮态) */
+  --camel:        #D4C4B7;  /* 晓灰 标签 6.70:1 */
+  --indigo:       #C1C8D6;  /* 云峰灰 代码 6.77:1 */
+  --amber:        #E1DBD7;  /* 高亮档(装饰) */
+
+  /* 层次 5 档（剑锋紫→荼蘼白 短路径） */
+  --srf-1: #4C454D;  /* 卡片 t=0.08 */
+  --srf-2: #62595F;  /* 悬浮 t=0.20 (纪律3: 不放文字) */
+  --srf-3: #908688;  /* 边框 t=0.45 */
+  --srf-4: #BFB6B4;  /* 弱化 t=0.70 */
+  --srf-5: #E1DBD7;  /* 高亮 t=0.88 */
+
+  --border:       var(--srf-3);
+  --selection:    rgba(241, 151, 144, 0.22);
+  --code-bg:      #2C2C2C;  /* 缁 代码块底 (云峰灰 on 缁 8.31:1) */
+  --code-text:    var(--indigo);
+  --btn-bg:       #D92121;  /* 按钮仍用朱砂红 */
+  --btn-text:     #F8F4F0;  /* 4.58:1 */
+}
+
+/* ---------- 2. Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  letter-spacing: var(--ls-base);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+::selection { background: var(--selection); }
+
+a { color: var(--cinnabar); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--cinnabar) 40%, transparent); }
+a:hover { border-bottom-color: var(--cinnabar); }
+
+img { max-width: 100%; height: auto; }
+
+/* ---------- 3. 布局 ---------- */
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 1.25em;
+}
+
+.site-header {
+  padding: 3.5em 0 2.5em;
+  border-bottom: 1px solid var(--border);
+}
+.site-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+}
+.site-title {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  font-size: 1.35em;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--ink);
+  border: 0;
+}
+.site-nav { display: flex; gap: 1.4em; font-size: 0.92em; }
+.site-nav a { color: var(--ink); border: 0; letter-spacing: 1px; }
+.site-nav a:hover { color: var(--cinnabar); }
+
+.site-main { padding: 3em 0 4em; min-height: 60vh; }
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 2.5em 0 3.5em;
+  font-size: 0.85em;
+  color: var(--srf-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2em;
+}
+
+/* 竖排题款（装饰性，仅页脚签名 — 纪律3: 正文永远横排） */
+.tategaki {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 6px;
+  font-size: 0.9em;
+  color: var(--cinnabar);
+  border: 0;
+}
+
+/* ---------- 4. 排版 ---------- */
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 2px;   /* 标题字距拉开 — 东方排版特征 */
+  color: var(--ink);
+  scroll-margin-top: 2em;
+}
+h2 { letter-spacing: 1.5px; }
+h1 { font-size: 1.7em; }
+h2 { font-size: 1.4em; }
+h3 { font-size: 1.2em; letter-spacing: 1px; }
+h4 { font-size: 1.05em; letter-spacing: 1px; }
+
+.prose p { margin: 1em 0; }
+
+.prose blockquote {
+  margin: 1.5em 0;
+  padding: 0.6em 1.2em;
+  border-left: 3px solid var(--cinnabar);
+  background: var(--paper-2);
+  color: var(--ink);
+}
+
+/* 表格: 仅横线（中式简净） */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.92em;
+}
+.prose th, .prose td {
+  padding: 0.5em 0.8em;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.prose th { color: var(--camel); font-weight: 700; letter-spacing: 1px; }
+
+/* 代码 */
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--paper-2);
+  color: var(--indigo);
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius);
+}
+.prose pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 1.2em 1.4em;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  line-height: 1.6;
+  font-size: 0.88em;
+}
+.prose pre code { background: none; color: inherit; padding: 0; }
+.prose pre .highlight { background: none; }
+
+/* 分隔线: 毛笔笔触 */
+.brush-divider {
+  display: block;
+  width: 100%;
+  height: 24px;
+  margin: 2.5em 0;
+  opacity: 0.75;
+}
+.brush-divider svg { width: 100%; height: 100%; }
+
+/* ---------- 5. 组件 ---------- */
+/* 印章 Logo */
+.seal { display: inline-block; border: 0; }
+.seal svg { display: block; }
+
+/* 标签: 驼色描边小章 */
+.tag {
+  display: inline-block;
+  font-size: 0.75em;
+  letter-spacing: 1.5px;
+  color: var(--camel);
+  border: 1px solid var(--camel);
+  border-radius: var(--radius);
+  padding: 0.1em 0.7em;
+  margin-right: 0.6em;
+  transition: background 0.2s, color 0.2s;
+}
+.tag:hover { background: var(--camel); color: var(--paper); }
+
+/* 文章列表 */
+.post-list { list-style: none; margin: 0; padding: 0; }
+.post-list li { padding: 1.1em 0; border-bottom: 1px solid var(--border); }
+.post-list li:first-child { border-top: 1px solid var(--border); }
+.post-title { font-size: 1.15em; }
+.post-title a { color: var(--ink); border: 0; }
+.post-title a:hover { color: var(--cinnabar); }
+.post-meta { font-size: 0.8em; color: var(--camel); letter-spacing: 1px; margin-top: 0.3em; }
+
+/* 文章页 */
+.post-header { margin-bottom: 2.5em; }
+.post-header h1 { margin-bottom: 0.3em; }
+.post-date { font-size: 0.85em; color: var(--camel); letter-spacing: 1px; }
+
+/* 上一篇/下一篇 */
+.post-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+  margin-top: 3.5em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--border);
+  font-size: 0.9em;
+}
+.post-nav a { border: 0; color: var(--camel); }
+.post-nav a:hover { color: var(--cinnabar); }
+
+/* 按钮 */
+.btn {
+  display: inline-block;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  padding: 0.4em 1.4em;
+  border-radius: var(--radius);
+  letter-spacing: 2px;
+  border: 0;
+  font-family: var(--font-serif);
+  font-size: 0.95em;
+  cursor: pointer;
+}
+.btn:hover { opacity: 0.9; color: var(--btn-text); }
+
+/* 主题切换按钮 */
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--camel);
+  font-size: 0.85em;
+  padding: 0.2em 0.7em;
+  cursor: pointer;
+  font-family: var(--font-serif);
+  letter-spacing: 1px;
+}
+.theme-toggle:hover { border-color: var(--cinnabar); color: var(--cinnabar); }
+
+/* TOC */
+.toc { font-size: 0.85em; margin: 1.5em 0; padding: 1em 1.2em; background: var(--paper-2); border-radius: var(--radius); }
+.toc-title { font-weight: 700; letter-spacing: 2px; color: var(--camel); margin-bottom: 0.5em; }
+.toc ol { list-style: none; padding-left: 1em; margin: 0.3em 0; }
+.toc a { color: var(--ink); border: 0; }
+.toc a:hover { color: var(--cinnabar); }
+
+/* 数学公式容器（KaTeX 开启时） */
+.katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5em 0; }
+
+/* 打印 */
+@media print {
+  .site-header, .site-footer, .theme-toggle, .post-nav { display: none; }
+  body { background: #fff; }
+}
+
+/* 移动端 */
+@media (max-width: 600px) {
+  .site-header { padding-top: 2em; }
+  .site-header-inner { flex-direction: column; align-items: flex-start; }
+  .site-nav { flex-wrap: wrap; }
+  h1 { font-size: 1.5em; }
+}

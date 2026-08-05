@@ -1,0 +1,7 @@
+<div>
+  <p>© {{ now.Year }} {{ site.Title }}</p>
+  <p>Theme <a href="https://github.com/FeiNiaoBF/hugo-theme-inyo">Inyo 陰陽</a></p>
+</div>
+{{ with site.Params.vertical_footer }}
+<span class="tategaki" aria-hidden="true">{{ . }}</span>
+{{ end }}

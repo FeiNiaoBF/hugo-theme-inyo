@@ -1,0 +1,23 @@
+[home]
+other = "首页"
+
+[posts]
+other = "文章"
+
+[about]
+other = "关于"
+
+[prev]
+other = "上一篇"
+
+[next]
+other = "下一篇"
+
+[read_more]
+other = "阅读全文"
+
+[tag]
+other = "标签"
+
+[date_format]
+other = "2006年1月2日"

@@ -1,0 +1,10 @@
+<a class="site-title" href="{{ site.Home.RelPermalink }}">
+  {{ partial "seal.html" . }}
+  <span>{{ site.Title }}</span>
+</a>
+<nav class="site-nav">
+  <a href="{{ site.Home.RelPermalink }}">{{ i18n "home" }}</a>
+  {{ with site.GetPage "/posts" }}<a href="{{ .RelPermalink }}">{{ i18n "posts" }}</a>{{ end }}
+  {{ with site.GetPage "/about" }}<a href="{{ .RelPermalink }}">{{ i18n "about" }}</a>{{ end }}
+</nav>
+<button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme">☯</button>

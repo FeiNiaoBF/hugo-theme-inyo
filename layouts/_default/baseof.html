@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="{{ site.Language.Locale | default "zh-cn" }}" data-theme="light">
+<head>
+  {{ partial "head.html" . }}
+</head>
+<body>
+  <header class="site-header">
+    <div class="container site-header-inner">
+      {{ partial "header.html" . }}
+    </div>
+  </header>
+
+  <main class="site-main">
+    <div class="container">
+      {{ block "main" . }}{{ end }}
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      {{ partial "footer.html" . }}
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var key = 'inyo-theme';
+      var root = document.documentElement;
+      var stored = localStorage.getItem(key);
+      if (stored) root.setAttribute('data-theme', stored);
+      var btn = document.getElementById('theme-toggle');
+      if (btn) {
+        btn.addEventListener('click', function () {
+          var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', next);
+          localStorage.setItem(key, next);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

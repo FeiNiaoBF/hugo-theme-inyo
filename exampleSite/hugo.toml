@@ -1,0 +1,15 @@
+baseURL = "https://example.org/"
+title = "Inyo 陰陽 · Demo"
+locale = "zh-cn"
+defaultContentLanguage = "zh-cn"
+enableRobotsTXT = true
+
+[module]
+[[module.imports]]
+path = "github.com/FeiNiaoBF/hugo-theme-inyo"
+
+[params]
+math = true
+vertical_footer = "行到水穷处 坐看云起时"
+seal_text = "陰陽"
+seal_style = "yang"
