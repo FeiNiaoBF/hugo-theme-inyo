@@ -142,8 +142,36 @@ img { max-width: 100%; height: auto; }
   gap: 1.6em;
   font-size: 0.92em;
 }
-.topnav a { color: var(--ink); border: 0; letter-spacing: 1px; }
+.topnav a {
+  position: relative;
+  color: var(--ink);
+  border: 0;
+  letter-spacing: 1px;
+  transition: color 0.3s ease;
+}
 .topnav a:hover { color: var(--cinnabar); }
+/* pianpker 式下划线：hover 自左下扫入；激活项常驻 */
+.topnav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -0.35em;
+  width: 100%;
+  height: 0.5em;
+  background: color-mix(in srgb, var(--cinnabar) 35%, transparent);
+  transform-origin: bottom right;
+  transform: scaleX(0);
+  transition: transform 0.3s ease-out;
+  z-index: -1;
+}
+.topnav a:hover::after,
+.topnav a.is-active::after {
+  transform-origin: bottom left;
+  transform: scaleX(1);
+}
+.topnav a.is-active { color: var(--cinnabar); font-weight: 700; }
+/* 暗色：不用下划线，改颜色+字重 */
+[data-theme="dark"] .topnav a::after { display: none; }
 .topnav .verse {
   margin-left: auto;
   color: var(--camel);
