@@ -1,8 +1,5 @@
 {{ define "main" }}
 <h1 class="visually-hidden">{{ site.Title }}</h1>
-{{ with .Content }}
-<div class="prose">{{ . }}</div>
-{{ end }}
 
 {{ $posts := (where site.RegularPages "Section" "posts").ByDate.Reverse }}
 {{ if eq (len $posts) 0 }}
