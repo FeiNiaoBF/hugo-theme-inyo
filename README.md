@@ -15,6 +15,7 @@
 - 🧮 **数学公式开关**：`params.math = true` 启用 KaTeX（保留自带字体）
 - 📐 **可定制**：全 CSS 变量 token 体系，改配色不用碰模板
 - 🔤 **多语言**：i18n（zh-cn / en / ja）+ 语言切换器（Hugo 多语言站点自动显示）
+- 📦 **自托管字体**：霞鹜文楷 unicode-range 分片（OFL 1.1）随主题分发，零 CDN 依赖、无字体闪烁
 
 ## 安装
 
@@ -55,9 +56,9 @@ theme: inyo
 
 ```toml
 [params]
-# 正文字体：wenkai（霞鹜文楷，默认，OFL 开源）| serif（思源宋体）
+# 正文字体：wenkai（霞鹜文楷，默认，自托管分片）/ serif（思源宋体，CDN）
 font = "wenkai"
-# 是否从 CDN 加载当前字体
+# 是否加载 web 字体（false 则用系统字体栈）
 webfonts = true
 # 数学公式
 math = true

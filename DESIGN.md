@@ -62,7 +62,7 @@
 
 | 角色 | 字体栈 | 参数 |
 |---|---|---|
-| 中文正文 | `'LXGW WenKai','Noto Serif SC','Source Han Serif SC','KaiTi',serif` | 默认 **霞鹜文楷**（OFL 1.1，源自 Klee One）；16px · 行高 **2.0** |
+| 中文正文 | `'LXGW WenKai','Noto Serif SC','Source Han Serif SC','KaiTi',serif` | 默认 **霞鹜文楷**（OFL 1.1，**自托管分片**：static/fonts/wenkai + assets/css/wenkai.css）；16px · 行高 **2.0** |
 | 标题 | 同族加粗（霞鹜文楷 Bold） | h1 字距 **1px** · h2 **0.75px** |
 | 思源宋体（可选） | `'Noto Serif SC','Source Han Serif SC','SimSun',Georgia,serif` | `params.font = "serif"` |
 | 代码/元信息 | Sarasa Mono SC 更纱黑体 | 13px · 行高 1.6 · 日期/阅读时间/版权 |
@@ -136,3 +136,4 @@
 - 色相和谐: Cohen-Or et al., "Color Harmonization", SIGGRAPH 2006
 - 排版实测参照: valaxy-theme-shuimo（已弃用其作为参考，保留其排版数据）
 - 字体: 思源宋体/霞鹜文楷/更纱黑体（均为开源 OFL）
+- 字体交付: 霞鹜文楷自托管分片来自官方 lxgw-wenkai-webfont 包（97×2 unicode-range 分片）；Windows 上 `cn-font-split` 因 koffi/libffi 不可用，改 vendor 官方分片

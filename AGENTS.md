@@ -17,7 +17,7 @@
 
 - Hugo（Hugo Modules 分发），模板语法 Go template
 - CSS：原生 CSS + 变量，无预处理器
-- 字体：霞鹜文楷（默认，OFL 开源）/ 思源宋体（可选 `font="serif"`）/ 更纱黑体（代码与元信息），全部 OFL 开源
+- 字体：霞鹜文楷（默认，自托管分片）/ 思源宋体（可选 `font="serif"`，CDN）/ 更纱黑体（代码与元信息，系统栈），全部 OFL 开源
 - 数学：KaTeX 通过 `params.math` 开关，CDN 加载；博客侧 goldmark 配置不归主题管
 
 ## 文件结构
