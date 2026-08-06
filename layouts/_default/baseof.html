@@ -5,23 +5,21 @@
   {{ partial "head.html" . }}
 </head>
 <body>
-  <header class="site-header">
-    <div class="container site-header-inner">
-      {{ partial "header.html" . }}
-    </div>
-  </header>
-
-  <main class="site-main">
-    <div class="container">
-      {{ block "main" . }}{{ end }}
-    </div>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container">
-      {{ partial "footer.html" . }}
-    </div>
-  </footer>
+  <div class="shell">
+    <aside class="rail">
+      <div class="rail-main">
+        {{ partial "header.html" . }}
+      </div>
+      <div class="rail-footer">
+        {{ partial "footer.html" . }}
+      </div>
+    </aside>
+    <main class="content">
+      <div class="container">
+        {{ block "main" . }}{{ end }}
+      </div>
+    </main>
+  </div>
 
   <script>
     (function () {
