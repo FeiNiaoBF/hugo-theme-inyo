@@ -19,6 +19,9 @@ other = "阅读全文"
 [tag]
 other = "标签"
 
+[tags]
+other = "标签"
+
 [date_format]
 other = "2006年1月2日"
 

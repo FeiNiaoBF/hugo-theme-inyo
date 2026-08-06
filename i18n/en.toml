@@ -19,6 +19,9 @@ other = "Read more"
 [tag]
 other = "Tags"
 
+[tags]
+other = "Tags"
+
 [date_format]
 other = "2006-01-02"
 

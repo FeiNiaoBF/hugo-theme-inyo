@@ -9,6 +9,16 @@ enableRobotsTXT = true
 path = "github.com/FeiNiaoBF/hugo-theme-inyo"
 
 [params]
+font = "wenkai"
 math = true
+subtitle = "纸墨二元 · 落字有间"
 seal_text = "陰陽"
-seal_style = "yang"
+seal_style = "yin"
+
+[[params.social]]
+name = "GitHub"
+url = "https://github.com/FeiNiaoBF/hugo-theme-inyo"
+
+[[params.social]]
+name = "RSS"
+url = "/index.xml"

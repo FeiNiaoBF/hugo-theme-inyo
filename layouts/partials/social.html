@@ -1,0 +1,7 @@
+{{ if site.Params.social }}
+<p class="rail-social">
+  {{ range site.Params.social }}
+  <a href="{{ .url }}"{{ if hasPrefix .url "/" }} aria-label="RSS"{{ end }}{{ if not (hasPrefix .url "/") }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .name }}</a>
+  {{ end }}
+</p>
+{{ end }}

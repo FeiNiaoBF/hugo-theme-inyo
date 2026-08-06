@@ -5,8 +5,14 @@ license = "MIT"
 min_version = "0.140.0"
 
 [params]
-  font = "serif"       # serif(思源宋体) | wenkai(霞鹜文楷)
+  font = "wenkai"      # wenkai(霞鹜文楷,默认) | serif(思源宋体)
   math = false         # 启用 KaTeX
   webfonts = true      # 从 CDN 加载字体 (false 则纯系统栈)
+  subtitle = ""        # 站名下的气质签名（副标题）
+  verse = ""           # 顶部导航诗句（二期动画占位）
   seal_text = "陰陽"   # 印章文字
-  seal_style = "yang"  # yang=阳文(朱文) | yin=阴文(白文)
+  seal_style = "yin"   # yin=阴文(白文,默认) | yang=阳文(朱文)
+  # 社交链接示例:
+  # [[params.social]]
+  #   name = "GitHub"
+  #   url  = "https://github.com/..."

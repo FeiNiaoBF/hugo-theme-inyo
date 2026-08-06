@@ -1,4 +1,4 @@
-{{- $font := cond (eq site.Params.font "wenkai") "wenkai" "serif" -}}
+{{- $font := cond (eq site.Params.font "serif") "serif" "wenkai" -}}
 <!DOCTYPE html>
 <html lang="{{ site.Language.Locale | default "zh-cn" }}" data-theme="light" data-font="{{ $font }}">
 <head>
@@ -6,14 +6,26 @@
 </head>
 <body>
   <div class="shell">
+    <nav class="topnav" aria-label="Site navigation">
+      <a href="{{ site.Home.RelPermalink }}">{{ i18n "home" }}</a>
+      {{ with site.GetPage "/posts" }}<a href="{{ .RelPermalink }}">{{ i18n "posts" }}</a>{{ end }}
+      {{ with site.GetPage "/tags" }}<a href="{{ .RelPermalink }}">{{ i18n "tags" }}</a>{{ end }}
+      {{ with site.GetPage "/about" }}<a href="{{ .RelPermalink }}">{{ i18n "about" }}</a>{{ end }}
+      {{ with site.Params.verse }}<span class="verse" aria-hidden="true">{{ . }}</span>{{ end }}
+    </nav>
+
     <aside class="rail">
-      <div class="rail-main">
-        {{ partial "header.html" . }}
-      </div>
-      <div class="rail-footer">
+      {{ partial "header.html" . }}
+      <div class="rail-bottom">
+        {{ partial "social.html" . }}
+        <div class="rail-controls">
+          {{ partial "lang.html" . }}
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme">☯</button>
+        </div>
         {{ partial "footer.html" . }}
       </div>
     </aside>
+
     <main class="content">
       <div class="container">
         {{ block "main" . }}{{ end }}

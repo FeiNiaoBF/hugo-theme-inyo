@@ -6,15 +6,15 @@
 <link rel="stylesheet" href="{{ $css.RelPermalink }}">
 <link rel="icon" type="image/svg+xml" href="{{ "img/seal-yang.svg" | relURL }}">
 {{ if ne site.Params.webfonts false }}
-{{ $font := cond (eq site.Params.font "wenkai") "wenkai" "serif" }}
-{{ if eq $font "wenkai" }}
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-bold.css">
-{{ else }}
+{{ $font := cond (eq site.Params.font "serif") "serif" "wenkai" }}
+{{ if eq $font "serif" }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap">
+{{ else }}
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-bold.css">
 {{ end }}
 {{ end }}
 {{ if site.Params.math }}

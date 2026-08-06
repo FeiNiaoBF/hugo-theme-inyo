@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-label="Inyo seal">
-  <rect x="1.5" y="1.5" width="37" height="37" fill="none" stroke="#D92121" stroke-width="1.5"/>
-  <text x="20" y="24.5" text-anchor="middle" font-size="11" fill="#D92121" font-family="'Noto Serif SC','Source Han Serif SC',serif">陰陽</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" role="img" aria-label="Inyo seal">
+  <rect x="2" y="2" width="40" height="40" rx="2.5" fill="#F8F4F0" stroke="#D92121" stroke-width="1.6"/>
+  <text x="22" y="17" text-anchor="middle" font-size="15" fill="#D92121" font-family="'LXGW WenKai','Noto Serif SC','Source Han Serif SC',serif">陰</text>
+  <text x="22" y="35" text-anchor="middle" font-size="15" fill="#D92121" font-family="'LXGW WenKai','Noto Serif SC','Source Han Serif SC',serif">陽</text>
 </svg>

@@ -1,0 +1,8 @@
+{{ if hugo.IsMultilingual }}
+<nav class="lang" aria-label="Language">
+  {{ range .Translations }}
+  <a href="{{ .RelPermalink }}" lang="{{ .Language.Lang }}" hreflang="{{ .Language.Lang }}">{{ .Language.LanguageName }}</a>
+  {{ end }}
+  <span class="lang-current">{{ .Language.LanguageName }}</span>
+</nav>
+{{ end }}
