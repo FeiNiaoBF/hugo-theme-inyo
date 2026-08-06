@@ -3,14 +3,16 @@
 {{ with .Content }}
 <div class="prose">{{ . }}</div>
 {{ end }}
-<ul class="post-list">
+<ul class="catalog">
   {{ range .Pages }}
-  <li>
-    <h3 class="post-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
-    <div class="post-meta">
+  <li class="catalog-item">
+    <h2 class="catalog-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+    <div class="catalog-meta">
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
-      {{ range .Params.tags }}<a class="tag" href="{{ "tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a>{{ end }}
+      <span aria-hidden="true">·</span>
+      <span>{{ i18n "reading_time" .ReadingTime }}</span>
     </div>
+    {{ with .Description }}<p class="catalog-summary">{{ . | plainify }}</p>{{ end }}
   </li>
   {{ end }}
 </ul>

@@ -231,53 +231,41 @@ h4 { font-size: 1.05em; letter-spacing: 1px; }
 }
 .tag:hover { background: var(--camel); color: var(--paper); }
 
-/* 首页：文集目录 */
-.home-featured { margin: 0 0 3em; }
-.home-featured-title { margin: 0; font-size: 1.55em; }
-.home-featured-title a,
-.home-archive-title a { color: var(--ink); border: 0; }
-.home-featured-title a:hover,
-.home-archive-title a:hover { color: var(--cinnabar); }
-.home-featured-meta {
+/* 目录 */
+.catalog { list-style: none; margin: 0; padding: 0; }
+.catalog-item { padding: 1.1em 0; border-bottom: 1px solid var(--border); }
+.catalog-item:first-child { border-top: 1px solid var(--border); }
+.catalog-title { margin: 0; font-size: 1.15em; }
+.catalog-title a { color: var(--ink); border: 0; }
+.catalog-title a:hover { color: var(--cinnabar); }
+.catalog-meta {
+  margin-top: 0.3em;
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  color: var(--camel);
+  letter-spacing: 0.5px;
   display: flex;
   flex-wrap: wrap;
   gap: 0.45em;
-  margin-top: 0.4em;
-  color: var(--camel);
-  font-size: 0.8em;
-  letter-spacing: 1px;
 }
-.home-featured-summary { margin: 0.9em 0 0; }
-.home-archive { list-style: none; margin: 0; padding: 0; }
-.home-archive-item {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 1.5em;
-  padding: 0.65em 0;
-}
-.home-archive-title { margin: 0; font-size: 1.05em; line-height: 1.6; }
-.home-archive-date {
-  color: var(--camel);
-  font-size: 0.8em;
-  letter-spacing: 1px;
-  white-space: nowrap;
-}
+.catalog-summary { margin: 0.5em 0 0; font-size: 0.92em; color: var(--ink); opacity: 0.85; }
 .home-empty { margin: 0; color: var(--camel); }
 
-/* 文章列表 */
-.post-list { list-style: none; margin: 0; padding: 0; }
-.post-list li { padding: 1.1em 0; border-bottom: 1px solid var(--border); }
-.post-list li:first-child { border-top: 1px solid var(--border); }
-.post-title { font-size: 1.15em; }
-.post-title a { color: var(--ink); border: 0; }
-.post-title a:hover { color: var(--cinnabar); }
-.post-meta { font-size: 0.8em; color: var(--camel); letter-spacing: 1px; margin-top: 0.3em; }
-
-/* 文章页 */
+/* 文章页 v2 */
+.post-single { max-width: 40em; }
 .post-header { margin-bottom: 2.5em; }
 .post-header h1 { margin-bottom: 0.3em; }
-.post-date { font-size: 0.85em; color: var(--camel); letter-spacing: 1px; }
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45em;
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  color: var(--camel);
+  letter-spacing: 0.5px;
+}
+.post-meta .tag { font-family: var(--font-serif); }
+.post-date { display: none; }
 
 /* 上一篇/下一篇 */
 .post-nav {

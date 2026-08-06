@@ -3,39 +3,23 @@
 {{ with .Content }}
 <div class="prose">{{ . }}</div>
 {{ end }}
-<div class="brush-divider" aria-hidden="true">
-  <svg viewBox="0 0 400 20" preserveAspectRatio="none" focusable="false">
-    <path d="M4 14 Q 90 6, 190 11 T 396 9" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.55" />
-    <path d="M20 16 Q 120 9, 240 12 T 380 11" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.4" />
-  </svg>
-</div>
 
 {{ $posts := (where site.RegularPages "Section" "posts").ByDate.Reverse }}
 {{ if eq (len $posts) 0 }}
 <p class="home-empty">{{ i18n "no_posts" }}</p>
 {{ else }}
-{{ $featured := index $posts 0 }}
-<article class="home-featured">
-  <header>
-    <h2 class="home-featured-title"><a href="{{ $featured.RelPermalink }}">{{ $featured.Title }}</a></h2>
-    <div class="home-featured-meta">
-      <time datetime="{{ $featured.Date.Format "2006-01-02" }}">{{ $featured.Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
+<ul class="catalog">
+  {{ range $posts }}
+  <li class="catalog-item">
+    <h2 class="catalog-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+    <div class="catalog-meta">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
       <span aria-hidden="true">·</span>
-      <span>{{ i18n "reading_time" $featured.ReadingTime }}</span>
+      <span>{{ i18n "reading_time" .ReadingTime }}</span>
     </div>
-  </header>
-  <p class="home-featured-summary">{{ $featured.Summary | plainify | htmlUnescape | truncate 160 }}</p>
-</article>
-
-{{ if gt (len $posts) 1 }}
-<ul class="home-archive">
-  {{ range after 1 $posts }}
-  <li class="home-archive-item">
-    <h2 class="home-archive-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-    <time class="home-archive-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
+    {{ with .Description }}<p class="catalog-summary">{{ . | plainify }}</p>{{ end }}
   </li>
   {{ end }}
 </ul>
-{{ end }}
 {{ end }}
 {{ end }}
