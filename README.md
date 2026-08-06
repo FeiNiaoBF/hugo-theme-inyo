@@ -1,6 +1,6 @@
 # Inyo 陰陽
 
-> 纸墨二元 · 日式极简 × 昭和レトロ × 古中国水墨 — Hugo 博客主题
+> 纸墨二元 · 日式现代简约 × 古中国水墨 — Hugo 博客主题
 
 **Inyo（陰陽）** 是一个为长文阅读设计的 Hugo 博客主题。亮色模式是墨在纸上（荼蘼白宣纸底 + 墨色正文），暗色模式是白墨在墨（墨色夜墨底 + 月白正文）。朱砂红是唯一的情绪色——像一枚印章盖在整个站点上。
 
@@ -10,10 +10,11 @@
 - 🖋️ **全站只有一个情绪色**：朱砂红（链接/印章/按钮），60/25/10/5 用色纪律
 - 📖 **长文优先**：40em 容器、中文行高 2.0、标题字距拉开——东方式排版
 - 🎨 **全部颜色出自《中华传统色》742 色库**：每个 token 有真实色名（荼蘼白、墨色、朱砂红、朱红、晓灰、云峰灰…），全部通过 WCAG AA 实测
-- 🔖 **印章 Logo**：朱砂红印章 SVG（阴/阳文，细线，随主题变色）
-- 🧮 **数学公式开关**：`params.math = true` 启用 KaTeX
+- 🔖 **传统印章 Logo**：白文印（朱砂底白字）/ 朱文印两版，双模式不变色
+- 🧭 **顶部导航 + 右侧身份栏**（pianpker 式）：气质签名、社交链接（`/` 分隔）、语言切换、主题切换
+- 🧮 **数学公式开关**：`params.math = true` 启用 KaTeX（保留自带字体）
 - 📐 **可定制**：全 CSS 变量 token 体系，改配色不用碰模板
-- 🔤 **多语言**：i18n（zh-cn / en / ja），按 Hugo 标准处理
+- 🔤 **多语言**：i18n（zh-cn / en / ja）+ 语言切换器（Hugo 多语言站点自动显示）
 
 ## 安装
 
@@ -54,16 +55,33 @@ theme: inyo
 
 ```toml
 [params]
-# 文人变体正文（楷体，OFL 开源）；默认 "serif"（思源宋体）
+# 正文字体：wenkai（霞鹜文楷，默认，OFL 开源）| serif（思源宋体）
 font = "wenkai"
 # 是否从 CDN 加载当前字体
 webfonts = true
 # 数学公式
 math = true
+# 站名下的气质签名（副标题）
+subtitle = "纸墨二元 · 落字有间"
+# 顶部导航诗句（二期动画占位，留空不显示）
+verse = ""
 # 印章内容（1–4 字最佳）与样式
 seal_text = "陰陽"
-seal_style = "yang" # yang=阳文（朱文）/ yin=阴文（白文）
+seal_style = "yin" # yin=阴文（白文，默认）/ yang=阳文（朱文）
+
+# 社交链接（右侧栏渲染，/ 分隔）
+[[params.social]]
+name = "GitHub"
+url = "https://github.com/FeiNiaoBF/hugo-theme-inyo"
+
+[[params.social]]
+name = "RSS"
+url = "/index.xml"
 ```
+
+## 多语言
+
+主题内置 zh-cn / en / ja 翻译与语言切换器；Hugo 站点配置多个 `[languages.*]` 后，右侧栏自动显示语言切换。
 
 ## 目录结构
 
@@ -73,7 +91,7 @@ hugo-theme-inyo/
 ├── AGENTS.md        # AI 编码代理规范
 ├── layouts/         # 模板
 ├── assets/css/      # main.css —— CSS 变量 token 体系
-├── static/img/      # 印章、毛笔分隔线 SVG
+├── static/img/      # 印章 SVG（白文/朱文两版）
 └── exampleSite/     # 演示站点（hugo server --source exampleSite）
 ```
 
