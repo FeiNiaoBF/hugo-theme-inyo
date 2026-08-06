@@ -30,6 +30,7 @@
   --btn-text:     var(--paper);
 
   --font-serif: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', Georgia, 'Times New Roman', serif;
+  --font-wenkai: 'LXGW WenKai', 'KaiTi', 'STKaiti', serif;
   --font-mono: 'Sarasa Mono SC', 'JetBrains Mono', Consolas, 'Courier New', monospace;
 
   --fs-base: 16px;
@@ -38,6 +39,10 @@
   --container: 40em;
   --radius: 2px;
   --spacing: 1.5em;
+}
+
+[data-font="wenkai"] {
+  --font-serif: var(--font-wenkai);
 }
 
 /* 暗色模式（墨）— DESIGN.md §2.2 剑锋紫基 */

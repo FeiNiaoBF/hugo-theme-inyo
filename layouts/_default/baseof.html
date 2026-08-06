@@ -1,5 +1,6 @@
+{{- $font := cond (eq site.Params.font "wenkai") "wenkai" "serif" -}}
 <!DOCTYPE html>
-<html lang="{{ site.Language.Locale | default "zh-cn" }}" data-theme="light">
+<html lang="{{ site.Language.Locale | default "zh-cn" }}" data-theme="light" data-font="{{ $font }}">
 <head>
   {{ partial "head.html" . }}
 </head>

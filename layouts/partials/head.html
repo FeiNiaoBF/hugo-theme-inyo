@@ -6,9 +6,16 @@
 <link rel="stylesheet" href="{{ $css.RelPermalink }}">
 <link rel="icon" type="image/svg+xml" href="{{ "img/seal-yang.svg" | relURL }}">
 {{ if ne site.Params.webfonts false }}
+{{ $font := cond (eq site.Params.font "wenkai") "wenkai" "serif" }}
+{{ if eq $font "wenkai" }}
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-bold.css">
+{{ else }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap">
+{{ end }}
 {{ end }}
 {{ if site.Params.math }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">

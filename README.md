@@ -52,19 +52,19 @@ theme: inyo
 
 ## 配置
 
-```yaml
-params:
-  # 文人变体正文（楷体，OFL 开源）
-  font: "wenkai"            # 或 "serif"（默认思源宋体）
-  # 数学公式
-  math: true                # 启用 KaTeX
-  # 竖排题款（装饰性）
-  vertical:
-    footer: "行到水穷处"    # 页脚竖排签名
-  # 印章文字
-  seal:
-    text: "陰陽"            # 印章内容（1-4 字最佳）
-    style: "yang"           # yang=阳文(朱文) / yin=阴文(白文)
+```toml
+[params]
+# 文人变体正文（楷体，OFL 开源）；默认 "serif"（思源宋体）
+font = "wenkai"
+# 是否从 CDN 加载当前字体
+webfonts = true
+# 数学公式
+math = true
+# 页脚竖排签名（装饰性）
+vertical_footer = "行到水穷处"
+# 印章内容（1–4 字最佳）与样式
+seal_text = "陰陽"
+seal_style = "yang" # yang=阳文（朱文）/ yin=阴文（白文）
 ```
 
 ## 目录结构
