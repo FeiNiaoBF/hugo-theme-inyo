@@ -1,5 +1,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{{/* 主题首帧前应用，防导航闪烁（FOUC）；唯一允许的内联脚本 */}}
+<script>
+  (function () {
+    var key = 'inyo-theme';
+    var root = document.documentElement;
+    var stored = localStorage.getItem(key);
+    var theme = stored
+      || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    root.setAttribute('data-theme', theme);
+  })();
+</script>
 <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
 {{ with .Description }}<meta name="description" content="{{ . }}">{{ end }}
 {{ $css := resources.Get "css/main.css" | minify | fingerprint }}
