@@ -43,6 +43,8 @@ exampleSite/
 - 目录禁止用卡片、重复边框或额外强调色堆砌；分隔用细线 `--border` 与留白。
 - 新的列表条目 partial 只在标记被复用或形成稳定职责边界后提取，避免为单次调用制造碎片。
 - 需要用户定制时，优先提供小型 Hugo 覆盖 partial；不要为每个视觉细节增加配置开关。
+- **导航交互（pianpker 蒸馏）**：激活项 = 常驻下划线 + 加粗；hover = 下划线自左下扫入（`::after` + `transform-origin: bottom-right→bottom-left` + `scale-x 0→1`，≈300ms ease-out）；**暗色模式删除下划线**，改颜色 + 字重过渡。纯 CSS，零 JS。
+- **字体交付（pianpker 蒸馏）**：中文字体优先自托管 + `cn-font-split` 子集化（`unicode-range` 分片），消除 CDN 依赖与 FOUT；CDN 加载仅作过渡方案。
 
 ## 精确命令（低自由度，照抄执行）
 
