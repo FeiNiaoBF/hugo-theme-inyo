@@ -93,6 +93,18 @@ a:hover { border-bottom-color: var(--cinnabar); }
 
 img { max-width: 100%; height: auto; }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ---------- 3. 布局 ---------- */
 .container {
   max-width: var(--container);
@@ -213,9 +225,10 @@ h4 { font-size: 1.05em; letter-spacing: 1px; }
   width: 100%;
   height: 24px;
   margin: 2.5em 0;
+  color: var(--srf-3);
   opacity: 0.75;
 }
-.brush-divider svg { width: 100%; height: 100%; }
+.brush-divider svg { display: block; width: 100%; height: 100%; }
 
 /* ---------- 5. 组件 ---------- */
 /* 印章 Logo */
@@ -235,6 +248,40 @@ h4 { font-size: 1.05em; letter-spacing: 1px; }
   transition: background 0.2s, color 0.2s;
 }
 .tag:hover { background: var(--camel); color: var(--paper); }
+
+/* 首页：文集目录 */
+.home-featured { margin: 0 0 3em; }
+.home-featured-title { margin: 0; font-size: 1.55em; }
+.home-featured-title a,
+.home-archive-title a { color: var(--ink); border: 0; }
+.home-featured-title a:hover,
+.home-archive-title a:hover { color: var(--cinnabar); }
+.home-featured-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45em;
+  margin-top: 0.4em;
+  color: var(--camel);
+  font-size: 0.8em;
+  letter-spacing: 1px;
+}
+.home-featured-summary { margin: 0.9em 0 0; }
+.home-archive { list-style: none; margin: 0; padding: 0; }
+.home-archive-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 1.5em;
+  padding: 0.65em 0;
+}
+.home-archive-title { margin: 0; font-size: 1.05em; line-height: 1.6; }
+.home-archive-date {
+  color: var(--camel);
+  font-size: 0.8em;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.home-empty { margin: 0; color: var(--camel); }
 
 /* 文章列表 */
 .post-list { list-style: none; margin: 0; padding: 0; }
@@ -314,4 +361,11 @@ h4 { font-size: 1.05em; letter-spacing: 1px; }
   .site-header-inner { flex-direction: column; align-items: flex-start; }
   .site-nav { flex-wrap: wrap; }
   h1 { font-size: 1.5em; }
+  .brush-divider { margin: 2em 0; }
+  .home-featured { margin-bottom: 2.5em; }
+  .home-archive-item {
+    grid-template-columns: 1fr;
+    gap: 0.1em;
+    padding: 0.7em 0;
+  }
 }

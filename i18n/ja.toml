@@ -21,3 +21,9 @@ other = "タグ"
 
 [date_format]
 other = "2006年1月2日"
+
+[reading_time]
+other = "読了約{{ .Count }}分"
+
+[no_posts]
+other = "まだ記事はありません。"

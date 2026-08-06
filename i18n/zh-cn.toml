@@ -21,3 +21,9 @@ other = "标签"
 
 [date_format]
 other = "2006年1月2日"
+
+[reading_time]
+other = "阅读约 {{ .Count }} 分钟"
+
+[no_posts]
+other = "暂时还没有文章。"

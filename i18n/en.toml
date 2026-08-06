@@ -21,3 +21,10 @@ other = "Tags"
 
 [date_format]
 other = "2006-01-02"
+
+[reading_time]
+one = "{{ .Count }} minute read"
+other = "{{ .Count }} minute read"
+
+[no_posts]
+other = "No articles yet."
