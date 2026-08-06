@@ -10,6 +10,5 @@ path = "github.com/FeiNiaoBF/hugo-theme-inyo"
 
 [params]
 math = true
-vertical_footer = "行到水穷处 坐看云起时"
 seal_text = "陰陽"
 seal_style = "yang"

@@ -1,6 +1,6 @@
 # Inyo 陰陽 theme metadata
 name = "Inyo"
-description = "纸墨二元 · 日式极简 × 昭和レトロ × 古中国水墨 — Hugo 博客主题"
+description = "纸墨二元 · 日式现代简约 × 古中国水墨 — Hugo 博客主题"
 license = "MIT"
 min_version = "0.140.0"
 
@@ -8,6 +8,5 @@ min_version = "0.140.0"
   font = "serif"       # serif(思源宋体) | wenkai(霞鹜文楷)
   math = false         # 启用 KaTeX
   webfonts = true      # 从 CDN 加载字体 (false 则纯系统栈)
-  vertical_footer = "" # 页脚竖排签名（装饰性）
   seal_text = "陰陽"   # 印章文字
   seal_style = "yang"  # yang=阳文(朱文) | yin=阴文(白文)

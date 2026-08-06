@@ -201,17 +201,6 @@ h4 { font-size: 1.05em; letter-spacing: 1px; }
 .prose pre code { background: none; color: inherit; padding: 0; }
 .prose pre .highlight { background: none; }
 
-/* 分隔线: 毛笔笔触 */
-.brush-divider {
-  display: block;
-  width: 100%;
-  height: 24px;
-  margin: 2.5em 0;
-  color: var(--srf-3);
-  opacity: 0.75;
-}
-.brush-divider svg { display: block; width: 100%; height: 100%; }
-
 /* ---------- 5. 组件 ---------- */
 /* 印章 Logo */
 .seal { display: inline-block; color: var(--cinnabar); border: 0; }

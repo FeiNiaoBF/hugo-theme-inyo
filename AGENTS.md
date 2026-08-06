@@ -4,12 +4,12 @@
 
 ## 铁律
 
-1. **颜色禁止硬编码**：任何颜色必须来自 `assets/css/main.css` 的 CSS 变量 token（`--paper` / `--ink` / `--cinnabar` / `--camel` / `--indigo` / `--ink-bg` 等）。新增颜色前必须查 DESIGN.md §2 色表；新色必须实测 WCAG 对比度 ≥4.5:1（正文）/ ≥3:1（大文本），并在 DESIGN.md 记录
+1. **颜色禁止硬编码**：任何颜色必须来自 `assets/css/main.css` 的 CSS 变量 token（`--paper` / `--ink` / `--cinnabar` / `--camel` / `--indigo` / `--srf-*` 等）。新增颜色前必须查 DESIGN.md §2 色表；新色必须实测 WCAG 对比度 ≥4.5:1（正文）/ ≥3:1（大文本），并在 DESIGN.md 记录
 2. **三条使用纪律**（DESIGN.md §2.3，实测约束）：
-   - 松烟墨 `#3B3A3E` 禁止作剑锋紫的辅助面
-   - 卡片面（t=0.08）上的链接必须用粉红 `#F2B9B2` 或压深卡片
-   - 浅档（t≥0.20）只做背景/边框，禁止放文字
-3. **正文永远横排**：竖排只允许出现在装饰位（页脚签名、章节标记）；`writing-mode: vertical-rl` 只用于 `.tategaki` 类
+   - 墨色 `#1D1B1C` 上正文/链接全角色过 AA（月白 13.80 / 朱红 4.74 / 晓灰 10.10）
+   - 暗色抬升面（`--paper-2` `#322F31`）上的链接必须用舌红 `#F19790`（朱红 on 抬升面 3.66 不达标）
+   - 浅档（t≥0.55 `#888185` 及以上）只做弱化文字/边框/装饰，禁止放正文链接
+3. **正文永远横排**：竖排（`writing-mode: vertical-rl`）禁止用于正文、导航、页脚；装饰性竖排已整体移除（v2）
 4. **零 JS 依赖**：主题切换是唯一允许的内联脚本；不要引入框架
 5. **双模式对称**：新增样式必须同时给出亮（纸）和暗（墨）两套取值，走 `[data-theme="dark"]` 覆盖
 
@@ -25,7 +25,7 @@
 - `DESIGN.md` — 设计 token 权威来源，改设计先改这里
 - `assets/css/main.css` — 唯一样式文件（token 段 + 组件段）
 - `layouts/` — baseof / index / single / list / partials / shortcodes
-- `static/img/` — 印章、笔触 SVG
+- `static/img/` — 印章 SVG
 - `exampleSite/` — 本地验证站，改动必须跑 `hugo server --source exampleSite` 验证
 
 ## 提交规范
@@ -38,5 +38,5 @@
 
 ```bash
 cd exampleSite && hugo mod tidy && hugo server
-# 检查: 亮/暗两模式切换、文章页排版、代码块、表格、标签章、竖排页脚
+# 检查: 亮/暗两模式切换、右侧导航栏、目录首页、文章页排版、代码块、表格、标签章
 ```
