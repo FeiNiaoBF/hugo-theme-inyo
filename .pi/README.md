@@ -2,7 +2,7 @@
 
 本项目在 `.pi/skills/` 内提供配色设计技能，pi 会在信任该项目后自动发现。源数据来自 [zhongguo-traditional-colors](https://github.com/nevertoday/zhongguo-traditional-colors)（MIT License，作者 xiaoxiaodong）。
 
-每个技能自带完整 `references/`（742 中华传统色数据），**离线可用，无需联网**。移动或更新技能后，在当前 pi 会话中运行 `/reload`。
+三个 `xxd-*` 技能自带完整 `references/`（742 中华传统色数据），**离线可用，无需联网**；项目专用技能复用这些数据。移动或更新技能后，在当前 pi 会话中运行 `/reload`。
 
 ## 技能清单
 
@@ -11,6 +11,8 @@
 | `xxd-palette-builder` | 从 742 色筛选主/辅/背景/强调色板 + 比例 | 需要角色化色板时 |
 | `xxd-accessible-color` | WCAG 对比度检查 + 同库替代色修复 | 文字/按钮/图表可读性校验 |
 | `xxd-existing-design-audit` | 盘点旧色资产，判定保留/合并/替换/移除 | 改版/设计系统清理 |
+| `inyo-theme-development` | 执行 Inyo 模板、CSS、token 与发布约束 | 开发或发布主题时 |
+| `color-harmony-oklch` | OKLCH 和谐分析、目标对比度搜索与 742 色排序 | 主题或 UI 选色时 |
 
 ## 安装到 Claude Code
 
