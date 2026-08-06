@@ -64,6 +64,7 @@ cd exampleSite && hugo mod tidy
 - 本机 Git 代理 `127.0.0.1:7897` 可能未运行。获得用户明确 push 批准后，可用 `git -c http.proxy= push` 直连。
 - Windows 的 CRLF 转换警告正常；先运行 `git diff --check`，没有空白错误即可。
 - 主题切换有 0.25s 过渡；浏览器实测切换后等待至少 400ms，再读取 computed style。
+- **防导航闪烁（FOUC）**：应用主题的脚本必须放 `head.html` 样式表之前（首帧前定主题）；`body` 末尾只保留切换绑定。若在 body 应用主题，暗色用户每次导航都会先闪浅色。
 
 ## 发布流程
 
