@@ -6,14 +6,6 @@
 </head>
 <body>
   <div class="shell">
-    <nav class="topnav" aria-label="Site navigation">
-      <a href="{{ site.Home.RelPermalink }}">{{ i18n "home" }}</a>
-      {{ with site.GetPage "/posts" }}<a href="{{ .RelPermalink }}">{{ i18n "posts" }}</a>{{ end }}
-      {{ with site.GetPage "/tags" }}<a href="{{ .RelPermalink }}">{{ i18n "tags" }}</a>{{ end }}
-      {{ with site.GetPage "/about" }}<a href="{{ .RelPermalink }}">{{ i18n "about" }}</a>{{ end }}
-      {{ with site.Params.verse }}<span class="verse" aria-hidden="true">{{ . }}</span>{{ end }}
-    </nav>
-
     <aside class="rail">
       {{ partial "header.html" . }}
       <div class="rail-bottom">
@@ -27,6 +19,13 @@
     </aside>
 
     <main class="content">
+      <nav class="topnav" aria-label="Site navigation">
+        <a href="{{ site.Home.RelPermalink }}">{{ i18n "home" }}</a>
+        {{ with site.GetPage "/posts" }}<a href="{{ .RelPermalink }}">{{ i18n "posts" }}</a>{{ end }}
+        {{ with site.GetPage "/tags" }}<a href="{{ .RelPermalink }}">{{ i18n "tags" }}</a>{{ end }}
+        {{ with site.GetPage "/about" }}<a href="{{ .RelPermalink }}">{{ i18n "about" }}</a>{{ end }}
+        {{ with site.Params.verse }}<span class="verse" aria-hidden="true">{{ . }}</span>{{ end }}
+      </nav>
       <div class="container">
         {{ block "main" . }}{{ end }}
       </div>
