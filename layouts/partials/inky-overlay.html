@@ -10,5 +10,6 @@
 <div class="inky-overlay" aria-hidden="true">
   <span class="inky-seal"></span>
   <div class="inky-img"{{ with $bg }} style="background-image:url('{{ . }}')"{{ end }}></div>
+  <span class="inky-stamp">{{ partial "seal.html" . }}</span>
   <span class="inky-ring"></span>
 </div>

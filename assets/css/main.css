@@ -372,7 +372,7 @@ h6:hover .heading-anchor,
   100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
 }
 
-/* ② 洇墨 — 古画自落点生长聚焦（墨在纸上显影），与落印接力 */
+/* ② 洇墨 — 古画自落点生长聚焦；蒙版=撕纸边(SVG turbulence) ∩ 径向晕染 → 永无矩形边界 */
 .inky-img {
   position: absolute;
   inset: 0;
@@ -383,6 +383,16 @@ h6:hover .heading-anchor,
   transform: scale(0.55);
   transform-origin: var(--drop-x, 50%) var(--drop-y, 50%);
   filter: sepia(0.22) contrast(0.92) brightness(0.98) blur(10px);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cdefs%3E%3Cfilter id='t' x='-25%25' y='-25%25' width='150%25' height='150%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015' numOctaves='3' seed='7' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='9'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='0' y='0' width='100' height='100' rx='4' fill='white' filter='url(%23t)'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 50% 50%, #000 62%, rgba(0, 0, 0, 0.35) 86%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cdefs%3E%3Cfilter id='t' x='-25%25' y='-25%25' width='150%25' height='150%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015' numOctaves='3' seed='7' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='9'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='0' y='0' width='100' height='100' rx='4' fill='white' filter='url(%23t)'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 50% 50%, #000 62%, rgba(0, 0, 0, 0.35) 86%, transparent 100%);
+  mask-composite: intersect;
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
   transition: opacity 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s,
               transform 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s,
               filter 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
@@ -411,6 +421,28 @@ h6:hover .heading-anchor,
   transition: opacity 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
 }
 .inky-overlay.is-open .inky-img::after { opacity: 1; }
+
+/* ③ 落款 — 画成印成：Inyo 太极印章盖于右下，稍迟于洇墨 */
+.inky-stamp {
+  position: absolute;
+  right: 9vw;
+  bottom: 13vh;
+  display: block;
+  opacity: 0;
+  transform: scale(1.5) rotate(-8deg);
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.28));
+  transition: opacity 0.3s ease 2.4s, transform 0.45s cubic-bezier(0.2, 0, 0, 1) 2.4s;
+}
+.inky-stamp .seal { width: 56px; height: 56px; display: block; }
+.inky-overlay.is-open .inky-stamp {
+  opacity: 1;
+  transform: scale(1) rotate(-8deg);
+}
+.inky-overlay.recede .inky-stamp {
+  transition-delay: 0s;
+  opacity: 0;
+  transform: scale(1.4) rotate(-8deg);
+}
 
 /* 涟漪：一道淡墨环，随落印扩散、随洇墨淡出 */
 .inky-ring {
@@ -484,6 +516,7 @@ h6:hover .heading-anchor,
   .inky-img::after { transition: none; }
   .inky-ring { animation: none; }
   .inky-seal { animation: none; opacity: 0; }
+  .inky-stamp { transition: none; }
   .hero { transition: none; }
 }
 @media (max-width: 768px) {
