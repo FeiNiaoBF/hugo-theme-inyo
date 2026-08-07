@@ -1,0 +1,9 @@
+# Inyo runtime defaults. Site configuration wins when a consumer overrides a key.
+font = "wenkai"
+math = false
+webfonts = true
+subtitle = ""
+mainSections = ["posts"]
+ogImage = "img/seal-yang.svg"
+heroImage = "img/hero-beauty.jpg"
+heroImageQuality = 72

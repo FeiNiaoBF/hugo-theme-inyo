@@ -1,0 +1,5 @@
+# Keep Chroma's semantic classes so the theme CSS can provide light/dark tokens.
+_merge = "deep"
+
+[highlight]
+noClasses = false

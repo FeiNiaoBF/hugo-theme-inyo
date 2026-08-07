@@ -2,18 +2,10 @@
 name = "Inyo"
 description = "纸墨二元 · 日式现代简约 × 古中国水墨 — Hugo 博客主题"
 license = "MIT"
-min_version = "0.140.0"
+min_version = "0.164.0"
 
-[markup.highlight]
-  noClasses = false
+# Runtime defaults are provided through config/_default/*.toml so Hugo Modules
+# can merge them with the consuming site's project configuration.
 
-[params]
-  font = "wenkai"      # wenkai(霞鹜文楷,默认) | serif(思源宋体)
-  math = false         # 启用 KaTeX
-  webfonts = true      # 从 CDN 加载字体 (false 则纯系统栈)
-  subtitle = ""        # 站名下的气质签名（副标题）
-  heroImage = "img/hero-beauty.jpg"  # 墨滴涟漪背景图（assets 内路径，构建期转 WebP）
-  heroImageQuality = 72               # WebP 质量
-  # [[params.social]]
-  #   name = "GitHub"
-  #   url  = "https://github.com/..."
+[module.hugoVersion]
+min = "0.164.0"

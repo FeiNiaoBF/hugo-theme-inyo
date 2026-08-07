@@ -1,29 +1,29 @@
 baseURL = "https://example.org/"
 title = "Inyo 陰陽"
-locale = "zh-cn"
 defaultContentLanguage = "zh-cn"
 enableRobotsTXT = true
+
+[languages.zh-cn]
+label = "中文"
+locale = "zh-CN"
+weight = 1
 
 [module]
 [[module.imports]]
 path = "github.com/FeiNiaoBF/hugo-theme-inyo"
 
 [params]
-font = "wenkai"
-math = false
 subtitle = "纸墨二元 · 落字有间"
 author = "Inyo"
 
 [markup]
+_merge = "deep"
 [markup.goldmark]
 [markup.goldmark.renderer]
 unsafe = true
 
 [markup.goldmark.parser.attribute]
 block = true
-
-[markup.highlight]
-noClasses = false
 
 [[params.social]]
 name = "GitHub"
