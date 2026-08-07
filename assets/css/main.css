@@ -353,7 +353,7 @@ h6:hover .heading-anchor,
 .inky-img {
   position: absolute;
   inset: 0;
-  background-image: url("/img/hero-beauty.jpg");
+  /* 背景图由构建期处理（assets/img/hero-beauty.jpg → 1600w webp q72），模板内联 style 注入 */
   background-size: cover;
   background-position: center 30%;
   opacity: 0.5;                       /* 常驻半透明（遮罩外不可见） */

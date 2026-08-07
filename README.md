@@ -64,6 +64,9 @@ webfonts = true
 math = true
 # 站名下的气质签名（副标题）
 subtitle = "纸墨二元 · 落字有间"
+# 墨滴涟漪背景图（放 assets/img/ 下，构建期自动转 1600w WebP）
+heroImage = "img/hero-beauty.jpg"
+heroImageQuality = 72
 
 # 社交链接（右侧栏渲染，/ 分隔）
 [[params.social]]

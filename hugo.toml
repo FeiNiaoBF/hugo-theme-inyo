@@ -9,7 +9,8 @@ min_version = "0.140.0"
   math = false         # 启用 KaTeX
   webfonts = true      # 从 CDN 加载字体 (false 则纯系统栈)
   subtitle = ""        # 站名下的气质签名（副标题）
-  # 社交链接示例:
+  heroImage = "img/hero-beauty.jpg"  # 墨滴涟漪背景图（assets 内路径，构建期转 WebP）
+  heroImageQuality = 72               # WebP 质量
   # [[params.social]]
   #   name = "GitHub"
   #   url  = "https://github.com/..."

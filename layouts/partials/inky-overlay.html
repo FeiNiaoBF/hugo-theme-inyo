@@ -1,11 +1,14 @@
 {{- /* inky-overlay.html — 墨滴涟漪全屏古画背景
-    hover hero → 墨滴从鼠标位置滴下 → clip-path 圆窗从落点涟漪扩散 → 古画渐显
+    hover hero → 墨滴从鼠标位置滴下 → mask 软边墨窗从落点扩散 → 古画渐显
     mouseleave → 涟漪收回 + 图片渐渐消失
-    原理: clip-path circle(r at 落点) — 图片全屏固定不动, 仅圆窗半径动画
-    内容 (shell) 在 z-index 1, 阅读不受影响
-    零依赖: 原生 JS + CSS transition */ -}}
+    heroImage: 站点级参数（可选），构建期 Resize WebP，零运行时成本
+    原理: mask-image 径向渐变（圆心=落点）+ mask-size 0→360vmax */ -}}
+{{- $hero := resources.Get (site.Params.heroImage | default "img/hero-beauty.jpg") -}}
+{{- $bg := "" -}}
+{{- $q := site.Params.heroImageQuality | default 72 -}}
+{{- with $hero }}{{ $bg = (.Resize (printf "1600x webp q%d" $q)).RelPermalink }}{{ end -}}
 <div class="inky-overlay" aria-hidden="true">
-  <div class="inky-img"></div>
+  <div class="inky-img"{{ with $bg }} style="background-image:url('{{ . }}')"{{ end }}></div>
   <span class="inky-ring"></span>
   <span class="inky-ring"></span>
   <span class="inky-ring"></span>
