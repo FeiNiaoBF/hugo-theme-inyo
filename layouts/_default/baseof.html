@@ -64,6 +64,7 @@
       var hero = document.querySelector('.hero');
       var canvas = document.querySelector('.inky-canvas');
       if (overlay && hero && canvas) {
+        try {   /* 墨滴为增强效果，任何异常不得影响页面其他交互 */
         var updateDrop = function (e) {
           overlay.style.setProperty('--drop-x', e.clientX + 'px');
           overlay.style.setProperty('--drop-y', e.clientY + 'px');
@@ -118,7 +119,7 @@
                 dx: Math.cos(ang) * (0.04 + Math.random() * 0.3),
                 dy: Math.sin(ang) * (0.04 + Math.random() * 0.3)
               };
-              if (final) { p.life = p.ml; p.r = p.maxR; }   /* 静态落墨：直接终态 */
+              if (final) { p.life = 0; p.r = p.maxR; }   /* 静态落墨：全浓度直接终态（life=0 → alpha 满值） */
               drops.push(p);
             }
           }
@@ -185,6 +186,7 @@
             if (open) { closeInk(); } else { openInk(e); }
           });
         }
+        } catch (e) {}   /* 墨滴增强失败时静默降级，页面交互不受影响 */
       }
     })();
   </script>
