@@ -347,23 +347,28 @@ h6:hover .heading-anchor,
   z-index: 0;
   pointer-events: none;      /* 不拦截任何交互 */
 }
-/* 古画：全屏铺满固定不动；clip-path 圆窗从鼠标落点扩散 = 涟漪
-   clip-path: circle(r at x y) — 圆心 at 固定, 仅半径动画 → 图片静止, 窗口扩散
-   速率: 毛细波模型 cubic-bezier(0.1,0.8,0.2,1) 急起渐缓 */
+/* 古画：全屏固定；mask 软边墨窗从落点扩散（墨洇开，非硬边光圈）
+   原理: mask-image = 径向渐变（圆心=落点）+ 多段羽化末端；mask-size 0 → 360vmax
+   软边 = 渐变末端透明（液态扩散感） */
 .inky-img {
   position: absolute;
   inset: 0;
   background-image: url("/img/hero-beauty.jpg");
   background-size: cover;
   background-position: center 30%;
-  opacity: 0.5;                       /* 常驻半透明（圆窗外不可见） */
+  opacity: 0.5;                       /* 常驻半透明（遮罩外不可见） */
   filter: sepia(0.22) contrast(0.92) brightness(0.98);
-  /* 圆窗：半径 0 → 覆盖全屏, 圆心 = 鼠标落点 */
-  clip-path: circle(0% at var(--drop-x, 50%) var(--drop-y, 50%));
-  transition: clip-path 2.5s cubic-bezier(0.1, 0.8, 0.2, 1);
+  -webkit-mask-image: radial-gradient(circle at var(--drop-x, 50%) var(--drop-y, 50%),
+      #000 0%, #000 38%, rgba(0, 0, 0, 0.8) 52%, rgba(0, 0, 0, 0.45) 66%, transparent 80%);
+  -webkit-mask-size: 0vmax 0vmax;
+  mask-image: radial-gradient(circle at var(--drop-x, 50%) var(--drop-y, 50%),
+      #000 0%, #000 38%, rgba(0, 0, 0, 0.8) 52%, rgba(0, 0, 0, 0.45) 66%, transparent 80%);
+  mask-size: 0vmax 0vmax;
+  transition: mask-size 2.6s cubic-bezier(0.1, 0.8, 0.2, 1), -webkit-mask-size 2.6s cubic-bezier(0.1, 0.8, 0.2, 1);
 }
 .inky-overlay.is-open .inky-img {
-  clip-path: circle(150vmax at var(--drop-x, 50%) var(--drop-y, 50%));
+  -webkit-mask-size: 360vmax 360vmax;
+  mask-size: 360vmax 360vmax;
 }
 /* 纸色蒙版：压淡古画，保证内容文字可读 */
 .inky-img::before {
@@ -373,7 +378,27 @@ h6:hover .heading-anchor,
   background: var(--paper);
   opacity: 0.42;
 }
-/* 墨滴：落点的墨点，先聚后散（animation 保持流畅） */
+/* 涟漪环 ×3：墨入水面，同心圆从落点扩散（错峰 0.4s） */
+.inky-ring {
+  position: absolute;
+  left: var(--drop-x, 50%);
+  top: var(--drop-y, 50%);
+  width: 0;
+  height: 0;
+  border: 1.5px solid color-mix(in srgb, var(--ink) 32%, transparent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+.inky-overlay.is-open .inky-ring { animation: ink-ripple 2.6s ease-out forwards; }
+.inky-overlay.is-open .inky-ring:nth-child(3) { animation-delay: 0.4s; }
+.inky-overlay.is-open .inky-ring:nth-child(4) { animation-delay: 0.8s; }
+@keyframes ink-ripple {
+  0%   { width: 0; height: 0; opacity: 0.9; }
+  18%  { width: 120px; height: 120px; opacity: 0.6; }
+  100% { width: 240vmax; height: 240vmax; opacity: 0; }
+}
+/* 墨点：墨滴触水瞬间，先聚后散（token 驱动，暗色=白墨） */
 .inky-drop {
   position: absolute;
   left: var(--drop-x, 50%);
@@ -381,17 +406,18 @@ h6:hover .heading-anchor,
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(29, 27, 28, 0.85) 0%, rgba(29, 27, 28, 0.4) 55%, transparent 72%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--ink) 88%, transparent) 0%, color-mix(in srgb, var(--ink) 45%, transparent) 52%, transparent 70%);
+  filter: blur(1.5px);
   transform: translate(-50%, -50%);
   opacity: 0;
 }
 .inky-overlay.is-open .inky-drop {
-  animation: ink-drop 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: ink-drop 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 @keyframes ink-drop {
   0%   { width: 0; height: 0; opacity: 1; }
-  30%  { width: 46px; height: 46px; opacity: 0.95; }
-  100% { width: 90px; height: 90px; opacity: 0; }
+  25%  { width: 64px; height: 64px; opacity: 0.9; }
+  100% { width: 150px; height: 150px; opacity: 0; }
 }
 /* 内容层：确保在背景之上 */
 .shell { position: relative; z-index: 1; }
@@ -430,6 +456,7 @@ h6:hover .heading-anchor,
 /* 减动效：涟漪/墨滴/触发条动画全部关闭 */
 @media (prefers-reduced-motion: reduce) {
   .inky-img { transition: none; }
+  .inky-ring { animation: none; }
   .inky-drop { animation: none; }
   .hero { transition: none; }
 }
