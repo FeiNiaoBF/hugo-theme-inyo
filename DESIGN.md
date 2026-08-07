@@ -100,6 +100,44 @@
 - **移动端**: ≤768px 身份区折叠为顶部条（站名+导航一行，语言/☯ 并排）
 - **禁止项**: 无卡片、阴影、封面图、标签堆叠、分页、年份分组
 
+## 6.5 内容系统与工程（2026-08 新增）
+
+### 6.5.1 SEO 元数据（`head.html` 集中输出）
+
+| 项 | 实现 |
+|---|---|
+| canonical | 每页 `.Permalink` |
+| OpenGraph | title/type(article\|website)/url/image(双鱼logo+alt)/description/site_name/locale+alternate |
+| Twitter Card | summary 卡 |
+| JSON-LD | Person（含 sameAs 社交链接）+ 非首页 BreadcrumbList（站→section→文章） |
+| description 兜底 | `.Description` → `.Summary` plainify 截 155 字符 |
+
+### 6.5.2 可访问性（WCAG 2.x AA）
+
+- skip link（body 首元素 → `#main-content`，聚焦滑入）
+- 全局 `:focus-visible` 朱砂焦点环（outline 2px + 3px offset）
+- `prefers-reduced-motion` 全动画降级（0.01ms）
+- 主题切换按钮 `aria-pressed` + 三语 `aria-label`
+- 触屏 `hover:none` 门控墨滴涟漪
+
+### 6.5.3 内容交互
+
+- **标题锚点**：`_markup/render-heading.html` 构建期注入 `#`（hover 显示，朱砂），零 JS
+- **返回键**：文章标题上方 `← 返回`（`CurrentSection`，三语 i18n）
+- **外链策略**：`_markup/render-link.html` — 外链自动 `target="_blank" rel="noopener noreferrer"`，站内/锚点/脚注不动
+- **图片懒加载**：`_markup/render-image.html` — markdown 图片 `loading=lazy decoding=async`；手写 `<figure>` 不注入（LCP 首图保护）
+
+### 6.5.4 404 页
+
+「四〇四」朱砂大字 + 纸墨文案（"此页纸已散佚，笔墨未落。"）+ 首页/文章导航，三语 i18n。
+
+### 6.5.5 摘要算法（`partials/summary.html`）
+
+- **宽度感知截断**：CJK/全角=2 全宽单位（UTF-8 字节≥3 判定），ASCII/半角=1
+- **长度**：140 全宽单位 ≈ 3 行（47 单位/行 × 3 行，43em 容器实测；基准 pianpker 121–123 单位/3 行）
+- **来源优先级**：`.Description` → 正文首个 `<p>`（语义最干净）→ `.Summary` 兜底
+- 超限追加 `…`；首页 tags 组/untagged 组/列表页三处统一调用
+
 ## 7. ADR 记录
 
 ### ADR-1: 配色方法论（OKLCH + Cohen-Or + WCAG + 742 点名）
@@ -168,6 +206,14 @@
 - 每幕只有一个主角，前幕淡出让位（overlap 克制）；单一落点（鼠标）串联全部元素
 - 墨色全部 `color-mix(var(--ink))` 驱动，暗色模式自动白墨；朱砂环用 `--cinnabar`
 - `prefers-reduced-motion` 全部关闭；`hover:hover` 门控触屏
+
+### ADR-9: 墨滴涟漪 Hero（2026-08-07）
+- **状态**: 已接受（迭代 6 版后定型）
+- **交互**: 首页卷轴 hover → 四幕生命周期（落印→洇墨→落款→收墨），鼠标位置为唯一落点，mousemove 实时追踪
+- **技术选型**: mask-image 撕纸边（SVG turbulence ∩ 径向晕染）而非 clip-path——避免全屏大元素 clip 动画重绘卡顿；动效用 transform/opacity/filter 合成器属性
+- **性能**: 背景图 `params.heroImage` 构建期 `Resize "1600x webp q72"`（Hugo 原生，零运行时；web.dev 实测图片优化省 40–80% 体积）；动画一次性 2.8s，可接受
+- **可访问性**: `hover:hover` 门控触屏、`prefers-reduced-motion` 全关、`pointer-events:none` 不拦截交互、古画 z-index 0 内容之上
+- **开源对照**: 概念 = Material 3 Container Transform（卡片展开全屏）+ Android Circular Reveal 官方模式；数学同源 MDC Ripple（对角线覆盖 √(w²+h²) + 圆心=交互点）；差异化 = 墨滴落点 + 撕纸边 + 印章落款（品牌叙事）
 
 ## 10. 致谢与来源
 

@@ -12,10 +12,16 @@
 - 🎨 **全部颜色出自《中华传统色》742 色库**：每个 token 有真实色名（荼蘼白、墨色、朱砂红、朱红、晓灰、云峰灰…），全部通过 WCAG AA 实测
 - 🔖 **太极 Logo**：双鱼太极 + 朱砂环，几何验证面积对称，双模式可见
 - 🧭 **右侧身份栏**（pianpker 式）：大字站名、气质签名、竖排导航、社交链接（`/` 分隔）、语言切换、主题切换
+- 🖌️ **墨滴涟漪 Hero**（品牌交互）：悬停首页卷轴 → 四幕生命周期——落印（朱砂环急落）→ 洇墨（古画自鼠标落点晕开，撕纸边蒙版永无矩形边界）→ 落款（太极印章盖于右下）→ 收墨（移开向落点回退）；背景图可配置（`params.heroImage`，构建期自动转 1600w WebP，零运行时成本）
 - 🧮 **数学公式开关**：`params.math = true` 启用 KaTeX（保留自带字体）
 - 📐 **可定制**：全 CSS 变量 token 体系，改配色不用碰模板
 - 🔤 **多语言**：i18n（zh-cn / en / ja）+ 语言切换器（Hugo 多语言站点自动显示）
 - 📦 **自托管字体**：霞鹜文楷 unicode-range 分片（OFL 1.1）随主题分发，零 CDN 依赖、无字体闪烁
+- 🔍 **SEO 元数据全家桶**：canonical / OpenGraph / Twitter Card / Person + BreadcrumbList JSON-LD / description 自动摘要兜底
+- ♿ **可访问性 WCAG AA**：skip link、全局焦点环、`prefers-reduced-motion`、ARIA 状态
+- 🧩 **内容系统**：标题锚点（hover 显示 #）、返回键、宽度感知摘要截断（CJK=2/ASCII=1，140 全宽单位）、外链自动新窗口 + `rel=noopener`
+- 📄 **404 页**：纸墨叙事的「四〇四」引导页
+- ⚡ **性能**：图片懒加载（`loading=lazy` + LCP 首图保护）、构建期 WebP 优化、字体防 FOUC、GPU 合成层动画
 
 ## 安装
 
@@ -64,9 +70,11 @@ webfonts = true
 math = true
 # 站名下的气质签名（副标题）
 subtitle = "纸墨二元 · 落字有间"
-# 墨滴涟漪背景图（放 assets/img/ 下，构建期自动转 1600w WebP）
+# 墨滴涟漪背景图（放 assets/img/ 下，构建期自动转 1600w WebP；选图规范见 DESIGN.md §8）
 heroImage = "img/hero-beauty.jpg"
 heroImageQuality = 72
+# 站点作者（SEO Person schema + 文章页 article:author）
+author = "Inyo"
 
 # 社交链接（右侧栏渲染，/ 分隔）
 [[params.social]]
@@ -86,10 +94,11 @@ url = "/index.xml"
 
 ```
 hugo-theme-inyo/
-├── DESIGN.md        # 设计文档（配色 token 权威来源 + ADR）
+├── DESIGN.md        # 设计文档（配色 token 权威来源 + ADR + 动效/选图规范）
 ├── AGENTS.md        # AI 编码代理规范
-├── layouts/         # 模板
+├── layouts/         # 模板（baseof/index/single/list + partials + _markup 渲染 hooks）
 ├── assets/css/      # main.css —— CSS 变量 token 体系
+├── assets/img/      # heroImage 背景图（墨滴涟漪，构建期转 WebP）
 ├── static/img/      # Logo SVG（双鱼太极，favicon 品牌色版）
 └── exampleSite/     # 演示站点（hugo server --source exampleSite）
 ```

@@ -97,3 +97,11 @@ cd exampleSite && hugo mod tidy
 - [ ] 浏览器实测亮/暗切换，`body` 背景分别为 `#F8F4F0` / `#1D1B1C`。
 - [ ] 印章颜色为品牌固定色 `#D92121`（白文印朱砂底白字），双模式不变。
 - [ ] 所有新色均有 `DESIGN.md` 记录和对比度实测值。
+
+## 东方美学设计原则（2026-08 补充）
+
+- **竖排**：`writing-mode: vertical-rl` 只用于装饰（题签/印章），正文/导航/页脚永远横排；竖排中数字用汉字数字（一、二、三、四〇四）
+- **纸墨二元**：亮=纸色 `--paper` / 暗=墨色 `--ink`，双模式同温轴；全站单情绪色朱砂 `--cinnabar`；墨色派生一律 `color-mix(in srgb, var(--ink) N%, transparent)`（暗色自动白墨）
+- **图形可见性铁律**：纯黑白图形在单一模式会隐形（白=纸色=背景）——需要固定浅色圆盘（如 `#F2EDE6`）承托，或加朱砂环
+- **动效**：优先 transform/opacity/filter 合成器属性；clip-path 动画有全屏重绘风险、mask-position 有圆心漂移坑（圆心=图像左上角+尺寸/2，动画尺寸时圆心会跑）；hover 触发动效必须 `hover:hover` 门控 + `prefers-reduced-motion` 降级
+- **素材**：背景图走 `params.heroImage`（assets/img/，构建期 `Resize "1600x webp q72"`）；选图规范 DESIGN.md §8；公有领域素材获取见 `.me/public-domain-art-assets.md`（Met API / Wikimedia，含 Special:FilePath 陷阱）
