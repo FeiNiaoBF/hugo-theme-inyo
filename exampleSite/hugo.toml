@@ -19,10 +19,6 @@ author = "Inyo"
 [markup.goldmark.renderer]
 unsafe = true
 
-[markup.tableOfContents]
-startLevel = 2
-endLevel = 2
-
 [[params.social]]
 name = "GitHub"
 url = "https://github.com/FeiNiaoBF/hugo-theme-inyo"
