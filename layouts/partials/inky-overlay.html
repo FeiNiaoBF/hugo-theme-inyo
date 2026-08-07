@@ -1,7 +1,8 @@
 {{- /* inky-overlay.html — 墨滴涟漪全屏古画背景
-    四幕生命周期: 落印(seal) → 洇墨(canvas 粒子扩散) → 落款(stamp) → 收墨(recede)
-    画: .inky-img CSS 背景（淡入 + 柔边晕染）；墨: .inky-canvas 原生 canvas 粒子（浓淡三层+飞白）
-    heroImage: 站点级参数（可选），构建期 Resize WebP，零运行时成本 */ -}}
+    hover hero → 墨滴从鼠标位置滴下 → mask 软边墨窗从落点扩散 → 古画渐显
+    mouseleave → 涟漪收回 + 图片渐渐消失
+    heroImage: 站点级参数（可选），构建期 Resize WebP，零运行时成本
+    原理: mask-image 径向渐变（圆心=落点）+ mask-size 0→360vmax */ -}}
 {{- $hero := resources.Get (site.Params.heroImage | default "img/hero-beauty.jpg") -}}
 {{- $bg := "" -}}
 {{- $q := site.Params.heroImageQuality | default 72 -}}
@@ -9,7 +10,6 @@
 <div class="inky-overlay" aria-hidden="true">
   <span class="inky-seal"></span>
   <div class="inky-img"{{ with $bg }} style="background-image:url('{{ . }}')"{{ end }}></div>
-  <canvas class="inky-canvas"></canvas>
   <span class="inky-stamp">{{ partial "seal.html" . }}</span>
   <span class="inky-ring"></span>
 </div>
