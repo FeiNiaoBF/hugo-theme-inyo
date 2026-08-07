@@ -58,19 +58,21 @@
 
       /* 墨滴涟漪：hover 首页 hero → 墨迹粒子扩散（原生 canvas，零依赖）
          位置: mousemove 实时追踪 → 落墨/闭合都以"当前鼠标位置"为落点
-         墨: 浓淡三层（浓墨/淡墨/飞白）径向渐变粒子，--ink token 驱动（暗色=白墨） */
+         墨: 浓淡三层（浓墨/淡墨/飞白）径向渐变粒子，--ink token 驱动（暗色=白墨）
+         兜底: 非 hover 设备 tap 切换；reduced-motion 静态落墨（可见但不动画） */
       var overlay = document.querySelector('.inky-overlay');
       var hero = document.querySelector('.hero');
       var canvas = document.querySelector('.inky-canvas');
-      if (overlay && hero && canvas && window.matchMedia('(hover: hover)').matches) {
+      if (overlay && hero && canvas) {
         var updateDrop = function (e) {
           overlay.style.setProperty('--drop-x', e.clientX + 'px');
           overlay.style.setProperty('--drop-y', e.clientY + 'px');
         };
-
         var ctx = canvas.getContext('2d');
         var dpr = Math.min(window.devicePixelRatio || 1, 2);
         var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var hoverable = window.matchMedia('(hover: hover)').matches;
+        var open = false;
         var drops = [];
         var raf = null;
 
@@ -93,21 +95,20 @@
           return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
         };
 
-        var spawnInk = function (x, y) {
-          if (reduced) return;
+        var makeInk = function (x, y, final) {
           drops.length = 0;
           /* 三层：浓墨（近处浓） / 淡墨（远处晕） / 飞白（稀疏颗粒） */
           var layers = [
-            { n: 90, dist: 34, r0: 2,   r1: 6,   m0: 20, m1: 46,  a0: 0.15, a1: 0.28, s0: 0.5,  s1: 1.1,  l0: 70,  l1: 130 },
-            { n: 90, dist: 62, r0: 3,   r1: 8,   m0: 46, m1: 95,  a0: 0.05, a1: 0.12, s0: 0.28, s1: 0.8,  l0: 120, l1: 220 },
-            { n: 36, dist: 95, r0: 1,   r1: 2.5, m0: 34, m1: 78,  a0: 0.03, a1: 0.08, s0: 0.5,  s1: 1.3,  l0: 80,  l1: 170 }
+            { n: 120, dist: 34, r0: 2,   r1: 7,   m0: 22, m1: 50,  a0: 0.32, a1: 0.5,  s0: 0.5,  s1: 1.1,  l0: 70,  l1: 130 },
+            { n: 110, dist: 62, r0: 3,   r1: 9,   m0: 48, m1: 100, a0: 0.12, a1: 0.22, s0: 0.28, s1: 0.8,  l0: 120, l1: 220 },
+            { n: 44,  dist: 95, r0: 1,   r1: 3,   m0: 34, m1: 80,  a0: 0.05, a1: 0.12, s0: 0.5,  s1: 1.3,  l0: 80,  l1: 170 }
           ];
           for (var li = 0; li < layers.length; li++) {
             var L = layers[li];
             for (var i = 0; i < L.n; i++) {
               var ang = Math.random() * Math.PI * 2;
               var d = Math.pow(Math.random(), 1.8) * L.dist;   /* 集中于中心，边缘外溢 */
-              drops.push({
+              var p = {
                 x: x + Math.cos(ang) * d, y: y + Math.sin(ang) * d,
                 r: L.r0 + Math.random() * (L.r1 - L.r0),
                 maxR: L.m0 + Math.random() * (L.m1 - L.m0),
@@ -116,47 +117,74 @@
                 life: 0, ml: L.l0 + Math.random() * (L.l1 - L.l0),
                 dx: Math.cos(ang) * (0.04 + Math.random() * 0.3),
                 dy: Math.sin(ang) * (0.04 + Math.random() * 0.3)
-              });
+              };
+              if (final) { p.life = p.ml; p.r = p.maxR; }   /* 静态落墨：直接终态 */
+              drops.push(p);
             }
           }
-          if (raf) cancelAnimationFrame(raf);
+          return drops;
+        };
+
+        var paintFrame = function () {
+          ctx.filter = 'blur(2px)';
+          for (var i = drops.length - 1; i >= 0; i--) {
+            var p = drops[i];
+            var pr = p.life / p.ml;
+            var al = p.a * (1 - pr);
+            var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, Math.min(p.r, p.maxR));
+            g.addColorStop(0, inkRgb(al));
+            g.addColorStop(0.55, inkRgb(al * 0.45));
+            g.addColorStop(1, inkRgb(0));
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, Math.min(p.r, p.maxR), 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.filter = 'none';
+        };
+
+        var spawnInk = function (x, y) {
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
           ctx.clearRect(0, 0, canvas.width, canvas.height);
+          makeInk(x, y, reduced);
+          if (reduced) { paintFrame(); return; }          /* 减动效：静态墨迹，不消失 */
           var frame = function () {
-            ctx.filter = 'blur(2px)';
+            var alive = false;
             for (var i = drops.length - 1; i >= 0; i--) {
               var p = drops[i];
+              if (p.life >= p.ml) { drops.splice(i, 1); continue; }
+              alive = true;
               p.life++; p.r += p.s; p.x += p.dx; p.y += p.dy;
-              var pr = p.life / p.ml;
-              if (pr >= 1) { drops.splice(i, 1); continue; }
-              var al = p.a * (1 - pr);
-              var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, Math.min(p.r, p.maxR));
-              g.addColorStop(0, inkRgb(al));
-              g.addColorStop(0.55, inkRgb(al * 0.45));
-              g.addColorStop(1, inkRgb(0));
-              ctx.fillStyle = g;
-              ctx.beginPath();
-              ctx.arc(p.x, p.y, Math.min(p.r, p.maxR), 0, Math.PI * 2);
-              ctx.fill();
             }
-            if (drops.length) { raf = requestAnimationFrame(frame); }
-            else { raf = null; ctx.filter = 'none'; }
+            paintFrame();
+            raf = alive ? requestAnimationFrame(frame) : null;
           };
           raf = requestAnimationFrame(frame);
         };
 
-        hero.addEventListener('mousemove', updateDrop);       /* 实时位置 */
-        hero.addEventListener('mouseenter', function (e) {
+        var openInk = function (e) {
           updateDrop(e);
+          open = true;
           overlay.classList.remove('recede');
           overlay.classList.add('is-open');
           spawnInk(e.clientX, e.clientY);
-        });
-        hero.addEventListener('mouseleave', function (e) {
-          updateDrop(e);                                     /* 闭合也用最后鼠标位置 */
-          overlay.classList.add('recede');                   /* 收墨：快、缓入，归寂 */
-          overlay.classList.remove('is-open');
+        };
+        var closeInk = function () {
+          open = false;
           if (raf) { cancelAnimationFrame(raf); raf = null; }
-        });
+          overlay.classList.add('recede');
+          overlay.classList.remove('is-open');
+        };
+
+        if (hoverable) {
+          hero.addEventListener('mousemove', updateDrop);       /* 实时位置 */
+          hero.addEventListener('mouseenter', openInk);
+          hero.addEventListener('mouseleave', closeInk);
+        } else {
+          hero.addEventListener('pointerdown', function (e) {   /* 触屏/无 hover：tap 切换 */
+            if (open) { closeInk(); } else { openInk(e); }
+          });
+        }
       }
     })();
   </script>

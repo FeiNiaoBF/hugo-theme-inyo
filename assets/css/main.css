@@ -383,19 +383,19 @@ h6:hover .heading-anchor,
   opacity: 0;
   transform: scale(0.55);
   transform-origin: var(--drop-x, 50%) var(--drop-y, 50%);
-  filter: sepia(0.22) contrast(0.92) brightness(0.98) blur(10px);
+  filter: sepia(0.22) contrast(0.92) brightness(0.98) blur(6px);
   -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 66%, rgba(0, 0, 0, 0.42) 88%, transparent 100%);
   -webkit-mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-image: radial-gradient(circle at 50% 50%, #000 66%, rgba(0, 0, 0, 0.42) 88%, transparent 100%);
   mask-size: 100% 100%;
   mask-repeat: no-repeat;
-  transition: opacity 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s,
-              transform 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s,
-              filter 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+  transition: opacity 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s,
+              transform 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s,
+              filter 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
 }
 .inky-overlay.is-open .inky-img {
-  opacity: 0.5;
+  opacity: 0.62;
   transform: scale(1);
   filter: sepia(0.22) contrast(0.92) brightness(0.98) blur(0);
 }
@@ -405,7 +405,7 @@ h6:hover .heading-anchor,
   position: absolute;
   inset: 0;
   background: var(--paper);
-  opacity: 0.42;
+  opacity: 0.34;
 }
 /* 墨迹层：canvas 粒子（浓淡三层 + 飞白），覆盖于画上；recede 时 CSS 淡出 */
 .inky-canvas {
@@ -499,10 +499,7 @@ h6:hover .heading-anchor,
 .inky-overlay.recede .inky-ring { animation: none; opacity: 0; }
 /* 内容层：确保在背景之上 */
 .shell { position: relative; z-index: 1; }
-/* 触屏设备：无 hover，禁用墨滴（避免误触） */
-@media (hover: none) {
-  .inky-overlay { display: none; }
-}
+/* 触屏设备：tap 卷轴切换（见 baseof JS pointerdown 兑底），overlay 保持可见 */
 .hero {
   position: relative;
   height: 68px;                    /* 收起：一条卷轴（触发区，不再自身展开） */
