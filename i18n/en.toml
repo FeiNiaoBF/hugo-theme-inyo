@@ -40,3 +40,9 @@ other = "Skip to content"
 
 [toggle_theme]
 other = "Toggle theme"
+
+[notfound_msg]
+other = "This page has drifted away, like ink not yet set."
+
+[notfound_hint]
+other = "The link may have changed, or the writing still sits at the inkstone."

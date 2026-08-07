@@ -1,0 +1,11 @@
+{{- /* render-image.html — 图片渲染 hook
+    性能（web.dev 标准）: loading="lazy" + decoding="async" 默认懒加载
+    LCP 保护: 每页首个 Markdown 图片不加 lazy（首屏视口内图片需即时加载）
+    对齐: pianpker 图注（figure/figcaption）由作者用 HTML 写, hook 只处理普通 img */ -}}
+{{- $lazy := "loading=\"lazy\" decoding=\"async\"" -}}
+{{- if not (.Page.Scratch.Get "inyo-first-img") -}}
+  {{- $lazy = "decoding=\"async\"" -}}
+  {{- .Page.Scratch.Set "inyo-first-img" true -}}
+{{- end -}}
+{{- $img := printf "<img src=\"%s\" alt=\"%s\" %s>" (.Destination | safeURL) (.Text | plainify | htmlEscape) $lazy -}}
+{{- $img | safeHTML -}}

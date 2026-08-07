@@ -339,6 +339,104 @@ h6:hover .heading-anchor,
 }
 .tag:hover { background: var(--camel); color: var(--paper); }
 
+/* 首页大屏（Hero / Ensō 卷轴展开）：默认收起为窄带，hover 展开 + 图层错落动画 */
+.hero {
+  position: relative;
+  height: 68px;                    /* 收起：一条卷轴 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 3em;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: height 0.7s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s ease;
+}
+.hero:hover,
+.hero:focus-within {
+  height: 46vh;
+  border-color: var(--cinnabar);
+}
+.hero.hero-test-open { height: 46vh; border-color: var(--cinnabar); } /* 测试用 */
+/* 图层 1：和纸底 */
+.hero-art {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.1s;
+}
+.hero:hover .hero-art,
+.hero:focus-within .hero-art,
+.hero.hero-test-open .hero-art { opacity: 1; }
+.hero-art img {
+  width: min(88%, 760px);
+  height: auto;
+  transform: scale(0.72);
+  opacity: 0;
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.12s, opacity 0.6s ease 0.12s;
+}
+.hero:hover .hero-art img,
+.hero:focus-within .hero-art img,
+.hero.hero-test-open .hero-art img {
+  transform: scale(1);
+  opacity: 1;
+}
+/* 图层 2：站名 */
+.hero-text {
+  position: relative;
+  z-index: 1;
+  text-align: right;
+  padding-right: 1.2em;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease 0.3s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+}
+.hero:hover .hero-text,
+.hero:focus-within .hero-text,
+.hero.hero-test-open .hero-text {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hero-title {
+  font-size: 2.4em;
+  font-weight: 400;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+  margin: 0 0 0.2em;
+}
+.hero-subtitle {
+  color: var(--camel);
+  letter-spacing: 0.3em;
+  font-size: 0.95em;
+  margin: 0;
+}
+/* 收起态题签：居中显示副标语（卷轴轴心） */
+.hero::after {
+  content: attr(data-banner);
+  position: absolute;
+  left: 0; right: 0;
+  text-align: center;
+  color: var(--camel);
+  letter-spacing: 0.6em;
+  font-size: 0.85em;
+  transition: opacity 0.3s ease;
+}
+.hero:hover::after,
+.hero:focus-within::after,
+.hero.hero-test-open::after { opacity: 0; }
+@media (max-width: 768px) {
+  .hero { height: 56px; }
+  .hero:hover,
+  .hero:focus-within { height: 32vh; }
+  .hero-art img { width: 94%; }
+  .hero-text { text-align: center; padding-right: 0; }
+  .hero-title { font-size: 1.8em; letter-spacing: 0.3em; text-indent: 0.3em; }
+}
+
 /* 目录（v3：分组 + 常规字重，对齐 pianpker 阅读气质） */
 .catalog { list-style: none; margin: 0; padding: 0; }
 .catalog-group { margin-bottom: 3em; }
@@ -484,6 +582,20 @@ textarea:focus-visible,
     scroll-behavior: auto !important;
   }
 }
+
+/* 404 页 — 纸墨叙事 */
+.notfound { max-width: 40em; padding: 4em 0 6em; text-align: center; }
+.notfound-code {
+  font-size: 4em;
+  font-weight: 400;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;   /* 抵消字距的右偏 */
+  color: var(--cinnabar);
+  margin: 0 0 0.4em;
+}
+.notfound-msg { font-size: 1.15em; color: var(--ink); margin: 0 0 0.5em; }
+.notfound-hint { color: var(--camel); margin: 0 0 2em; }
+.notfound-nav { display: flex; gap: 1.2em; justify-content: center; flex-wrap: wrap; }
 
 /* 数学公式容器（KaTeX 开启时）— 公式保留 KaTeX 自带字体（等宽字体不适合数学排版，ADR 见 DESIGN.md §5） */
 .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5em 0; }

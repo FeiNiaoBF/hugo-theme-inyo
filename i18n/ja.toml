@@ -39,3 +39,9 @@ other = "本文へスキップ"
 
 [toggle_theme]
 other = "テーマ切替"
+
+[notfound_msg]
+other = "この頁は散り失せ、墨はまだ落ちていない。"
+
+[notfound_hint]
+other = "リンクが変わったか、或いは文はまだ硯のほとりにある。"

@@ -72,6 +72,10 @@ math: true
   <figcaption>双鱼太极 — Inyo 品牌图形，2026-08-06</figcaption>
 </figure>
 
+使用 Markdown 语法插入的图片（自动懒加载）：
+
+![双鱼太极 markdown 插入](/img/seal-yang.svg)
+
 ## 块引用
 
 ### 多个段落
