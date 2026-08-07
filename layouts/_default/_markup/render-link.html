@@ -1,0 +1,5 @@
+{{- /* render-link.html — 链接渲染 hook（统一目标地址策略）
+    外链 (http/https): target="_blank" + rel="noopener noreferrer"（新窗口 + 安全）
+    站内链接 / 锚点 / 相对路径: 原样，同窗口跳转
+    设计对齐 pianpker：外链新窗口，站内不打断阅读流 */ -}}
+<a href="{{ .Destination | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ if strings.HasPrefix .Destination "http" }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .Text | safeHTML }}</a>

@@ -1,21 +1,31 @@
 {{ define "main" }}
-<h1 class="visually-hidden">{{ site.Title }}</h1>
-
-{{ $posts := (where site.RegularPages "Section" "posts").ByDate.Reverse }}
-{{ if eq (len $posts) 0 }}
+{{ $all := where site.RegularPages "Section" "in" (site.Params.mainSections | default (slice "posts")) }}
+{{ if eq (len $all) 0 }}
 <p class="home-empty">{{ i18n "no_posts" }}</p>
 {{ else }}
-<ul class="catalog">
-  {{ range $posts }}
-  <li class="catalog-item">
-    <h2 class="catalog-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-    <div class="catalog-meta">
-      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
-      <span>{{ i18n "reading_time" .ReadingTime }}</span>
-    </div>
-    {{ with .Description }}<p class="catalog-summary">{{ . | plainify }}</p>{{ end }}
-  </li>
+  {{/* 按日期分组（组标题=发布日期）；同日多篇共一组，倒序 */}}
+  {{ $groups := $all.GroupByDate "2006-01-02" "desc" }}
+
+  {{ range $group := $groups }}
+    {{ $pages := $group.Pages.ByDate.Reverse }}
+    <section class="catalog-group">
+      <h2 class="catalog-group-title">
+        <time datetime="{{ (index $pages 0).Date.Format "2006-01-02" }}">{{ (index $pages 0).Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
+      </h2>
+      <ul class="catalog">
+        {{ range $pages }}
+        <li class="catalog-item">
+          <div class="catalog-head">
+            <h3 class="catalog-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+            <div class="catalog-meta">
+              <span>{{ i18n "reading_time" .ReadingTime }}</span>
+            </div>
+          </div>
+          {{ partial "summary.html" . }}
+        </li>
+        {{ end }}
+      </ul>
+    </section>
   {{ end }}
-</ul>
 {{ end }}
 {{ end }}

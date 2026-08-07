@@ -1,5 +1,5 @@
 baseURL = "https://example.org/"
-title = "Inyo 陰陽 · Demo"
+title = "Inyo 陰陽"
 locale = "zh-cn"
 defaultContentLanguage = "zh-cn"
 enableRobotsTXT = true
@@ -12,8 +12,16 @@ path = "github.com/FeiNiaoBF/hugo-theme-inyo"
 font = "wenkai"
 math = true
 subtitle = "纸墨二元 · 落字有间"
-seal_text = "陰陽"
-seal_style = "yin"
+author = "Inyo"
+
+[markup]
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true
+
+[markup.tableOfContents]
+startLevel = 2
+endLevel = 2
 
 [[params.social]]
 name = "GitHub"

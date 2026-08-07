@@ -6,12 +6,14 @@
 <ul class="catalog">
   {{ range .Pages }}
   <li class="catalog-item">
-    <h2 class="catalog-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-    <div class="catalog-meta">
-      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
-      <span>{{ i18n "reading_time" .ReadingTime }}</span>
+    <div class="catalog-head">
+      <h2 class="catalog-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+      <div class="catalog-meta">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
+        <span>{{ i18n "reading_time" .ReadingTime }}</span>
+      </div>
     </div>
-    {{ with .Description }}<p class="catalog-summary">{{ . | plainify }}</p>{{ end }}
+    {{ partial "summary.html" . }}
   </li>
   {{ end }}
 </ul>

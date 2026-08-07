@@ -1,6 +1,7 @@
 {{ define "main" }}
 <article class="post-single">
   <header class="post-header">
+    <a class="back-link" href="{{ .CurrentSection.RelPermalink }}">← {{ i18n "back" | default "返回" }}</a>
     <h1>{{ .Title }}</h1>
     <div class="post-meta">
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
@@ -8,8 +9,6 @@
       {{ range .Params.tags }}<a class="tag" href="{{ "tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a>{{ end }}
     </div>
   </header>
-
-  {{ if .Params.toc }}<div class="toc">{{ .TableOfContents }}</div>{{ end }}
 
   <div class="prose">
     {{ .Content }}

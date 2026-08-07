@@ -10,6 +10,9 @@ other = "About"
 [prev]
 other = "Prev"
 
+[back]
+other = "Back"
+
 [next]
 other = "Next"
 
@@ -31,3 +34,9 @@ other = "{{ .Count }} minute read"
 
 [no_posts]
 other = "No articles yet."
+
+[skip_to_content]
+other = "Skip to content"
+
+[toggle_theme]
+other = "Toggle theme"

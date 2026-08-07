@@ -10,6 +10,9 @@ other = "关于"
 [prev]
 other = "上一篇"
 
+[back]
+other = "返回"
+
 [next]
 other = "下一篇"
 
@@ -30,3 +33,9 @@ other = "阅读约 {{ .Count }} 分钟"
 
 [no_posts]
 other = "暂时还没有文章。"
+
+[skip_to_content]
+other = "跳到正文"
+
+[toggle_theme]
+other = "切换主题"

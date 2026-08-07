@@ -10,6 +10,9 @@ other = "このサイトについて"
 [prev]
 other = "前の記事"
 
+[back]
+other = "戻る"
+
 [next]
 other = "次の記事"
 
@@ -30,3 +33,9 @@ other = "読了約{{ .Count }}分"
 
 [no_posts]
 other = "まだ記事はありません。"
+
+[skip_to_content]
+other = "本文へスキップ"
+
+[toggle_theme]
+other = "テーマ切替"

@@ -5,32 +5,38 @@
   {{ partial "head.html" . }}
 </head>
 <body>
+  <a class="skip-link" href="#main-content">{{ i18n "skip_to_content" | default "跳到正文" }}</a>
   <div class="shell">
-    <aside class="rail">
-      {{ partial "header.html" . }}
-      <div class="rail-bottom">
-        {{ partial "social.html" . }}
-        <div class="rail-controls">
-          {{ partial "lang.html" . }}
-          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle theme">☯</button>
-        </div>
-        {{ partial "footer.html" . }}
-      </div>
-    </aside>
-
-    <main class="content">
-      {{ $cur := .RelPermalink }}
-      <nav class="topnav" aria-label="Site navigation">
-        <a class="navlink{{ if $.IsHome }} is-active{{ end }}" href="{{ site.Home.RelPermalink }}">{{ i18n "home" }}</a>
-        {{ with site.GetPage "/posts" }}<a class="navlink{{ if hasPrefix $cur .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ i18n "posts" }}</a>{{ end }}
-        {{ with site.GetPage "/tags" }}<a class="navlink{{ if hasPrefix $cur .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ i18n "tags" }}</a>{{ end }}
-        {{ with site.GetPage "/about" }}<a class="navlink{{ if eq $cur .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ i18n "about" }}</a>{{ end }}
-        {{ with site.Params.verse }}<span class="verse" aria-hidden="true">{{ . }}</span>{{ end }}
-      </nav>
+    <main class="content" id="main-content" tabindex="-1">
       <div class="container">
         {{ block "main" . }}{{ end }}
       </div>
     </main>
+
+    <aside class="identity">
+      <div class="identity-brand">
+        {{ partial "seal.html" . }}
+        {{ if .IsHome }}<h1 class="site-title"><a href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a></h1>{{ else }}<span class="site-title"><a href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a></span>{{ end }}
+      </div>
+      {{ with site.Params.subtitle }}<p class="identity-subtitle">{{ . }}</p>{{ end }}
+
+      {{ $cur := .RelPermalink }}
+      <nav class="identity-nav" aria-label="Site navigation">
+        {{ with site.GetPage "/posts" }}<a class="navlink{{ if hasPrefix $cur .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ i18n "posts" }}</a>{{ end }}
+        {{ with site.GetPage "/tags" }}<a class="navlink{{ if hasPrefix $cur .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ i18n "tags" }}</a>{{ end }}
+        {{ with site.GetPage "/about" }}<a class="navlink{{ if eq $cur .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ i18n "about" }}</a>{{ end }}
+      </nav>
+
+      <div class="identity-meta">
+        {{ partial "lang.html" . }}
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="{{ i18n "toggle_theme" | default "Toggle theme" }}" aria-pressed="false">☯</button>
+      </div>
+
+      <div class="identity-foot">
+        {{ partial "social.html" . }}
+        {{ partial "footer.html" . }}
+      </div>
+    </aside>
   </div>
 
   <script>
@@ -39,10 +45,13 @@
       var root = document.documentElement;
       var btn = document.getElementById('theme-toggle');
       if (btn) {
+        var syncPressed = function () { btn.setAttribute('aria-pressed', root.getAttribute('data-theme') === 'dark' ? 'true' : 'false'); };
+        syncPressed();
         btn.addEventListener('click', function () {
           var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
           root.setAttribute('data-theme', next);
           localStorage.setItem(key, next);
+          syncPressed();
         });
       }
     })();
