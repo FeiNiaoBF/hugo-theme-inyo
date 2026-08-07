@@ -53,6 +53,6 @@ For each palette:
 - Surface notes: background, text, CTA, accent, border, decoration, or packaging panel.
 - Risk note: contrast, dark mode, print drift, over-saturation, cultural cliche, or weak hierarchy.
 - Final pick: one palette with why it wins.
-- Next skill: usually `xxd-palette-applier`, `xxd-ui-token`, `xxd-accessible-color`, or `xxd-print-packaging`.
+- Next skill: usually `xxd-accessible-color`, `xxd-existing-design-audit`, `color-harmony-oklch`, or `inyo-theme-development`.
 
 Do not explain color theory unless it changes the recommendation.

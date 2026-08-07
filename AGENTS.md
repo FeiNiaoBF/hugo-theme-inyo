@@ -16,6 +16,7 @@
 ## 技术栈约束
 
 - Hugo（Hugo Modules 分发），模板语法 Go template
+- Hugo Extended `0.164.0`，Go `1.26.1`（以 `hugo.toml`、`go.mod` 和 CI 为准）
 - CSS：原生 CSS + 变量，无预处理器
 - 字体：霞鹜文楷（默认，自托管分片）/ 思源宋体（可选 `font="serif"`，CDN）/ 更纱黑体（代码与元信息，系统栈），全部 OFL 开源
 - 数学：KaTeX 通过 `params.math` 开关，CDN 加载；博客侧 goldmark 配置不归主题管
@@ -24,19 +25,38 @@
 
 - `DESIGN.md` — 设计 token 权威来源，改设计先改这里
 - `assets/css/main.css` — 唯一样式文件（token 段 + 组件段）
+- `config/_default/` — 主题可合并的运行时默认配置；站点身份、作者和社交链接由消费者配置
 - `layouts/` — baseof / index / single / list / partials / shortcodes
 - `static/img/` — 印章 SVG
+- `scripts/verify-theme.ps1` — Hugo 生成物、P1/P2、配置与 a11y smoke 门禁
+- `.pi/skills/` — 项目本地 pi skills；与本文件和 `DESIGN.md` 冲突时，以本文件和设计文档为准
 - `exampleSite/` — 本地验证站，改动必须跑 `hugo server --source exampleSite` 验证
+
+## 配置与验证事实来源
+
+- 主题默认参数在 `config/_default/params.toml`；Chroma 默认在 `config/_default/markup.toml`
+- 站点配置模板在 `exampleSite/hugo.toml`；如果站点自定义 `[markup]`，必须保留 `_merge = "deep"`
+- 每次改动至少运行：`hugo --source exampleSite --minify`、`pwsh -File scripts/verify-theme.ps1`、`git diff --check`
+- Hero 资源只允许首页加载；`static/img/seal-yang.svg` 是没有 CSS 变量上下文的 favicon 固定品牌色例外
 
 ## 提交规范
 
 - 中文或英文提交信息均可，前缀惯例：`feat:` `fix:` `docs:` `design:` `style:`
 - 提交前跑 `hugo --source exampleSite --minify` 确认构建通过
 - 涉及配色的提交必须附对比度数据
+- 不提交 `exampleSite/public/`、`resources/` 等生成物
 
 ## 验证清单
 
 ```bash
 cd exampleSite && hugo mod tidy && hugo server
 # 检查: 亮/暗两模式切换、右侧导航栏、目录首页、文章页排版、代码块、表格、标签章
+```
+
+自动门禁：
+
+```powershell
+hugo --source exampleSite --minify
+pwsh -File scripts/verify-theme.ps1
+git diff --check
 ```

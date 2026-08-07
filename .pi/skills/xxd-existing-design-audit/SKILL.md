@@ -54,6 +54,6 @@ Use this skill when the user is not starting from zero. It should preserve what 
 - Repair plan: keep, merge, replace, remove, or reserve.
 - Final role palette: role, color name, HEX, usage.
 - Migration notes: CSS/Figma/token names if relevant.
-- Next step: `xxd-accessible-color`, `xxd-ui-token`, `xxd-brand-system`, or `xxd-palette-applier`.
+- Next step: `xxd-accessible-color`, `xxd-palette-builder`, `color-harmony-oklch`, or `inyo-theme-development`.
 
 Do not recommend a complete rebuild when a focused repair solves the problem.

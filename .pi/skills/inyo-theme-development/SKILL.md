@@ -9,7 +9,7 @@ metadata:
 
 ## Overview
 
-Inyo 陰陽 是纸墨二元 Hugo 主题（开源 `hugo-theme-inyo`），v3 为顶部导航 + 右侧身份栏的 pianpker 式布局，默认霞鹜文楷。本技能保证所有改动符合根目录 `DESIGN.md`。
+Inyo 陰陽 是纸墨二元 Hugo 主题（开源 `hugo-theme-inyo`），当前基线是顶部导航 + 右侧身份栏的 pianpker 式布局，默认霞鹜文楷。本技能保证所有改动符合根目录 `AGENTS.md` 与 `DESIGN.md`；如果本技能与它们冲突，以根目录规范为准。
 
 ## 铁律（从 DESIGN.md 抄录，逐条执行）
 
@@ -25,13 +25,23 @@ Inyo 陰陽 是纸墨二元 Hugo 主题（开源 `hugo-theme-inyo`），v3 为�
 ## 文件结构
 
 ```text
-layouts/{_default,partials,shortcodes}/
-assets/css/main.css
-static/img/{seal-yang.svg,seal-yin.svg}
+config/_default/{params.toml,markup.toml}
+layouts/{_default,partials}/
+assets/{css/main.css,img/hero-beauty.jpg}
+static/{fonts/wenkai,img/seal-yang.svg}
 i18n/{en.toml,zh-cn.toml,ja.toml}
+scripts/verify-theme.ps1
+.github/workflows/verify-theme.yml
 .pi/skills/xxd-*/
 exampleSite/
 ```
+
+## 配置事实来源
+
+- `config/_default/params.toml`：主题默认字体、数学公式、主 section、OG 图片和 Hero 参数。
+- `config/_default/markup.toml`：保留 class-based Chroma；站点自己定义 `[markup]` 时必须使用 `_merge = "deep"`。
+- `exampleSite/hugo.toml`：可复制的消费者配置，站点标题、域名、语言、作者和社交链接由站点决定。
+- `hugo.toml`：主题元数据与 `module.hugoVersion.min = "0.164.0"`，不是站点身份配置。
 
 ## 布局蒸馏
 
@@ -52,6 +62,12 @@ exampleSite/
 # 构建验证
 hugo --source exampleSite --minify
 
+# P1/P2、配置、a11y、Hero 资源范围和生成物合同
+pwsh -File scripts/verify-theme.ps1
+
+# 空白字符检查
+git diff --check
+
 # 本地预览；验证后必须停止进程
 hugo server --source exampleSite
 
@@ -63,10 +79,11 @@ cd exampleSite && hugo mod tidy
 
 - `--minify` 输出可能省略属性引号（如 `class=site-title`）；检查生成 HTML 时使用兼容有无引号的 `grep -E` 模式。
 - `hugo.toml` 的模块导入使用 `[[module.imports]]` TOML 数组表；`hugo.yaml` 必须使用 YAML 列表，禁止混用两种语法。
-- 本机 Git 代理 `127.0.0.1:7897` 可能未运行。获得用户明确 push 批准后，可用 `git -c http.proxy= push` 直连。
 - Windows 的 CRLF 转换警告正常；先运行 `git diff --check`，没有空白错误即可。
 - 主题切换有 0.25s 过渡；浏览器实测切换后等待至少 400ms，再读取 computed style。
 - **防导航闪烁（FOUC）**：应用主题的脚本必须放 `head.html` 样式表之前（首帧前定主题）；`body` 末尾只保留切换绑定。若在 body 应用主题，暗色用户每次导航都会先闪浅色。
+- 非首页不渲染 `inky-overlay`，也不应出现 `hero-beauty` 或处理后的 Hero 路径。
+- `static/img/seal-yang.svg` 是 favicon 固定品牌色例外；网页内联 Logo 必须使用 CSS token。
 
 ## 发布流程
 
@@ -78,13 +95,16 @@ cd exampleSite && hugo mod tidy
 
 ## Hugo 官方文档
 
-以下入口于 2026-08-05 验证可访问；`/themes/` 当前会重定向到 Hugo Modules 总览：
+以下入口于 2026-08-07 验证可访问；`/themes/` 当前会重定向到 Hugo Modules 总览：
 
 - 主题总览：https://gohugo.io/themes/
 - 模板系统：https://gohugo.io/templates/
 - 模板查找顺序：https://gohugo.io/templates/lookup-order/
 - 主题组件：https://gohugo.io/hugo-modules/theme-components/
 - Hugo Modules：https://gohugo.io/hugo-modules/use-modules/
+- 配置总览：https://gohugo.io/configuration/introduction/
+- 模块配置：https://gohugo.io/configuration/module/
+- 多语言配置：https://gohugo.io/configuration/languages/
 - 新建主题命令：https://gohugo.io/commands/hugo_new_theme/
 - 主题市场：https://themes.gohugo.io/
 - 提交主题：https://gohugo.io/contribute/themes/
@@ -94,8 +114,13 @@ cd exampleSite && hugo mod tidy
 ## 验证清单
 
 - [ ] `hugo --source exampleSite --minify` 构建通过。
+- [ ] `pwsh -File scripts/verify-theme.ps1` 通过，且主题默认配置与项目 skill 合同存在。
+- [ ] `git diff --check` 通过。
+- [ ] Hugo Extended `0.164.0` 与 Go `1.26.1` 和 CI 一致。
+- [ ] 首页包含 Hero，文章页、标签页、About、404 不包含 Hero。
+- [ ] `html lang`、skip link、`main-content`、主题按钮 ARIA 与图片 alt 通过生成物检查。
 - [ ] 浏览器实测亮/暗切换，`body` 背景分别为 `#F8F4F0` / `#1D1B1C`。
-- [ ] 印章颜色为品牌固定色 `#D92121`（白文印朱砂底白字），双模式不变。
+- [ ] favicon 保留 `#F2EDE6`、`#1D1B1C`、`#D92121` 固定品牌色；网页内联 Logo 随亮暗模式可见。
 - [ ] 所有新色均有 `DESIGN.md` 记录和对比度实测值。
 
 ## 东方美学设计原则（2026-08 补充）
