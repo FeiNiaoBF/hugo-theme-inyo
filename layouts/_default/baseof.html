@@ -68,10 +68,12 @@
         hero.addEventListener('mousemove', updateDrop);       /* 实时位置 */
         hero.addEventListener('mouseenter', function (e) {
           updateDrop(e);
+          overlay.classList.remove('recede');
           overlay.classList.add('is-open');
         });
         hero.addEventListener('mouseleave', function (e) {
           updateDrop(e);                                     /* 闭合也用最后鼠标位置 */
+          overlay.classList.add('recede');                   /* 收墨：快、缓入，归寂 */
           overlay.classList.remove('is-open');
         });
       }

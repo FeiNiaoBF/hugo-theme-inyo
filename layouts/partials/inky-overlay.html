@@ -8,6 +8,7 @@
 {{- $q := site.Params.heroImageQuality | default 72 -}}
 {{- with $hero }}{{ $bg = (.Resize (printf "1600x webp q%d" $q)).RelPermalink }}{{ end -}}
 <div class="inky-overlay" aria-hidden="true">
+  <span class="inky-seal"></span>
   <div class="inky-img"{{ with $bg }} style="background-image:url('{{ . }}')"{{ end }}></div>
   <span class="inky-ring"></span>
 </div>
