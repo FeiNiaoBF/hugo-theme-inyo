@@ -14,7 +14,8 @@
 <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
 
 {{/* ==== SEO 元数据（Google / OGP / Twitter）==== */}}
-{{ $desc := or .Description (.Summary | plainify | truncate 155) }}
+{{ $summaryText := partial "summary-source.html" . }}
+{{ $desc := truncate 155 (or (.Description | plainify) $summaryText) }}
 {{ with $desc }}<meta name="description" content="{{ . }}">{{ end }}
 <link rel="canonical" href="{{ .Permalink }}">
 
@@ -24,7 +25,8 @@
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
 {{ with $desc }}<meta property="og:description" content="{{ . }}">{{ end }}
-{{ with site.Params.ogImage }}
+{{ $ogImage := site.Params.ogImage | default "img/seal-yang.svg" }}
+{{ with $ogImage }}
 <meta property="og:image" content="{{ . | absURL }}">
 <meta property="og:image:alt" content="{{ site.Title }}">
 {{ end }}
@@ -37,10 +39,10 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">
 {{ with $desc }}<meta name="twitter:description" content="{{ . }}">{{ end }}
-{{ with site.Params.ogImage }}<meta name="twitter:image" content="{{ . | absURL }}">{{ end }}
+{{ with $ogImage }}<meta name="twitter:image" content="{{ . | absURL }}">{{ end }}
 
 {{/* 文章扩展：作者 + 发布时间（article: 协议）*/}}
-{{ if .IsPage }}
+{{ if and .IsPage (not .Date.IsZero) }}
 {{ $authorName := site.Params.author | default site.Title }}
 <meta property="article:author" content="{{ $authorName }}">
 <meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
@@ -82,7 +84,8 @@
 <link rel="stylesheet" href="{{ $wenkai.RelPermalink }}">
 {{ end }}
 {{ end }}
-{{ if site.Params.math }}
+{{ $mathEnabled := or site.Params.math .Params.math }}
+{{ if $mathEnabled }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"

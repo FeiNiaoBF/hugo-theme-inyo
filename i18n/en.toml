@@ -41,6 +41,19 @@ other = "Skip to content"
 [toggle_theme]
 other = "Toggle theme"
 
+[site_navigation]
+other = "Site navigation"
+
+[language]
+other = "Language"
+
+[heading_anchor]
+other = "Link to {{ . }}"
+
+[tag_count]
+one = "{{ .Count }} article"
+other = "{{ .Count }} articles"
+
 [notfound_msg]
 other = "This page has drifted away, like ink not yet set."
 

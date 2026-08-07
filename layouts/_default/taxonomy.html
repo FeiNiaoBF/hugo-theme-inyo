@@ -1,0 +1,40 @@
+{{ define "main" }}
+{{ $page := . }}
+{{ with .Data.Terms }}
+  {{ $title := $page.Title }}
+  {{ if eq $page.Type "tags" }}{{ $title = i18n "tags" | default $page.Title }}{{ end }}
+  <h1>{{ $title }}</h1>
+  {{ with $page.Content }}
+  <div class="prose">{{ . }}</div>
+  {{ end }}
+  <ul class="taxonomy-list">
+    {{ range .Alphabetical }}
+    <li class="taxonomy-item">
+      <a href="{{ .Page.RelPermalink }}">{{ .Page.Title }}</a>
+      <span class="taxonomy-count">{{ i18n "tag_count" .Count }}</span>
+    </li>
+    {{ end }}
+  </ul>
+{{ else }}
+  <h1>{{ $page.Title }}</h1>
+  {{ with $page.Content }}
+  <div class="prose">{{ . }}</div>
+  {{ end }}
+  <ul class="catalog">
+    {{ range $page.Pages.ByDate.Reverse }}
+    <li class="catalog-item">
+      <div class="catalog-head">
+        <h2 class="catalog-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+        <div class="catalog-meta">
+          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
+          <span>{{ i18n "reading_time" .ReadingTime }}</span>
+        </div>
+      </div>
+      {{ partial "summary.html" . }}
+    </li>
+    {{ else }}
+    <li class="home-empty">{{ i18n "no_posts" }}</li>
+    {{ end }}
+  </ul>
+{{ end }}
+{{ end }}

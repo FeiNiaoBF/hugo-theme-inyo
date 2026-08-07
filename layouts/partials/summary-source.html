@@ -1,0 +1,14 @@
+{{- $text := "" -}}
+{{- if .Description -}}
+  {{- $text = .Description | plainify -}}
+{{- else -}}
+  {{- $paras := findRE "<p[^>]*>[\\s\\S]*?</p>" .Content 1 -}}
+  {{- if $paras -}}
+    {{- $text = index $paras 0 | plainify -}}
+  {{- else -}}
+    {{- $text = .Summary | plainify -}}
+  {{- end -}}
+{{- end -}}
+{{- $text = replace $text "\n" " " -}}
+{{- $text = strings.TrimSpace $text -}}
+{{- return $text -}}

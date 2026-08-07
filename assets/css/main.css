@@ -108,6 +108,8 @@ img { max-width: 100%; height: auto; }
 
 /* ---------- 3. 布局 v3（对齐 pianpker：右侧身份区 + 左内容） ---------- */
 .container {
+  width: 100%;
+  min-width: 0;
   max-width: var(--container);
   margin: 0 auto;
   padding: 0 1.25em;
@@ -288,6 +290,8 @@ h6:hover .heading-anchor,
   border-radius: var(--radius);
 }
 .prose pre {
+  max-width: 100%;
+  min-width: 0;
   background: var(--code-bg);
   color: var(--code-text);
   padding: 1.2em 1.4em;
@@ -298,6 +302,63 @@ h6:hover .heading-anchor,
 }
 .prose pre code { background: none; color: inherit; padding: 0; }
 .prose pre .highlight { background: none; }
+
+/* Chroma 语义 token：颜色随纸/墨 token 双模式切换，避免构建期固定调色板。 */
+.prose pre.chroma { background: var(--code-bg); color: var(--code-text); }
+.chroma .c,
+.chroma .ch,
+.chroma .cm,
+.chroma .c1,
+.chroma .cs,
+.chroma .cp,
+.chroma .gh,
+.chroma .gu,
+.chroma .ln { color: var(--camel); }
+.chroma .k,
+.chroma .kc,
+.chroma .kd,
+.chroma .kn,
+.chroma .kp,
+.chroma .kr,
+.chroma .kt { color: var(--cinnabar); font-weight: 700; }
+.chroma .s,
+.chroma .sa,
+.chroma .sb,
+.chroma .sc,
+.chroma .dl,
+.chroma .sd,
+.chroma .s2,
+.chroma .se,
+.chroma .sh,
+.chroma .si,
+.chroma .sx,
+.chroma .sr,
+.chroma .s1,
+.chroma .ss { color: var(--indigo); }
+.chroma .na,
+.chroma .nb,
+.chroma .nc,
+.chroma .nd,
+.chroma .ne,
+.chroma .nf,
+.chroma .nl,
+.chroma .nn,
+.chroma .no,
+.chroma .nt,
+.chroma .nv,
+.chroma .nx { color: var(--code-text); }
+.chroma .o,
+.chroma .ow,
+.chroma .p,
+.chroma .n,
+.chroma .m,
+.chroma .mb,
+.chroma .mf,
+.chroma .mh,
+.chroma .mi,
+.chroma .mo { color: var(--code-text); }
+.chroma .err { color: var(--cinnabar); background: color-mix(in srgb, var(--cinnabar) 14%, transparent); }
+.chroma .hl { background: color-mix(in srgb, var(--amber) 14%, transparent); }
 
 /* 行内语义元素（Markdown 样式指南 demo 需要） */
 .prose mark { background: color-mix(in srgb, var(--cinnabar) 22%, transparent); color: var(--ink); padding: 0 0.15em; border-radius: 2px; }
@@ -321,8 +382,15 @@ h6:hover .heading-anchor,
 .prose li input[type="checkbox"] { margin-right: 0.5em; }
 
 /* ---------- 5. 组件 ---------- */
-/* 印章 Logo */
-.seal { display: inline-block; color: var(--cinnabar); border: 0; }
+/* 印章 Logo：网页内联版随纸墨主题切换，favicon 固定品牌色见 DESIGN.md §4 */
+.seal {
+  --seal-disc: var(--paper-2);
+  --seal-ink: var(--ink);
+  --seal-light: var(--paper);
+  display: inline-block;
+  color: var(--cinnabar);
+  border: 0;
+}
 .seal svg { display: block; }
 
 /* 标签: 驼色描边小章 */
@@ -420,7 +488,10 @@ h6:hover .heading-anchor,
   display: block;
   opacity: 0;
   transform: scale(1.5) rotate(-8deg);
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.28));
+  filter: drop-shadow(
+    0 2px 5px
+    color-mix(in srgb, var(--ink) 28%, transparent)
+  );
   transition: opacity 0.3s ease 2.4s, transform 0.45s cubic-bezier(0.2, 0, 0, 1) 2.4s;
 }
 .inky-stamp .seal { width: 56px; height: 56px; display: block; }
@@ -547,9 +618,14 @@ h6:hover .heading-anchor,
 }
 .catalog-summary { margin: 0.4em 0 0; font-size: 0.92em; color: var(--ink); opacity: 0.85; }
 .home-empty { margin: 0; color: var(--camel); }
+.taxonomy-list { list-style: none; padding: 0; margin: 1.5em 0; }
+.taxonomy-item { display: flex; justify-content: space-between; gap: 1em; padding: 0.75em 0; border-bottom: 1px solid var(--border); }
+.taxonomy-item a { color: var(--ink); border: 0; }
+.taxonomy-item a:hover { color: var(--cinnabar); }
+.taxonomy-count { color: var(--camel); font-family: var(--font-mono); font-size: 0.78em; }
 
 /* 文章页 v2 */
-.post-single { max-width: 40em; }
+.post-single { width: 100%; min-width: 0; max-width: 40em; }
 .post-header { margin-bottom: 2.5em; }
 .post-header h1 { margin-bottom: 0.3em; }
 /* 返回键（pianpker Go back 对齐） */
@@ -679,7 +755,7 @@ textarea:focus-visible,
 /* 打印 */
 @media print {
   .identity, .post-nav { display: none; }
-  body { background: #fff; }
+  body { background: var(--paper); }
 }
 
 /* 平板中间态 */

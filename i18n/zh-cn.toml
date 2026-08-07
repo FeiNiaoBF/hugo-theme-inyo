@@ -40,6 +40,19 @@ other = "跳到正文"
 [toggle_theme]
 other = "切换主题"
 
+[site_navigation]
+other = "站点导航"
+
+[language]
+other = "语言"
+
+[heading_anchor]
+other = "链接到 {{ . }}"
+
+[tag_count]
+one = "{{ .Count }} 篇文章"
+other = "{{ .Count }} 篇文章"
+
 [notfound_msg]
 other = "此页纸已散佚，笔墨未落。"
 

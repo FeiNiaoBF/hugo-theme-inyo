@@ -1,0 +1,38 @@
+name: Verify Inyo theme
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Set up Hugo Extended
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.164.0"
+          extended: true
+
+      - name: Build example site
+        shell: pwsh
+        run: hugo --source exampleSite --minify
+
+      - name: Run theme smoke checks
+        shell: pwsh
+        run: pwsh -File scripts/verify-theme.ps1
+
+      - name: Check diff whitespace
+        shell: pwsh
+        run: git diff --check

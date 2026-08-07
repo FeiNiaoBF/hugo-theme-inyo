@@ -4,6 +4,9 @@ description = "纸墨二元 · 日式现代简约 × 古中国水墨 — Hugo �
 license = "MIT"
 min_version = "0.140.0"
 
+[markup.highlight]
+  noClasses = false
+
 [params]
   font = "wenkai"      # wenkai(霞鹜文楷,默认) | serif(思源宋体)
   math = false         # 启用 KaTeX

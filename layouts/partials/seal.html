@@ -1,20 +1,21 @@
 {{/* Inyo 品牌 Logo — 双鱼太极 + 朱砂环（v4，2026-08-06 用户选定）
     几何（数学验证，非手推弧线）: 黑鱼=左半圆(r20)+上小圆(r10,cy12)；白鱼=右半+下小圆(r10,cy32 纸色覆盖)
     面积验证: 黑鱼 = π·20²/2 − π·10²/2 + π·10²/2 = 200π = 白鱼 ✓ 完全对称
-    配色: 圆盘固定浅纸 #F2EDE6（略深于亮色背景，双模式可见）+ 黑鱼固定墨色 + 朱砂环 --cinnabar
+    配色: 网页内联版使用 --seal-disc / --seal-ink / --seal-light 随主题切换；朱砂环 --cinnabar
+    favicon 无 CSS 变量上下文，继续使用 static/img/seal-yang.svg 的固定品牌色
     鱼眼: 上=盘色（黑鱼头）/ 下=墨色（白鱼头）——经典对位
     ADR: DESIGN.md §4 Logo 行 + ADR-8 */}}
 <svg class="seal" width="34" height="34" viewBox="0 0 44 44" role="img" aria-label="{{ site.Title | default "Inyo" }}">
-  <!-- 圆盘（固定浅纸色，双模式可见） -->
-  <circle cx="22" cy="22" r="20" fill="#F2EDE6"/>
+  <!-- 圆盘（主题 token，亮暗模式均可见） -->
+  <circle cx="22" cy="22" r="20" fill="var(--seal-disc)"/>
   <!-- 黑鱼：左半圆 + 上小圆（鱼头向右凸出） -->
-  <path d="M22 2 A20 20 0 0 0 22 42 Z" fill="#1D1B1C"/>
-  <circle cx="22" cy="12" r="10" fill="#1D1B1C"/>
-  <!-- 白鱼：下小圆纸色覆盖黑鱼尾部（鱼头向左凸出） -->
-  <circle cx="22" cy="32" r="10" fill="#F2EDE6"/>
+  <path d="M22 2 A20 20 0 0 0 22 42 Z" fill="var(--seal-ink)"/>
+  <circle cx="22" cy="12" r="10" fill="var(--seal-ink)"/>
+  <!-- 白鱼：下小圆主题浅色覆盖黑鱼尾部（鱼头向左凸出） -->
+  <circle cx="22" cy="32" r="10" fill="var(--seal-light)"/>
   <!-- 鱼眼（经典对位：黑鱼白点 / 白鱼黑点） -->
-  <circle cx="22" cy="12" r="3.3" fill="#F2EDE6"/>
-  <circle cx="22" cy="32" r="3.3" fill="#1D1B1C"/>
+  <circle cx="22" cy="12" r="3.3" fill="var(--seal-light)"/>
+  <circle cx="22" cy="32" r="3.3" fill="var(--seal-ink)"/>
   <!-- 朱砂环 -->
   <circle cx="22" cy="22" r="20" fill="none" stroke="var(--cinnabar)" stroke-width="1.4"/>
 </svg>

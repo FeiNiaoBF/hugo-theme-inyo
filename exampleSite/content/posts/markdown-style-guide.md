@@ -307,3 +307,7 @@ $$
 ## 结语
 
 以上就是 Inyo 主题支持的全部 Markdown 元素。写作时无需关心样式——专注内容，主题负责气质。
+
+## 渲染 Hook 测试 {#render-hook-fixture data-kind="hook"}
+
+[协议相对链接](//example.org) 与 [不安全链接](javascript:alert(1)) 用于验证主题的链接渲染策略。

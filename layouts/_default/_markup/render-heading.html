@@ -1,2 +1,8 @@
 {{- /* render-heading: 标题锚点注入（构建期, 零 JS）— 对齐 pianpker Link-to-heading 交互; 每个 h2-h4 注入 heading-anchor 链接 */ -}}
-<h{{ .Level }} id="{{ .Anchor }}">{{ .Text | safeHTML }}<a class="heading-anchor" href="#{{ .Anchor }}" aria-label="Link to {{ .Text | plainify }}">#</a></h{{ .Level }}>
+{{- $attrs := "" -}}
+{{- range $key, $value := .Attributes -}}
+  {{- if ne (lower $key) "id" -}}
+    {{- $attrs = printf "%s %s=\"%s\"" $attrs $key ($value | htmlEscape) -}}
+  {{- end -}}
+{{- end -}}
+<h{{ .Level }} id="{{ .Anchor }}"{{ $attrs | safeHTMLAttr }}>{{ .Text | safeHTML }}<a class="heading-anchor" href="#{{ .Anchor }}" aria-label="{{ i18n "heading_anchor" (.Text | plainify) }}">#</a></h{{ .Level }}>

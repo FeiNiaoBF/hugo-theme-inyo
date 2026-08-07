@@ -40,6 +40,18 @@ other = "本文へスキップ"
 [toggle_theme]
 other = "テーマ切替"
 
+[site_navigation]
+other = "サイトナビゲーション"
+
+[language]
+other = "言語"
+
+[heading_anchor]
+other = "{{ . }}へのリンク"
+
+[tag_count]
+other = "{{ .Count }}件の記事"
+
 [notfound_msg]
 other = "この頁は散り失せ、墨はまだ落ちていない。"
 

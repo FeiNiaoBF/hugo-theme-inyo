@@ -10,7 +10,7 @@ path = "github.com/FeiNiaoBF/hugo-theme-inyo"
 
 [params]
 font = "wenkai"
-math = true
+math = false
 subtitle = "纸墨二元 · 落字有间"
 author = "Inyo"
 
@@ -18,6 +18,12 @@ author = "Inyo"
 [markup.goldmark]
 [markup.goldmark.renderer]
 unsafe = true
+
+[markup.goldmark.parser.attribute]
+block = true
+
+[markup.highlight]
+noClasses = false
 
 [[params.social]]
 name = "GitHub"
