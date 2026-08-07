@@ -1,0 +1,10 @@
+{{- /* inky-overlay.html — 墨滴涟漪全屏古画背景
+    hover hero → 墨滴从鼠标位置滴下 → clip-path 圆窗从落点涟漪扩散 → 古画渐显
+    mouseleave → 涟漪收回 + 图片渐渐消失
+    原理: clip-path circle(r at 落点) — 图片全屏固定不动, 仅圆窗半径动画
+    内容 (shell) 在 z-index 1, 阅读不受影响
+    零依赖: 原生 JS + CSS transition */ -}}
+<div class="inky-overlay" aria-hidden="true">
+  <div class="inky-img"></div>
+  <span class="inky-drop"></span>
+</div>

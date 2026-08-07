@@ -1,4 +1,6 @@
 {{ define "main" }}
+<div class="hero" aria-hidden="true" data-banner="{{ site.Params.subtitle | default site.Title }}"></div>
+
 {{ $all := where site.RegularPages "Section" "in" (site.Params.mainSections | default (slice "posts")) }}
 {{ if eq (len $all) 0 }}
 <p class="home-empty">{{ i18n "no_posts" }}</p>
