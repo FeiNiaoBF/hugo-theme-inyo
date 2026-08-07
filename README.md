@@ -27,7 +27,7 @@
 
 ### Hugo Modules（推荐）
 
-要求：Hugo Extended `>= 0.140.0`；使用 Hugo Modules 时 Go `>= 1.26.1`。
+要求：Hugo Extended `>= 0.164.0`；使用 Hugo Modules 时 Go `>= 1.26.1`。
 
 新建站点先初始化模块：
 
@@ -37,18 +37,21 @@ hugo mod init example.org/my-site
 
 ```toml
 # hugo.toml
-module:
-  imports:
-    - path: github.com/FeiNiaoBF/hugo-theme-inyo
+[module]
+[[module.imports]]
+path = "github.com/FeiNiaoBF/hugo-theme-inyo"
 ```
 
 ```bash
 hugo mod tidy
 ```
 
-主题默认使用 Hugo 的 class-based Chroma 输出，站点配置应保留：
+主题通过 `config/_default/markup.toml` 默认使用 Hugo 的 class-based Chroma 输出。若站点同时自定义 `[markup]`（例如开启 Goldmark 原始 HTML），请保留 deep merge：
 
 ```toml
+[markup]
+_merge = "deep"
+
 [markup.highlight]
 noClasses = false
 ```
@@ -56,11 +59,11 @@ noClasses = false
 本地开发可用 `replace` 指向本地路径：
 
 ```toml
-module:
-  imports:
-    - path: github.com/FeiNiaoBF/hugo-theme-inyo
-  replacements:
-    github.com/FeiNiaoBF/hugo-theme-inyo: ../hugo-theme-inyo
+[module]
+replacements = "github.com/FeiNiaoBF/hugo-theme-inyo -> ../hugo-theme-inyo"
+
+[[module.imports]]
+path = "github.com/FeiNiaoBF/hugo-theme-inyo"
 ```
 
 ### 经典 themes/ 目录
@@ -75,6 +78,8 @@ theme: inyo
 
 ## 配置
 
+Hugo 官方建议把项目配置放在站点根目录的 `hugo.toml`，并且只写偏离默认值的部分。Inyo 主题自己的默认值放在 `config/_default/params.toml` 与 `config/_default/markup.toml`，模块会将它们合并到站点；站点配置优先。站点名称、域名、语言、作者和社交链接仍然必须由使用者决定。
+
 ```toml
 [params]
 # 正文字体：wenkai（霞鹜文楷，默认，自托管分片）/ serif（思源宋体，CDN）
@@ -84,6 +89,8 @@ webfonts = true
 # 数学公式
 math = true
 # 单篇文章也可在 front matter 使用 math: true；默认关闭时按页加载 KaTeX
+# 首页展示的 section
+mainSections = ["posts"]
 # 社交卡片图（不配置时默认使用 static/img/seal-yang.svg）
 # ogImage = "img/og-image.png"
 # 站名下的气质签名（副标题）
@@ -116,6 +123,7 @@ url = "/index.xml"
 hugo-theme-inyo/
 ├── DESIGN.md        # 设计文档（配色 token 权威来源 + ADR + 动效/选图规范）
 ├── AGENTS.md        # AI 编码代理规范
+├── config/_default/ # 主题可合并的默认参数与 Markdown 配置
 ├── layouts/         # 模板（baseof/index/single/list + partials + _markup 渲染 hooks）
 ├── assets/css/      # main.css —— CSS 变量 token 体系
 ├── assets/img/      # heroImage 背景图（墨滴涟漪，构建期转 WebP）
