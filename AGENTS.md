@@ -10,7 +10,7 @@
    - 暗色抬升面（`--paper-2` `#322F31`）上的链接必须用舌红 `#F19790`（朱红 on 抬升面 3.66 不达标）
    - 浅档（t≥0.55 `#888185` 及以上）只做弱化文字/边框/装饰，禁止放正文链接
 3. **正文永远横排**：竖排（`writing-mode: vertical-rl`）禁止用于正文、导航、页脚；装饰性竖排已整体移除（v2）
-4. **零 JS 依赖**：内联脚本仅限两类——主题切换 + 首页墨滴涟漪（hover 交互，必须 `hover:hover` 门控 + `prefers-reduced-motion` 降级）；不要引入框架
+4. **零 JS 依赖**：内联脚本仅限两类——主题切换 + 首页诗词交互；hover 反馈必须由 `hover:hover` 门控，文字动效必须提供 `prefers-reduced-motion` 降级；不要引入框架
 5. **双模式对称**：新增样式必须同时给出亮（纸）和暗（墨）两套取值，走 `[data-theme="dark"]` 覆盖
 
 ## 技术栈约束
@@ -37,7 +37,9 @@
 - 主题默认参数在 `config/_default/params.toml`；Chroma 默认在 `config/_default/markup.toml`
 - 站点配置模板在 `exampleSite/hugo.toml`；如果站点自定义 `[markup]`，必须保留 `_merge = "deep"`
 - 每次改动至少运行：`hugo --source exampleSite --minify`、`pwsh -File scripts/verify-theme.ps1`、`git diff --check`
-- Hero 资源只允许首页加载；`static/img/seal-yang.svg` 是没有 CSS 变量上下文的 favicon 固定品牌色例外
+- Hero 数据、API 地址和交互脚本只允许首页输出；远程诗词默认关闭且必须有本地 fallback；点击反馈使用沿 Hero 圆角边框从底部中央上行、在顶部中央合墨的双翼墨线，并提供 reduced-motion 降级
+- 目录摘要优先使用 Hugo `.Summary`，再由 `.Description` 兜底；保持 140 全宽单位与最多 3 行的阅读节奏
+- `static/img/seal-yang.svg` 是没有 CSS 变量上下文的 favicon 固定品牌色例外
 
 ## 提交规范
 

@@ -20,14 +20,15 @@ Inyo 陰陽 是纸墨二元 Hugo 主题（开源 `hugo-theme-inyo`），当前�
    - 浅档（t≥0.55 `#888185` 及以上）只做弱化文字/边框/装饰，禁止放正文链接
 3. **正文永远横排**；竖排（`writing-mode: vertical-rl`）禁止用于正文、导航、页脚，装饰性竖排已整体移除（v2）。
 4. **双模式对称**：新样式必须同时提供亮（纸）和暗（墨）取值，暗色覆盖放在 `[data-theme="dark"]`。
-5. **零 JS 依赖**：内联脚本仅限两类——主题切换 + 首页墨滴涟漪（hover 交互，必须 `hover:hover` 门控 + `prefers-reduced-motion` 降级）。
+5. **零 JS 依赖**：内联脚本仅限两类——主题切换 + 首页诗词交互；hover 反馈必须 `hover:hover` 门控，换句动效必须提供 `prefers-reduced-motion` 降级。
 
 ## 文件结构
 
 ```text
 config/_default/{params.toml,markup.toml}
 layouts/{_default,partials}/
-assets/{css/main.css,img/hero-beauty.jpg}
+assets/css/main.css
+data/inyo/hero_poems.toml
 static/{fonts/wenkai,img/seal-yang.svg}
 i18n/{en.toml,zh-cn.toml,ja.toml}
 scripts/verify-theme.ps1
@@ -38,7 +39,7 @@ exampleSite/
 
 ## 配置事实来源
 
-- `config/_default/params.toml`：主题默认字体、数学公式、主 section、OG 图片和 Hero 参数。
+- `config/_default/params.toml`：主题默认字体、数学公式、主 section、OG 图片和可选诗词 API 参数。
 - `config/_default/markup.toml`：保留 class-based Chroma；站点自己定义 `[markup]` 时必须使用 `_merge = "deep"`。
 - `exampleSite/hugo.toml`：可复制的消费者配置，站点标题、域名、语言、作者和社交链接由站点决定。
 - `hugo.toml`：主题元数据与 `module.hugoVersion.min = "0.164.0"`，不是站点身份配置。
@@ -47,7 +48,7 @@ exampleSite/
 
 - 保留 Inyo 当前 `40em` 阅读栏与全部既有颜色 token；外部主题只参考布局机制，不复制配色、框架或交互。
 - v3 布局为顶部导航（首页/文章/标签/关于 + 诗句占位）+ 右侧固定身份栏（18em sticky，pianpker 式）+ 左中内容区；≤768px 顶部导航保持、身份栏折叠为紧凑头部。
-- 目录/列表条目：标题 + 日期/阅读时间（更纱黑体），有 `description` 才显示一行摘要；移动端不隐藏摘要。
+- 目录/列表条目：标题 + 日期/阅读时间（更纱黑体），优先显示 Hugo `.Summary`，由 `.Description` 兜底；摘要按 140 全宽单位截断并限制为最多 3 行。
 - TOC 默认留在正文流内；侧栏只承载导航，不承担 TOC。
 - 集合页必须分别处理零篇、一篇和多篇内容，不能只验证理想数据量。
 - 目录禁止用卡片、重复边框或额外强调色堆砌；分隔用细线 `--border` 与留白。
@@ -62,7 +63,7 @@ exampleSite/
 # 构建验证
 hugo --source exampleSite --minify
 
-# P1/P2、配置、a11y、Hero 资源范围和生成物合同
+# P1/P2、配置、a11y、Hero 诗词和生成物合同
 pwsh -File scripts/verify-theme.ps1
 
 # 空白字符检查
@@ -82,7 +83,7 @@ cd exampleSite && hugo mod tidy
 - Windows 的 CRLF 转换警告正常；先运行 `git diff --check`，没有空白错误即可。
 - 主题切换有 0.25s 过渡；浏览器实测切换后等待至少 400ms，再读取 computed style。
 - **防导航闪烁（FOUC）**：应用主题的脚本必须放 `head.html` 样式表之前（首帧前定主题）；`body` 末尾只保留切换绑定。若在 body 应用主题，暗色用户每次导航都会先闪浅色。
-- 非首页不渲染 `inky-overlay`，也不应出现 `hero-beauty` 或处理后的 Hero 路径。
+- 非首页不渲染 Hero，不应出现本地诗句 JSON、诗词 API 地址或交互脚本。
 - `static/img/seal-yang.svg` 是 favicon 固定品牌色例外；网页内联 Logo 必须使用 CSS token。
 
 ## 发布流程
@@ -129,4 +130,4 @@ cd exampleSite && hugo mod tidy
 - **纸墨二元**：亮=纸色 `--paper` / 暗=墨色 `--ink`，双模式同温轴；全站单情绪色朱砂 `--cinnabar`；墨色派生一律 `color-mix(in srgb, var(--ink) N%, transparent)`（暗色自动白墨）
 - **图形可见性铁律**：纯黑白图形在单一模式会隐形（白=纸色=背景）——需要固定浅色圆盘（如 `#F2EDE6`）承托，或加朱砂环
 - **动效**：优先 transform/opacity/filter 合成器属性；clip-path 动画有全屏重绘风险、mask-position 有圆心漂移坑（圆心=图像左上角+尺寸/2，动画尺寸时圆心会跑）；hover 触发动效必须 `hover:hover` 门控 + `prefers-reduced-motion` 降级
-- **素材**：背景图走 `params.heroImage`（assets/img/，构建期 `Resize "1600x webp q72"`）；选图规范 DESIGN.md §8；公有领域素材获取见 `.me/public-domain-art-assets.md`（Met API / Wikimedia，含 Special:FilePath 陷阱）
+- **诗句 Hero**：本地数据走 `data/inyo/hero_poems.toml`；远程 API 默认关闭，只在用户主动交互时请求，失败必须静默回退；点击后朱红双翼墨线沿 Hero 圆角边框从底部中央上行并在顶部中央合墨，内容就绪后再落字，并提供 reduced-motion 降级
