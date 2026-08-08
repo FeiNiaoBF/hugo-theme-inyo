@@ -6,9 +6,6 @@
 </head>
 <body>
   <a class="skip-link" href="#main-content">{{ i18n "skip_to_content" | default "跳到正文" }}</a>
-  {{ if .IsHome }}
-    {{ partial "inky-overlay.html" . }}
-  {{ end }}
   <div class="shell">
     <aside class="identity">
       <div class="identity-brand">
@@ -58,28 +55,8 @@
         });
       }
 
-      /* 墨滴涟漪：hover 首页 hero → 全屏古画背景展开（原生 JS）
-         位置: mousemove 实时追踪鼠标 → 展开/闭合都以"当前鼠标位置"为落点 */
-      var overlay = document.querySelector('.inky-overlay');
-      var hero = document.querySelector('.hero');
-      if (overlay && hero && window.matchMedia('(hover: hover)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        var updateDrop = function (e) {
-          overlay.style.setProperty('--drop-x', e.clientX + 'px');
-          overlay.style.setProperty('--drop-y', e.clientY + 'px');
-        };
-        hero.addEventListener('mousemove', updateDrop);       /* 实时位置 */
-        hero.addEventListener('mouseenter', function (e) {
-          updateDrop(e);
-          overlay.classList.remove('recede');
-          overlay.classList.add('is-open');
-        });
-        hero.addEventListener('mouseleave', function (e) {
-          updateDrop(e);                                     /* 闭合也用最后鼠标位置 */
-          overlay.classList.add('recede');                   /* 收墨：快、缓入，归寂 */
-          overlay.classList.remove('is-open');
-        });
-      }
     })();
   </script>
+  {{ if .IsHome }}{{ partial "hero-poetry-script.html" . }}{{ end }}
 </body>
 </html>

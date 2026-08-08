@@ -407,181 +407,128 @@ h6:hover .heading-anchor,
 }
 .tag:hover { background: var(--camel); color: var(--paper); }
 
-/* ---------- 5c. 墨滴涟漪全屏古画（Inky Overlay） ---------- */
-/* 背景层：位于内容 (shell z-index:1) 之下，阅读不受影响 */
-.inky-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;      /* 不拦截任何交互 */
-}
-/* 墨滴涟漪全屏古画（Inky Overlay）— 品牌生命周期四幕
-   落印(seal) → 洇墨(diffuse) → 驻留(hold) → 收墨(recede)
-   动效 token: 落印 240ms 急落决断 / 洇墨 2.8s 从容扩散 / 收墨 1.3s 缓入归寂 */
-
-/* ① 落印 — 朱砂环印章盖下（品牌：印章/朱砂环），随后淡出让位给墨 */
-.inky-seal {
-  position: absolute;
-  left: var(--drop-x, 50%);
-  top: var(--drop-y, 50%);
-  width: 90px;
-  height: 90px;
-  border: 2px solid var(--cinnabar);
-  border-radius: 50%;
-  transform: translate(-50%, -50%) scale(1.6);
-  opacity: 0;
-  box-shadow: 0 0 0 6px color-mix(in srgb, var(--cinnabar) 16%, transparent);
-}
-.inky-overlay.is-open .inky-seal { animation: seal-stamp 1s cubic-bezier(0.2, 0, 0, 1) forwards; }
-@keyframes seal-stamp {
-  0%   { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
-  16%  { transform: translate(-50%, -50%) scale(1);   opacity: 0.9; }
-  66%  { transform: translate(-50%, -50%) scale(1);   opacity: 0.45; }
-  100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
-}
-
-/* ② 洇墨 — 古画自落点生长聚焦；蒙版=撕纸边(SVG turbulence) ∩ 径向晕染 → 永无矩形边界 */
-.inky-img {
-  position: absolute;
-  inset: 0;
-  /* 背景图由构建期处理（assets/img/hero-beauty.jpg → 1600w webp q72），模板内联 style 注入 */
-  background-size: cover;
-  background-position: center 30%;
-  opacity: 0;
-  transform: scale(0.55);
-  transform-origin: var(--drop-x, 50%) var(--drop-y, 50%);
-  filter: sepia(0.22) contrast(0.92) brightness(0.98) blur(10px);
-  transition: opacity 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s,
-              transform 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s,
-              filter 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
-}
-.inky-overlay.is-open .inky-img {
-  opacity: 0.5;
-  transform: scale(1);
-  filter: sepia(0.22) contrast(0.92) brightness(0.98) blur(0);
-}
-/* 纸色蒙版：压淡古画，保证内容文字可读 */
-.inky-img::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--paper);
-  opacity: 0.42;
-}
-/* 边缘墨晕：洇开边缘的墨色沉淀，随驻留淡去 */
-.inky-img::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at var(--drop-x, 50%) var(--drop-y, 50%),
-      transparent 52%, color-mix(in srgb, var(--ink) 16%, transparent) 100%);
-  opacity: 0;
-  transition: opacity 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
-}
-.inky-overlay.is-open .inky-img::after { opacity: 1; }
-
-/* ③ 落款 — 画成印成：Inyo 太极印章盖于右下，稍迟于洇墨 */
-.inky-stamp {
-  position: absolute;
-  right: 9vw;
-  bottom: 13vh;
-  display: block;
-  opacity: 0;
-  transform: scale(1.5) rotate(-8deg);
-  filter: drop-shadow(
-    0 2px 5px
-    color-mix(in srgb, var(--ink) 28%, transparent)
-  );
-  transition: opacity 0.3s ease 2.4s, transform 0.45s cubic-bezier(0.2, 0, 0, 1) 2.4s;
-}
-.inky-stamp .seal { width: 56px; height: 56px; display: block; }
-.inky-overlay.is-open .inky-stamp {
-  opacity: 1;
-  transform: scale(1) rotate(-8deg);
-}
-.inky-overlay.recede .inky-stamp {
-  transition-delay: 0s;
-  opacity: 0;
-  transform: scale(1.4) rotate(-8deg);
-}
-
-/* 涟漪：一道淡墨环，随落印扩散、随洇墨淡出 */
-.inky-ring {
-  position: absolute;
-  left: var(--drop-x, 50%);
-  top: var(--drop-y, 50%);
-  width: 0;
-  height: 0;
-  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  filter: blur(3px);
-  opacity: 0;
-}
-.inky-overlay.is-open .inky-ring {
-  animation: ink-ripple 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-@keyframes ink-ripple {
-  0%   { width: 0; height: 0; opacity: 0.5; }
-  30%  { width: 30vmax; height: 30vmax; opacity: 0.35; }
-  100% { width: 130vmax; height: 130vmax; opacity: 0; }
-}
-
-/* ④ 收墨 — 鼠标移开，墨向落点回退（快、缓入），归寂复纸面 */
-.inky-overlay.recede .inky-img {
-  transition-duration: 1.3s;
-  transition-timing-function: ease-in;
-}
-.inky-overlay.recede .inky-img::after {
-  transition-duration: 1.3s;
-  transition-timing-function: ease-in;
-}
-.inky-overlay.recede .inky-ring { animation: none; opacity: 0; }
-/* 内容层：确保在背景之上 */
-.shell { position: relative; z-index: 1; }
-/* 触屏设备：无 hover，禁用墨滴（避免误触） */
-@media (hover: none) {
-  .inky-overlay { display: none; }
-}
+/* ---------- 5c. 首页诗句 Hero（墨线落字） ---------- */
 .hero {
   position: relative;
-  height: 68px;                    /* 收起：一条卷轴（触发区，不再自身展开） */
+  width: 100%;
+  height: 68px;
+  padding: 0 1.25em;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   margin-bottom: 3em;
   overflow: hidden;
+  appearance: none;
+  font: inherit;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+  background: transparent;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  transition: border-color 0.4s ease, background 0.4s ease;
+  transition: border-color 0.24s ease, background 0.24s ease;
 }
-.hero:hover {
-  border-color: var(--cinnabar);
-  background: color-mix(in srgb, var(--cinnabar) 4%, transparent);
+.hero:focus-visible {
+  outline: 2px solid var(--cinnabar);
+  outline-offset: 3px;
 }
-/* 墨滴触发提示：hover 时题签微动（告知可交互） */
-.hero::after {
-  content: attr(data-banner);
-  position: absolute;
-  left: 0; right: 0;
-  text-align: center;
+.hero.is-fetching {
+  border-color: color-mix(in srgb, var(--cinnabar) 34%, var(--border));
+  background: color-mix(in srgb, var(--cinnabar) 2%, transparent);
+}
+.hero__copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: 0.1em;
+  line-height: 1.35;
+}
+.hero__quote,
+.hero__source {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.hero__quote {
+  color: var(--ink);
+  font-size: 1em;
+  font-weight: 400;
+}
+.hero__source {
   color: var(--camel);
-  letter-spacing: 0.6em;
-  font-size: 0.85em;
-  transition: color 0.3s ease;
+  font-size: 0.75em;
+  line-height: 1.25;
 }
-.hero:hover::after { color: var(--cinnabar); }
-/* 减动效：涟漪/墨滴/触发条动画全部关闭 */
+.hero__stroke {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero__stroke-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+}
+.hero__stroke-line {
+  stroke: var(--cinnabar);
+  stroke-width: 1.2;
+}
+.hero.is-ink-rising .hero__stroke-line {
+  animation: hero-ink-rise 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.hero.is-leaving .hero__copy {
+  animation: hero-poem-leave 160ms ease-in both;
+}
+.hero.is-entering .hero__quote,
+.hero.is-entering .hero__source {
+  animation: hero-poem-enter 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.hero.is-entering .hero__source {
+  animation-delay: 40ms;
+}
+@keyframes hero-ink-rise {
+  0%   { opacity: 0; stroke-dashoffset: 1; }
+  8%   { opacity: 0.94; }
+  72%  { opacity: 0.94; stroke-dashoffset: 0; }
+  88%  { opacity: 0.72; stroke-dashoffset: 0; }
+  100% { opacity: 0; stroke-dashoffset: 0; }
+}
+@keyframes hero-poem-leave {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-6px); }
+}
+@keyframes hero-poem-enter {
+  from { opacity: 0; filter: blur(2px); transform: translateY(4px); }
+  to   { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+@media (hover: hover) {
+  .hero:hover {
+    border-color: var(--cinnabar);
+    background: color-mix(in srgb, var(--cinnabar) 4%, transparent);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
-  .inky-img { transition: none; }
-  .inky-img::after { transition: none; }
-  .inky-ring { animation: none; }
-  .inky-seal { animation: none; opacity: 0; }
-  .inky-stamp { transition: none; }
   .hero { transition: none; }
+  .hero__copy,
+  .hero__quote,
+  .hero__source,
+  .hero__stroke-line { animation: none !important; }
 }
 @media (max-width: 768px) {
-  .hero { height: 56px; }
+  .hero { height: 56px; padding-inline: 1em; }
+  .hero__source { font-size: 0.72em; }
 }
 
 /* 目录（v3：分组 + 常规字重，对齐 pianpker 阅读气质） */
@@ -616,7 +563,17 @@ h6:hover .heading-anchor,
   white-space: nowrap;
   flex-shrink: 0;
 }
-.catalog-summary { margin: 0.4em 0 0; font-size: 0.92em; color: var(--ink); opacity: 0.85; }
+.catalog-summary {
+  display: -webkit-box;
+  margin: 0.4em 0 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 0.92em;
+  opacity: 0.85;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
 .home-empty { margin: 0; color: var(--camel); }
 .taxonomy-list { list-style: none; padding: 0; margin: 1.5em 0; }
 .taxonomy-item { display: flex; justify-content: space-between; gap: 1em; padding: 0.75em 0; border-bottom: 1px solid var(--border); }

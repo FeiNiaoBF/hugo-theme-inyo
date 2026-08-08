@@ -1,0 +1,216 @@
+<script>
+  (function () {
+    var hero = document.getElementById('hero-poetry');
+    var data = document.getElementById('hero-poetry-data');
+    if (!hero || !data) return;
+
+    var quote = hero.querySelector('.hero__quote');
+    var source = hero.querySelector('.hero__source');
+    var stroke = hero.querySelector('.hero__stroke');
+    var strokePaths = stroke ? {
+      left: stroke.querySelector('.hero__stroke-line--left'),
+      right: stroke.querySelector('.hero__stroke-line--right')
+    } : null;
+    var label = hero.getAttribute('data-label') || '';
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var poems;
+
+    try {
+      poems = JSON.parse(data.textContent);
+    } catch (_) {
+      poems = [];
+    }
+    if (!Array.isArray(poems)) poems = [];
+
+    var clean = function (value) {
+      return typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : '';
+    };
+    var makeKey = function (poem) {
+      return poem.text + '|' + poem.source;
+    };
+    var currentKey = clean(quote.textContent) + '|' + clean(source.textContent).replace(/^——\s*/, '');
+    var busy = false;
+    var feedbackTimer = 0;
+
+    var syncStrokeGeometry = function () {
+      if (!stroke || !strokePaths || !strokePaths.left || !strokePaths.right) return;
+
+      var bounds = hero.getBoundingClientRect();
+      var width = Math.max(1, bounds.width);
+      var height = Math.max(1, bounds.height);
+      var inset = 0.75;
+      var styles = window.getComputedStyle(hero);
+      var radius = parseFloat(styles.borderTopLeftRadius) || 0;
+      radius = Math.max(0, Math.min(radius, (width / 2) - inset, (height / 2) - inset));
+
+      var leftPath = [
+        'M', width / 2, height - inset,
+        'L', radius + inset, height - inset,
+        'Q', inset, height - inset, inset, height - radius - inset,
+        'L', inset, radius + inset,
+        'Q', inset, inset, radius + inset, inset,
+        'L', width / 2, inset
+      ].join(' ');
+      var rightPath = [
+        'M', width / 2, height - inset,
+        'L', width - radius - inset, height - inset,
+        'Q', width - inset, height - inset, width - inset, height - radius - inset,
+        'L', width - inset, radius + inset,
+        'Q', width - inset, inset, width - radius - inset, inset,
+        'L', width / 2, inset
+      ].join(' ');
+
+      stroke.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+      strokePaths.left.setAttribute('d', leftPath);
+      strokePaths.right.setAttribute('d', rightPath);
+    };
+
+    syncStrokeGeometry();
+    if (typeof window.ResizeObserver === 'function') {
+      var strokeResizeObserver = new window.ResizeObserver(syncStrokeGeometry);
+      strokeResizeObserver.observe(hero);
+    } else {
+      window.addEventListener('resize', syncStrokeGeometry, { passive: true });
+    }
+
+    var normalizePoem = function (payload) {
+      var poem = payload && payload.data ? payload.data : payload;
+      if (!poem) return null;
+
+      var lines = Array.isArray(poem.content)
+        ? poem.content
+        : clean(poem.content).split(/\r?\n/);
+      var text = '';
+      for (var index = 0; index < lines.length; index += 1) {
+        text = clean(lines[index]);
+        if (text) break;
+      }
+
+      var author = poem.author && typeof poem.author === 'object'
+        ? clean(poem.author.name)
+        : clean(poem.author);
+      var title = clean(poem.title);
+      if (!text || !author || !title) return null;
+
+      return {
+        text: text,
+        source: author + '《' + title + '》'
+      };
+    };
+
+    var localPoem = function () {
+      var candidates = poems.filter(function (poem) {
+        return clean(poem.text) && clean(poem.source) && makeKey(poem) !== currentKey;
+      });
+      if (!candidates.length) return poems[0] || null;
+      return candidates[Math.floor(Math.random() * candidates.length)];
+    };
+
+    var setPoem = function (poem) {
+      quote.textContent = poem.text;
+      source.textContent = '—— ' + poem.source;
+      currentKey = makeKey(poem);
+      hero.setAttribute('aria-label', label + '。' + poem.text + ' ' + poem.source);
+    };
+
+    var beginFeedback = function () {
+      hero.classList.add('is-fetching');
+      if (reduceMotion) return;
+
+      hero.classList.remove('is-ink-rising');
+      void hero.offsetWidth;
+      hero.classList.add('is-ink-rising');
+
+      if (feedbackTimer) window.clearTimeout(feedbackTimer);
+      feedbackTimer = window.setTimeout(function () {
+        hero.classList.remove('is-ink-rising');
+        feedbackTimer = 0;
+      }, 760);
+    };
+
+    var revealPoem = function (poem, done) {
+      if (!poem) {
+        done();
+        return;
+      }
+      if (reduceMotion) {
+        setPoem(poem);
+        done();
+        return;
+      }
+
+      hero.classList.remove('is-leaving', 'is-entering');
+      void hero.offsetWidth;
+      hero.classList.add('is-leaving');
+
+      window.setTimeout(function () {
+        setPoem(poem);
+        hero.classList.remove('is-leaving');
+        hero.classList.add('is-entering');
+      }, 160);
+
+      window.setTimeout(function () {
+        hero.classList.remove('is-entering');
+        done();
+      }, 500);
+    };
+
+    var finish = function (poem) {
+      revealPoem(poem || localPoem(), function () {
+        hero.classList.remove('is-fetching');
+        busy = false;
+        hero.setAttribute('aria-busy', 'false');
+      });
+    };
+
+    var requestPoem = function () {
+      if (busy) return;
+      busy = true;
+      hero.setAttribute('aria-busy', 'true');
+      beginFeedback();
+
+      var enabled = hero.getAttribute('data-api-enabled') === 'true';
+      var endpoint = clean(hero.getAttribute('data-api-endpoint'));
+      if (!enabled || !endpoint || typeof window.fetch !== 'function') {
+        finish(localPoem());
+        return;
+      }
+
+      var url;
+      try {
+        url = new URL(endpoint, window.location.href);
+        var lang = clean(hero.getAttribute('data-api-lang'));
+        if (lang) url.searchParams.set('lang', lang);
+      } catch (_) {
+        finish(localPoem());
+        return;
+      }
+
+      var controller = typeof AbortController === 'function' ? new AbortController() : null;
+      var timeout = controller ? window.setTimeout(function () { controller.abort(); }, 2500) : 0;
+      var options = {
+        headers: { Accept: 'application/json' },
+        credentials: 'omit',
+        referrerPolicy: 'no-referrer'
+      };
+      if (controller) options.signal = controller.signal;
+
+      window.fetch(url.toString(), options)
+        .then(function (response) {
+          if (!response.ok) throw new Error('Poetry API request failed');
+          return response.json();
+        })
+        .then(function (payload) {
+          var poem = normalizePoem(payload);
+          if (!poem || makeKey(poem) === currentKey) poem = localPoem();
+          finish(poem);
+        })
+        .catch(function () { finish(localPoem()); })
+        .finally(function () {
+          if (timeout) window.clearTimeout(timeout);
+        });
+    };
+
+    hero.addEventListener('click', requestPoem);
+  })();
+</script>

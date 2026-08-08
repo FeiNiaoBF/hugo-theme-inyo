@@ -1,5 +1,49 @@
 {{ define "main" }}
-<div class="hero" aria-hidden="true" data-banner="{{ site.Params.subtitle | default site.Title }}"></div>
+{{- $poems := hugo.Data.inyo.hero_poems.poems -}}
+{{- if not $poems -}}
+  {{- $poems = slice (dict "text" (site.Params.subtitle | default site.Title) "source" site.Title) -}}
+{{- end -}}
+{{- $initial := index $poems 0 -}}
+{{- $apiEnabled := false -}}
+{{- $apiEndpoint := "" -}}
+{{- $apiLang := "zh-Hans" -}}
+{{- with site.Params.heroPoetry.api -}}
+  {{- $apiEnabled = .enabled | default false -}}
+  {{- $apiEndpoint = .endpoint | default "" -}}
+  {{- $apiLang = .lang | default "zh-Hans" -}}
+{{- end -}}
+{{- $heroLabel := i18n "hero_poetry_label" | default "切换首页诗句" -}}
+<button
+  class="hero"
+  id="hero-poetry"
+  type="button"
+  aria-label="{{ $heroLabel }}。{{ $initial.text }} {{ $initial.source }}"
+  aria-busy="false"
+  data-label="{{ $heroLabel }}"
+  data-api-enabled="{{ $apiEnabled }}"
+  data-api-endpoint="{{ $apiEndpoint }}"
+  data-api-lang="{{ $apiLang }}">
+  <span class="hero__copy" aria-live="polite" aria-atomic="true">
+    <span class="hero__quote">{{ $initial.text }}</span>
+    <span class="hero__source">—— {{ $initial.source }}</span>
+  </span>
+  <svg
+    class="hero__stroke"
+    viewBox="0 0 100 100"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+    focusable="false">
+    <path
+      class="hero__stroke-line hero__stroke-line--left"
+      d="M 50 99 L 10 99 Q 2 99 2 91 L 2 9 Q 2 1 10 1 L 50 1"
+      pathLength="1" />
+    <path
+      class="hero__stroke-line hero__stroke-line--right"
+      d="M 50 99 L 90 99 Q 98 99 98 91 L 98 9 Q 98 1 90 1 L 50 1"
+      pathLength="1" />
+  </svg>
+</button>
+<script type="application/json" id="hero-poetry-data">{{ $poems | jsonify | safeJS }}</script>
 
 {{ $all := where site.RegularPages "Section" "in" (site.Params.mainSections | default (slice "posts")) }}
 {{ if eq (len $all) 0 }}

@@ -5,5 +5,8 @@ webfonts = true
 subtitle = ""
 mainSections = ["posts"]
 ogImage = "img/seal-yang.svg"
-heroImage = "img/hero-beauty.jpg"
-heroImageQuality = 72
+
+[heroPoetry.api]
+enabled = false
+endpoint = "https://poetry.palemoky.com/api/poems/random"
+lang = "zh-Hans"

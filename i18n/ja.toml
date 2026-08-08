@@ -57,3 +57,5 @@ other = "この頁は散り失せ、墨はまだ落ちていない。"
 
 [notfound_hint]
 other = "リンクが変わったか、或いは文はまだ硯のほとりにある。"
+[hero_poetry_label]
+other = "ホームの詩句を切り替える"

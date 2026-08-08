@@ -58,3 +58,5 @@ other = "此页纸已散佚，笔墨未落。"
 
 [notfound_hint]
 other = "链接可能已更改，或内容尚在砚台边。"
+[hero_poetry_label]
+other = "切换首页诗句"

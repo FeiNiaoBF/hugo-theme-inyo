@@ -59,3 +59,5 @@ other = "This page has drifted away, like ink not yet set."
 
 [notfound_hint]
 other = "The link may have changed, or the writing still sits at the inkstone."
+[hero_poetry_label]
+other = "Show another homepage poem"

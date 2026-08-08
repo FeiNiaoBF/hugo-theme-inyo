@@ -16,6 +16,9 @@ path = "github.com/FeiNiaoBF/hugo-theme-inyo"
 subtitle = "纸墨二元 · 落字有间"
 author = "Inyo"
 
+[params.heroPoetry.api]
+enabled = true
+
 [markup]
 _merge = "deep"
 [markup.goldmark]
