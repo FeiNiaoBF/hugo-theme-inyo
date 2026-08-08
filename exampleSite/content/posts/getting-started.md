@@ -2,6 +2,7 @@
 title: "主题入门"
 date: 2026-08-07
 description: "用 Hugo Modules 在五分钟内安装 Inyo，并确认主题已经正确工作。"
+summary: "本文带你用 Hugo Modules 在五分钟内安装 Inyo、启动本地预览并完成第一次构建。随后可以继续查阅配置、写作、定制和发布文档。"
 categories: ["文档"]
 tags: ["Inyo", "安装", "入门"]
 aliases:

@@ -1,10 +1,9 @@
-{{/* summary.html — 显示宽度感知的摘要截断（算法版 v4）
-   摘要源: 正文第一个 <p> 段落（语义最干净，排除标题/frontmatter/代码块）
+{{/* summary.html — 显示宽度感知的摘要截断（算法版 v5）
+   摘要源: Hugo .Summary（<!--more--> → front matter summary → 自动摘要）
    算法: CJK/全角 = 2 全宽单位（UTF-8 字节 ≥3）, ASCII/半角 = 1
    长度: 140 全宽单位 ≈ 3 行（47 单位/行 × 3 行, Inyo 容器 43em 实测）
    基准: pianpker 实测摘要 121–123 全宽单位 ≈ 3 行
-   回退链: .Description → 正文第一段 → .Summary
-   ⚠️ 陷阱: findRE 的 . 不匹配换行, 段内软换行会导致跳过整段 → 用 [\s\S]
+   回退链: .Summary → .Description
    使用: {{ partial "summary.html" . }} */}}
 {{ $text := partial "summary-source.html" . }}
 

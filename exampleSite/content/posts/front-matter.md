@@ -2,6 +2,7 @@
 title: "Front Matter 指南"
 date: 2026-08-07
 description: "使用最小而清晰的 Front Matter 控制文章标题、摘要、标签、日期和数学公式。"
+summary: "本文提供一份可复制的 Inyo 文章 Front Matter 模板，并解释标题、日期、摘要、分类与标签的页面影响。你还会看到页面级数学开关、图片替代文本和 SEO 字段的推荐写法。"
 categories: ["文档"]
 tags: ["写作", "Front Matter", "SEO"]
 ---
@@ -90,4 +91,3 @@ Markdown 图片的方括号内容就是替代文本：
 - 查看这些字段实际如何渲染：打开[功能展厅](/posts/markdown-style-guide/)。
 - 调整站点参数：阅读[配置参考](/posts/configuration-reference/)。
 - 发布前逐项检查：阅读[发布清单](/posts/release-checklist/)。
-
