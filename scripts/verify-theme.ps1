@@ -14,6 +14,14 @@ function Assert-NotContains($Path, $Pattern, $Message) {
   if ($text -match $Pattern) { throw $Message }
 }
 
+function Assert-FileExists($Path, $Message) {
+  if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw $Message }
+}
+
+function Assert-FileMissing($Path, $Message) {
+  if (Test-Path -LiteralPath $Path) { throw $Message }
+}
+
 function Assert-ExternalTargetsSafe($Path, $Message) {
   $text = Get-Content -Raw $Path
   $links = [regex]::Matches($text, '<a\b[^>]*target=("|''|)?_blank("|''|)?[^>]*>')
@@ -34,24 +42,72 @@ function Assert-ImagesHaveAlt($Path, $Message) {
   }
 }
 
+function Assert-HasLongCatalogSummary($Path, $MinimumChars, $Message) {
+  $text = Get-Content -Raw $Path
+  $summaries = [regex]::Matches($text, '<p\b[^>]*class=("|''|)?catalog-summary\1[^>]*>(.*?)</p>', 'Singleline')
+  foreach ($summary in $summaries) {
+    $plain = [System.Net.WebUtility]::HtmlDecode(([regex]::Replace($summary.Groups[2].Value, '<[^>]+>', ''))).Trim()
+    if ($plain.Length -ge $MinimumChars) { return }
+  }
+  throw $Message
+}
+
 $themeParamsConfig = Join-Path $repoRoot "config\_default\params.toml"
 $themeMarkupConfig = Join-Path $repoRoot "config\_default\markup.toml"
 $exampleConfig = Join-Path $exampleSite "hugo.toml"
 $demoPosts = Join-Path $exampleSite "content\posts"
+$heroPoemsData = Join-Path $repoRoot "data\inyo\hero_poems.toml"
+$apiFixture = Join-Path $repoRoot "scripts\fixtures\chinese-poetry-api-random.json"
+$oldHeroPartial = Join-Path $repoRoot "layouts\partials\inky-overlay.html"
+$oldHeroAsset = Join-Path $repoRoot "assets\img\hero-beauty.jpg"
+$designDoc = Join-Path $repoRoot "DESIGN.md"
+$readme = Join-Path $repoRoot "README.md"
+$agentsDoc = Join-Path $repoRoot "AGENTS.md"
 $inyoSkill = Join-Path $repoRoot ".pi\skills\inyo-theme-development\SKILL.md"
 $skillFiles = Get-ChildItem (Join-Path $repoRoot ".pi\skills") -Recurse -Filter "SKILL.md" -File
 Assert-Contains $themeParamsConfig '(?m)^font\s*=\s*"wenkai"' "Config failure: theme default params must define the wenkai font."
 Assert-Contains $themeParamsConfig '(?m)^math\s*=\s*false' "Config failure: theme default params must disable math globally."
 Assert-Contains $themeParamsConfig '(?m)^webfonts\s*=\s*true' "Config failure: theme default params must enable webfonts."
 Assert-Contains $themeParamsConfig '(?m)^mainSections\s*=\s*\["posts"\]' "Config failure: theme default params must use posts as the main section."
-Assert-Contains $themeParamsConfig '(?m)^heroImageQuality\s*=\s*72' "Config failure: theme default params must set the Hero image quality."
+Assert-Contains $themeParamsConfig '(?ms)^\[heroPoetry\.api\].*?^enabled\s*=\s*false' "Config failure: the theme must disable the remote poetry API by default."
+Assert-Contains $themeParamsConfig '(?m)^endpoint\s*=\s*"https://poetry\.palemoky\.com/api/poems/random"' "Config failure: the theme must provide the current poetry API endpoint."
+Assert-Contains $themeParamsConfig '(?m)^lang\s*=\s*"zh-Hans"' "Config failure: the theme must default the poetry API to simplified Chinese."
+Assert-NotContains $themeParamsConfig '(?m)^heroImage(?:Quality)?\s*=' "Config failure: obsolete Hero image parameters remain in theme defaults."
+Assert-Contains $exampleConfig '(?ms)^\[params\.heroPoetry\.api\].*?^enabled\s*=\s*true' "Config failure: exampleSite must enable the optional poetry API."
+Assert-FileExists $heroPoemsData "Hero poetry failure: the local fallback data file is missing."
+Assert-FileExists $apiFixture "Hero poetry failure: the verified API response fixture is missing."
+Assert-FileMissing $oldHeroPartial "Hero poetry failure: obsolete inky-overlay.html still exists."
+Assert-FileMissing $oldHeroAsset "Hero poetry failure: obsolete hero-beauty.jpg still exists."
+$heroPoemsText = Get-Content -Raw $heroPoemsData
+$heroPoemBlocks = [regex]::Matches($heroPoemsText, '(?ms)^\[\[poems\]\]\s*(.*?)(?=^\[\[poems\]\]|\z)')
+if ($heroPoemBlocks.Count -lt 2) { throw "Hero poetry failure: local fallback data must contain at least two poems." }
+foreach ($poemBlock in $heroPoemBlocks) {
+  if ($poemBlock.Groups[1].Value -notmatch '(?m)^text\s*=\s*"[^"\r\n]+"' -or $poemBlock.Groups[1].Value -notmatch '(?m)^source\s*=\s*"[^"\r\n]+"') {
+    throw "Hero poetry failure: each local fallback must contain text and source."
+  }
+}
+$apiSample = Get-Content -Raw $apiFixture | ConvertFrom-Json
+if (-not $apiSample.data.title -or -not $apiSample.data.content[0] -or -not $apiSample.data.author.name) {
+  throw "Hero poetry failure: the API fixture does not preserve the verified title/content/author contract."
+}
 Assert-Contains $themeMarkupConfig '(?m)^_merge\s*=\s*"deep"' "Config failure: theme markup defaults must deep-merge with project markup settings."
 Assert-Contains $themeMarkupConfig '(?m)^\[highlight\]\s*\r?\nnoClasses\s*=\s*false' "Config failure: theme defaults must preserve class-based Chroma output."
 Assert-Contains $exampleConfig '(?m)^_merge\s*=\s*"deep"' "Config failure: exampleSite must deep-merge its Goldmark settings with theme markup defaults."
 Assert-Contains $inyoSkill 'config/_default/params\.toml' "Skill failure: Inyo development skill is missing the theme default config contract."
 Assert-Contains $inyoSkill 'scripts/verify-theme\.ps1' "Skill failure: Inyo development skill is missing the smoke verification command."
 Assert-Contains $inyoSkill '0\.164\.0' "Skill failure: Inyo development skill is out of sync with the Hugo baseline."
+Assert-Contains $inyoSkill '双翼墨线' "Skill failure: Inyo development skill is missing the current Hero motion contract."
+Assert-Contains $inyoSkill '顶部中央' "Skill failure: Inyo development skill is missing the closed Hero border geometry."
+Assert-Contains $inyoSkill '\.Summary' "Skill failure: Inyo development skill is missing the Hugo summary contract."
 Assert-NotContains $inyoSkill 'seal-yin\.svg' "Skill failure: Inyo development skill references a nonexistent seal-yin.svg asset."
+Assert-Contains $designDoc '朱红双翼墨线' "Design failure: DESIGN.md is missing the accepted Hero motion direction."
+Assert-Contains $designDoc '底部中央.*顶部中央' "Design failure: DESIGN.md does not describe the closed double-wing line geometry."
+Assert-Contains $readme '两阶段' "Documentation failure: README.md does not describe the immediate-feedback Hero flow."
+Assert-Contains $readme '顶部中央' "Documentation failure: README.md does not describe the closed Hero border geometry."
+Assert-Contains $readme '\.Summary' "Documentation failure: README.md does not describe catalog summary semantics."
+Assert-Contains $agentsDoc '双翼墨线' "Agent rules failure: AGENTS.md is missing the current Hero motion contract."
+Assert-Contains $agentsDoc '顶部中央' "Agent rules failure: AGENTS.md is missing the closed Hero border geometry."
+Assert-Contains $agentsDoc '\.Summary' "Agent rules failure: AGENTS.md is missing the Hugo summary contract."
 foreach ($skillFile in $skillFiles) {
   Assert-NotContains $skillFile.FullName 'xxd-(?:ui-token|brand-system|palette-applier|print-packaging)' "Skill failure: $($skillFile.FullName) references a project skill that does not exist."
 }
@@ -59,11 +115,11 @@ foreach ($skillFile in $skillFiles) {
 # Demo documentation contracts: keep the example site task-oriented and in sync with the current theme.
 $demoDocs = @(
   @{ Name = "getting-started"; Patterns = @('主题入门', 'Hugo Extended `0\.164\.0`', 'replace github\.com/FeiNiaoBF/hugo-theme-inyo', 'aliases:') },
-  @{ Name = "configuration-reference"; Patterns = @('配置参考', '参数 \| 默认值 \| 可选值 \| 作用 \| 作用范围', 'heroImageQuality') },
+  @{ Name = "configuration-reference"; Patterns = @('配置参考', '参数 \| 默认值 \| 可选值 \| 作用 \| 作用范围', 'heroPoetry\.api') },
   @{ Name = "front-matter"; Patterns = @('Front Matter 指南', 'math: true', '图片与可访问性') },
   @{ Name = "markdown-style-guide"; Patterns = @('功能展厅', '功能索引', 'data-kind="hook"') },
-  @{ Name = "customization"; Patterns = @('定制主题', '--seal-disc', 'Hero 只在首页加载') },
-  @{ Name = "release-checklist"; Patterns = @('发布清单', 'scripts/verify-theme\.ps1', 'git diff --check') }
+  @{ Name = "customization"; Patterns = @('定制主题', '--seal-disc', '双翼墨线', '\.Summary') },
+  @{ Name = "release-checklist"; Patterns = @('发布清单', 'scripts/verify-theme\.ps1', 'git diff --check', '100ms', '2–3 行') }
 )
 foreach ($demoDoc in $demoDocs) {
   $docPath = Join-Path $demoPosts ($demoDoc.Name + ".md")
@@ -71,6 +127,7 @@ foreach ($demoDoc in $demoDocs) {
   foreach ($pattern in $demoDoc.Patterns) {
     Assert-Contains $docPath $pattern "Demo docs failure: $($demoDoc.Name).md is missing $pattern."
   }
+  Assert-NotContains $docPath '<!--more-->' "Demo docs failure: $($demoDoc.Name).md contains a raw summary divider that shadows its front matter summary."
   Assert-Contains $docPath '## 下一步' "Demo docs failure: $($demoDoc.Name).md is missing its next-step navigation."
 }
 $oldGuidePath = Join-Path $demoPosts "theme-guide.md"
@@ -79,6 +136,12 @@ foreach ($stalePattern in @('0\.140\.0', 'hugo\.yaml', 'languageName', 'replacem
   foreach ($doc in $demoDocs) {
     $docPath = Join-Path $demoPosts ($doc.Name + ".md")
     Assert-NotContains $docPath $stalePattern "Demo docs failure: $($doc.Name).md contains stale configuration syntax $stalePattern."
+  }
+}
+foreach ($staleHeroPattern in @('heroImage', 'hero-beauty', 'inky-overlay', '墨滴涟漪')) {
+  foreach ($doc in $demoDocs) {
+    $docPath = Join-Path $demoPosts ($doc.Name + ".md")
+    Assert-NotContains $docPath $staleHeroPattern "Demo docs failure: $($doc.Name).md contains obsolete Hero material $staleHeroPattern."
   }
 }
 
@@ -103,6 +166,9 @@ $sealTemplate = Join-Path $repoRoot "layouts\partials\seal.html"
 $favicon = Join-Path $repoRoot "static\img\seal-yang.svg"
 $socialPartial = Join-Path $repoRoot "layouts\partials\social.html"
 $baseof = Join-Path $repoRoot "layouts\_default\baseof.html"
+$indexTemplate = Join-Path $repoRoot "layouts\index.html"
+$heroScript = Join-Path $repoRoot "layouts\partials\hero-poetry-script.html"
+$summarySource = Join-Path $repoRoot "layouts\partials\summary-source.html"
 $langPartial = Join-Path $repoRoot "layouts\partials\lang.html"
 $headingHook = Join-Path $repoRoot "layouts\_default\_markup\render-heading.html"
 
@@ -133,8 +199,21 @@ Assert-Contains $favicon 'stroke="#D92121"' "P2 failure: favicon lost its fixed 
 Assert-NotContains $favicon 'var\(--' "P2 failure: favicon unexpectedly depends on CSS variables."
 Assert-NotContains $socialPartial 'aria-label="RSS"' "P2 failure: all internal social links are incorrectly labeled as RSS."
 
-# P2 Task 2: Hero resource must be present only on the homepage.
-Assert-Contains $homePage '<[^>]+class=("|''|)?inky-overlay' "P2 failure: homepage is missing the Hero overlay."
+# Hero poetry: semantic, local-first, homepage-only, with the old image system fully removed.
+Assert-Contains $homePage '<button\b[^>]*class=("|''|)?hero(?:\s|"|''|>)' "Hero poetry failure: homepage is missing the semantic Hero button."
+Assert-Contains $homePage '<button\b[^>]*class=("|''|)?hero[^>]*\baria-label=("|''|)?[^"''>\s]+' "Hero poetry failure: Hero button is missing aria-label."
+Assert-NotContains $homePage 'aria-label=("|''|)?[^>]*。，' "Hero poetry failure: Hero button accessible name contains doubled punctuation."
+Assert-Contains $homePage '<button\b[^>]*class=("|''|)?hero[^>]*\baria-busy=("|''|)?false' "Hero poetry failure: Hero button is missing its initial aria-busy state."
+Assert-Contains $homePage 'class=("|''|)?hero__quote' "Hero poetry failure: homepage is missing the visible poem line."
+Assert-Contains $homePage 'class=("|''|)?hero__source' "Hero poetry failure: homepage is missing the visible poem source."
+Assert-Contains $homePage '<svg\b[^>]*class=("|''|)?hero__stroke[^>]*\baria-hidden=("|''|)?true' "Hero poetry failure: homepage is missing the decorative double-wing SVG."
+Assert-Contains $indexTemplate '(?s)<path\b[^>]*class="hero__stroke-line hero__stroke-line--left"[^>]*pathLength="1"' "Hero poetry failure: the left border path is missing."
+Assert-Contains $indexTemplate '(?s)<path\b[^>]*class="hero__stroke-line hero__stroke-line--right"[^>]*pathLength="1"' "Hero poetry failure: the right border path is missing."
+Assert-NotContains $indexTemplate 'hero__stroke-glow' "Hero poetry failure: the short glow path should be removed from the SVG."
+Assert-NotContains $indexTemplate '<line\b' "Hero poetry failure: the obsolete straight-line SVG geometry remains."
+Assert-Contains $homePage 'id=("|''|)?hero-poetry-data' "Hero poetry failure: homepage is missing serialized local fallback data."
+Assert-Contains $homePage 'https://poetry\.palemoky\.com/api/poems/random' "Hero poetry failure: homepage does not contain the configured optional API endpoint."
+Assert-NotContains $homePage 'inky-overlay|hero-beauty|heroImage' "Hero poetry failure: homepage still contains the obsolete image Hero system."
 Assert-NotContains $homePage '(?:fill|stroke)=("|''|)?#[0-9A-Fa-f]{3,8}' "P2 failure: generated homepage HTML contains a fixed-color inline Logo value."
 foreach ($nonHome in @(
   @{ Path = $article; Name = "article" },
@@ -144,9 +223,43 @@ foreach ($nonHome in @(
   @{ Path = $term; Name = "tag term" },
   @{ Path = $notFound; Name = "404" }
 )) {
-  Assert-NotContains $nonHome.Path '<[^>]+class=("|''|)?inky-overlay' "P2 failure: $($nonHome.Name) rendered the homepage-only Hero overlay."
-  Assert-NotContains $nonHome.Path 'hero-beauty|img/hero' "P2 failure: $($nonHome.Name) contains a Hero image path."
+  Assert-NotContains $nonHome.Path '<button\b[^>]*class=("|''|)?hero(?:\s|"|''|>)' "Hero poetry failure: $($nonHome.Name) rendered the homepage-only Hero."
+  Assert-NotContains $nonHome.Path 'hero-poetry-data|poetry\.palemoky\.com' "Hero poetry failure: $($nonHome.Name) contains the homepage-only poetry data or API script."
 }
+Assert-NotContains $css '\.inky-' "Hero poetry failure: obsolete inky component CSS remains."
+Assert-NotContains $baseof 'inky-overlay|hero-beauty|heroImage' "Hero poetry failure: base template still references the old image system."
+Assert-Contains $baseof '(?s)if\s+\.IsHome.*partial\s+"hero-poetry-script\.html"' "Hero poetry failure: poetry interaction script is not scoped to the homepage."
+Assert-Contains $heroScript 'addEventListener\(''click'',\s*requestPoem\)' "Hero poetry failure: Hero activation is not bound to the native button click seam."
+Assert-Contains $heroScript 'prefers-reduced-motion:\s*reduce' "Hero poetry failure: runtime interaction does not honor reduced motion."
+Assert-Contains $heroScript 'AbortController' "Hero poetry failure: remote poetry requests have no timeout controller."
+Assert-Contains $heroScript 'normalizePoem' "Hero poetry failure: remote API responses are not isolated behind an adapter."
+Assert-Contains $heroScript 'is-fetching' "Hero poetry failure: the interaction has no visible pending state."
+Assert-Contains $heroScript 'is-ink-rising' "Hero poetry failure: the interaction has no immediate double-wing ink state."
+Assert-Contains $heroScript 'getBoundingClientRect' "Hero poetry failure: border geometry is not based on the rendered Hero size."
+Assert-Contains $heroScript 'ResizeObserver' "Hero poetry failure: border geometry has no responsive resize observer."
+Assert-Contains $heroScript 'viewBox' "Hero poetry failure: the SVG viewBox is not synchronized with Hero dimensions."
+Assert-Contains $heroScript 'setAttribute\(''d''' "Hero poetry failure: the SVG border paths are not generated from measured geometry."
+Assert-NotContains $heroScript 'glowLeft|glowRight|hero__stroke-glow' "Hero poetry failure: the short glow path is still wired into the Hero script."
+Assert-Contains $heroScript '(?s)var requestPoem\s*=.*?beginFeedback\(\).*?window\.fetch' "Hero poetry failure: visual feedback does not begin before the remote request."
+Assert-Contains $heroScript '(?s)var finish\s*=.*?classList\.remove\(''is-fetching''\)' "Hero poetry failure: the pending state is not cleared after the poem reveal."
+Assert-NotContains $heroScript 'mouse(?:enter|over|move)' "Hero poetry failure: hover unexpectedly triggers JavaScript or API behavior."
+Assert-Contains $css '(?s)@media\s*\(hover:\s*hover\).*?\.hero:hover' "Hero poetry failure: pointer hover feedback is not capability-gated."
+Assert-Contains $css '(?s)@media\s*\(prefers-reduced-motion:\s*reduce\).*?\.hero__stroke' "Hero poetry failure: Hero animation has no reduced-motion CSS fallback."
+Assert-Contains $css '\.hero__stroke-line' "Hero poetry failure: double-wing core line styles are missing."
+Assert-Contains $css '@keyframes\s+hero-ink-rise' "Hero poetry failure: the rising ink animation is missing."
+Assert-Contains $css 'stroke-dashoffset' "Hero poetry failure: the border trace does not animate its stroke offset."
+Assert-Contains $css '760ms' "Hero poetry failure: the closed border trace does not use the approved duration."
+Assert-NotContains $css 'hero-ink-(?:rise|glow)[^}]*infinite' "Hero poetry failure: the border trace must not loop continuously."
+Assert-NotContains $css 'hero__stroke-glow|hero-ink-glow|stroke-dasharray\s*:\s*\.08\s+\.92' "Hero poetry failure: the short glow animation still exists."
+Assert-Contains $css '(?s)\.hero__stroke-line\s*\{[^}]*stroke:\s*var\(--cinnabar\)' "Hero poetry failure: the double-wing line does not use the cinnabar token."
+Assert-NotContains $css '@keyframes\s+hero-ink-stroke' "Hero poetry failure: the obsolete horizontal ink-stroke animation remains."
+Assert-NotContains $designDoc '短光头|光晕只播放一次' "Documentation failure: DESIGN.md still promises the removed short glow effect."
+Assert-NotContains $releaseChecklist '短光头|光晕' "Documentation failure: release checklist still promises the removed short glow effect."
+
+# Catalog summaries: respect Hugo summary semantics before falling back to metadata description.
+Assert-Contains $summarySource '(?s)\.Summary.*?\.Description' "Summary failure: Hugo .Summary must take precedence over .Description."
+Assert-NotContains $summarySource 'findRE\s+"<p' "Summary failure: the theme still limits previews to the first paragraph."
+Assert-HasLongCatalogSummary $homePage 60 "Summary failure: homepage previews are still limited to short single-sentence descriptions."
 
 # P2 Task 3: generated-output accessibility and localization contracts.
 $pages = @(
@@ -175,7 +288,7 @@ Assert-Contains $headingHook 'i18n\s+"heading_anchor"' "P2 failure: heading anch
 $requiredI18nKeys = @(
   "home", "posts", "about", "prev", "back", "next", "read_more", "tag", "tags",
   "date_format", "reading_time", "no_posts", "skip_to_content", "toggle_theme",
-  "site_navigation", "language", "heading_anchor", "tag_count", "notfound_msg", "notfound_hint"
+  "site_navigation", "language", "heading_anchor", "hero_poetry_label", "tag_count", "notfound_msg", "notfound_hint"
 )
 foreach ($locale in @("zh-cn", "en", "ja")) {
   $localePath = Join-Path $repoRoot "i18n\$locale.toml"
