@@ -55,6 +55,70 @@ url = "https://github.com/FeiNiaoBF/hugo-theme-inyo"
 
 `ogImage` 读取 `static/` 路径；`heroImage` 读取 `assets/` 路径并由 Hugo 在构建期处理。不要把两类资源放反。
 
+### 完整 hugo.yaml 示例（推荐）
+
+Hugo 官方文档与主流主题（如 PaperMod）都推荐 **YAML** 格式——更易读、注释友好，适合整份复制后按需调整。新建站点时可直接复制下面整份文件：
+
+```yaml
+# ============ 站点基础 ============
+baseURL: "https://example.org/"        # 发布域名（必填，协议+斜杠结尾）
+title: "Inyo 陰陽"                      # 站点名（身份栏大字 + 浏览器标题）
+defaultContentLanguage: "zh-cn"        # 默认语言
+enableRobotsTXT: true                  # 生成 robots.txt
+
+# ============ 主题模块 ============
+module:
+  imports:
+    - path: github.com/FeiNiaoBF/hugo-theme-inyo
+
+# ============ 多语言（可选，去掉注释启用） ============
+# languages:
+#   zh-cn:
+#     languageName: 中文
+#     weight: 1
+#   en:
+#     languageName: English
+#     weight: 2
+
+# ============ Markdown 渲染 ============
+markup:
+  _merge: "deep"                       # 保留主题的代码高亮默认值
+  goldmark:
+    renderer:
+      unsafe: true                     # 允许内联 HTML（<mark>/<kbd>/<figure> 必需）
+    parser:
+      attribute:
+        block: true                    # 块级属性（标题/段落自定义类）
+
+# ============ 主题参数 ============
+params:
+  # --- 字体 ---
+  font: "wenkai"                       # wenkai 霞鹜文楷（默认，自托管分片）/ serif 思源宋体（CDN）
+  webfonts: true                       # false 则用系统字体栈（加载更快）
+
+  # --- 站名与签名 ---
+  subtitle: "纸墨二元 · 落字有间"        # 身份栏站名下的气质签名
+
+  # --- 作者（SEO） ---
+  author: "Inyo"                       # Person schema + 文章页作者信息
+
+  # --- 数学公式 ---
+  math: true                           # 启用 KaTeX（CDN 按需加载）
+
+  # --- 墨滴涟漪背景图（特色交互） ---
+  heroImage: "img/hero-beauty.jpg"     # assets/ 内路径，构建期自动转 1600w WebP
+  heroImageQuality: 72                 # WebP 压缩质量
+
+  # --- 社交链接（右侧身份栏） ---
+  social:
+    - name: "GitHub"
+      url: "https://github.com/FeiNiaoBF/hugo-theme-inyo"
+    - name: "RSS"
+      url: "/index.xml"
+```
+
+以上示例**已用 Hugo 实测可构建**（Module 方式，含主题模块导入与全部参数），可直接复制使用。
+
 ## Markdown 与代码高亮
 
 站点配置使用：
