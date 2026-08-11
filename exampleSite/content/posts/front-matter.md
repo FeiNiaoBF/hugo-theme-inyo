@@ -33,8 +33,8 @@ Hugo 也支持 TOML 和 JSON，但同一篇文章只使用一种格式。项目�
 |---|---|---|
 | `title` | `"文章标题"` | 文章页标题、目录标题、页面标题 |
 | `date` | `2026-08-07` | 日期显示、目录排序、文章元数据 |
-| `description` | `"一句话摘要"` | 目录摘要、`description`、OGP 和 Twitter 描述 |
-| `summary` | 一段文字 | 可显式提供 Hugo 摘要；未提供时主题按描述、首段和 Hugo 摘要回退 |
+| `description` | `"一句话摘要"` | SEO、OGP 和 Twitter 描述；当 Hugo `.Summary` 为空时也作为目录摘要回退 |
+| `summary` | 一段文字 | 显式提供 Hugo 摘要，优先用于首页目录和列表页 |
 | `categories` | `["随笔"]` | 分类整理和分类 taxonomy |
 | `tags` | `["Inyo"]` | 文章页标签、标签索引和标签详情页 |
 | `math` | `true` | 仅当前文章加载 KaTeX |
@@ -42,13 +42,9 @@ Hugo 也支持 TOML 和 JSON，但同一篇文章只使用一种格式。项目�
 
 ## 摘要写法
 
-目录摘要的回退顺序是：
+目录摘要优先读取 Hugo `.Summary`。你可以用 Front Matter `summary` 写两句导读，也可以使用 Hugo 的 `more` 手动摘要分隔符；没有显式摘要时，Hugo 会自动生成摘要。只有 `.Summary` 为空时，主题才使用 `description` 兜底。
 
-1. 当前页面的 `description`。
-2. 正文第一个有效段落。
-3. Hugo 生成的摘要。
-
-推荐为教程、发布说明和配置参考显式写 `description`，让首页目录在不打开全文时也能说明页面用途。
+推荐把更完整的导读写入 `summary`，把简短的一句话写入 `description`：前者服务首页阅读，后者服务 SEO 和社交卡片。
 
 ## 标签与分类
 
@@ -56,7 +52,7 @@ Hugo 也支持 TOML 和 JSON，但同一篇文章只使用一种格式。项目�
 
 ## 单篇启用数学公式
 
-主题默认关闭数学公式。只需要在当前文章开启：
+主题默认关闭数学公式。站点保持 `params.math = false` 时，只需要在当前文章开启：
 
 ```yaml
 math: true
@@ -75,6 +71,8 @@ $$
 ```
 
 不使用公式的页面不要开启 `math`，这样可以避免加载不需要的 KaTeX 资源。
+
+如果站点设置了 `params.math = true`，KaTeX 会在全站加载；页面的 `math: false` 不能覆盖这个全站开关。
 
 ## 图片与可访问性
 

@@ -64,6 +64,8 @@ lang = "zh-Hans"
 
 接口仅在用户主动交互后请求。超时、跨域失败、响应字段不完整或连续重复时，主题会静默改用本地诗句，不显示错误文案。
 
+接口响应需要提供 `content`、`author` 和 `title`，也可以像当前 fixture 一样包在 `data` 字段中。`content` 为数组时只取第一条非空诗句；当前 fixture 可在 `scripts/fixtures/chinese-poetry-api-random.json` 查看。
+
 “朱红双翼墨线”只在 Hero 横条内部发生：点击后两条线从底部中央沿底边、左右圆角和侧边上行，最后沿顶部边框在中央合墨；远程或本地诗句就绪后，旧句淡出，新句与作者出处依次落定。等待期间不会增加 loading 文案或图标，`prefers-reduced-motion: reduce` 下则直接替换文字。若要维护自己的本地诗句，可在站点覆盖同路径数据文件，并保持每条记录包含 `text` 与 `source`：
 
 ```toml

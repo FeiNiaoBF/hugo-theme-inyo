@@ -27,11 +27,11 @@ Hugo Modules 会把主题默认配置合并到站点配置中；站点配置优�
 | `font` | `"wenkai"` | `"wenkai"`、`"serif"` | 选择霞鹜文楷或思源宋体 | 全站 |
 | `webfonts` | `true` | `true`、`false` | 是否加载主题字体资源；关闭后使用系统字体栈 | 全站 |
 | `subtitle` | `""` | 字符串 | 身份栏标题下方的签名 | 全站 |
-| `math` | `false` | `true`、`false` | 全站加载 KaTeX；单篇文章可用 Front Matter 覆盖 | 全站 / 单页 |
+| `math` | `false` | `true`、`false` | 全站加载 KaTeX；站点关闭时，单篇文章可用 `math: true` 补充开启 | 全站 / 单页 |
 | `mainSections` | `["posts"]` | section 名称数组 | 决定首页目录展示哪些 section | 首页 |
 | `ogImage` | `"img/seal-yang.svg"` | `static/` 下的图片路径 | Open Graph 和 Twitter 分享图 | SEO |
 | `heroPoetry.api.enabled` | `false` | `true`、`false` | 是否在用户点击 Hero 后请求远程诗词 | 仅首页 |
-| `heroPoetry.api.endpoint` | 诗泉随机诗词接口 | 可返回兼容 JSON 的 URL | 远程随机诗词端点 | 仅首页 |
+| `heroPoetry.api.endpoint` | `https://poetry.palemoky.com/api/poems/random` | 可返回兼容 JSON 的 URL | 远程随机诗词端点 | 仅首页 |
 | `heroPoetry.api.lang` | `"zh-Hans"` | `"zh-Hans"`、`"zh-Hant"` | 传给诗词接口的语言参数 | 仅首页 |
 | `author` | 未设置 | 字符串 | 作者元数据和文章作者信息 | 站点 / 文章 |
 | `social` | 未设置 | `name`、`url` 对象数组 | 身份栏社交链接和 Schema `sameAs` | 全站 |
@@ -59,6 +59,20 @@ url = "https://github.com/FeiNiaoBF/hugo-theme-inyo"
 ```
 
 `ogImage` 读取 `static/` 路径。Hero 不再使用图片资源；本地诗句来自主题的 `data/inyo/hero_poems.toml`，即使远程接口关闭或失败也能正常交互。
+
+远程接口需要返回对象本身或 `data` 包装对象，并至少提供：
+
+```json
+{
+  "data": {
+    "content": ["第一条非空诗句"],
+    "author": { "name": "作者" },
+    "title": "作品名"
+  }
+}
+```
+
+主题只取 `content` 的第一条非空内容；缺少有效诗句、作者或作品名时，直接使用本地 fallback。完整 fixture 位于 `scripts/fixtures/chinese-poetry-api-random.json`。
 
 ### 可复制的 TOML 示例
 
@@ -93,7 +107,7 @@ _merge = "deep"
 unsafe = true
 ```
 
-远程 API 默认关闭。开启后，浏览器仅在用户点击首页 Hero 时发起请求；失败或超时会静默使用本地诗句。
+远程 API 默认关闭。开启后，浏览器仅在用户点击首页 Hero 时发起请求；失败、超时或响应不符合上述合同时会静默使用本地诗句。
 
 ## Markdown 与代码高亮
 
