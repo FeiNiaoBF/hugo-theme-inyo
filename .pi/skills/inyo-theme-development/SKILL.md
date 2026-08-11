@@ -43,6 +43,7 @@ exampleSite/
 - `config/_default/markup.toml`：保留 class-based Chroma；站点自己定义 `[markup]` 时必须使用 `_merge = "deep"`。
 - `exampleSite/hugo.toml`：可复制的消费者配置，站点标题、域名、语言、作者和社交链接由站点决定。
 - `hugo.toml`：主题元数据与 `module.hugoVersion.min = "0.164.0"`，不是站点身份配置。
+- `data/inyo/hero_poems.toml`：离线可用的 Hero 诗句 fallback；每条记录必须同时包含 `text` 与 `source`。
 
 ## 布局蒸馏
 
@@ -84,6 +85,7 @@ cd exampleSite && hugo mod tidy
 - 主题切换有 0.25s 过渡；浏览器实测切换后等待至少 400ms，再读取 computed style。
 - **防导航闪烁（FOUC）**：应用主题的脚本必须放 `head.html` 样式表之前（首帧前定主题）；`body` 末尾只保留切换绑定。若在 body 应用主题，暗色用户每次导航都会先闪浅色。
 - 非首页不渲染 Hero，不应出现本地诗句 JSON、诗词 API 地址或交互脚本。
+- 诗词 API 适配器只接受对象本身或 `data` 包装对象中的 `content`、`author` 与 `title`；只取第一条非空 `content`，缺字段必须回退本地数据。
 - `static/img/seal-yang.svg` 是 favicon 固定品牌色例外；网页内联 Logo 必须使用 CSS token。
 
 ## 发布流程
@@ -131,3 +133,4 @@ cd exampleSite && hugo mod tidy
 - **图形可见性铁律**：纯黑白图形在单一模式会隐形（白=纸色=背景）——需要固定浅色圆盘（如 `#F2EDE6`）承托，或加朱砂环
 - **动效**：优先 transform/opacity/filter 合成器属性；clip-path 动画有全屏重绘风险、mask-position 有圆心漂移坑（圆心=图像左上角+尺寸/2，动画尺寸时圆心会跑）；hover 触发动效必须 `hover:hover` 门控 + `prefers-reduced-motion` 降级
 - **诗句 Hero**：本地数据走 `data/inyo/hero_poems.toml`；远程 API 默认关闭，只在用户主动交互时请求，失败必须静默回退；点击后朱红双翼墨线沿 Hero 圆角边框从底部中央上行并在顶部中央合墨，内容就绪后再落字，并提供 reduced-motion 降级
+- **摘要链路**：目录/列表使用 `.Summary → .Description`；SEO description 使用 `.Description → .Summary`，二者不可在文档中混写。

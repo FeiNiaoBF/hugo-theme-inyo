@@ -27,6 +27,7 @@
 - `assets/css/main.css` — 唯一样式文件（token 段 + 组件段）
 - `config/_default/` — 主题可合并的运行时默认配置；站点身份、作者和社交链接由消费者配置
 - `layouts/` — baseof / index / single / list / partials / shortcodes
+- `data/inyo/` — 首页诗句的本地 fallback 数据
 - `static/img/` — 印章 SVG
 - `scripts/verify-theme.ps1` — Hugo 生成物、P1/P2、配置与 a11y smoke 门禁
 - `.pi/skills/` — 项目本地 pi skills；与本文件和 `DESIGN.md` 冲突时，以本文件和设计文档为准
@@ -38,7 +39,9 @@
 - 站点配置模板在 `exampleSite/hugo.toml`；如果站点自定义 `[markup]`，必须保留 `_merge = "deep"`
 - 每次改动至少运行：`hugo --source exampleSite --minify`、`pwsh -File scripts/verify-theme.ps1`、`git diff --check`
 - Hero 数据、API 地址和交互脚本只允许首页输出；远程诗词默认关闭且必须有本地 fallback；点击反馈使用沿 Hero 圆角边框从底部中央上行、在顶部中央合墨的双翼墨线，并提供 reduced-motion 降级
-- 目录摘要优先使用 Hugo `.Summary`，再由 `.Description` 兜底；保持 140 全宽单位与最多 3 行的阅读节奏
+- 目录摘要优先使用 Hugo `.Summary`（手动摘要、Front Matter `summary` 或自动摘要），仅在摘要为空时由 `.Description` 兜底；保持 140 全宽单位与最多 3 行的阅读节奏
+- SEO 的 `description` 元数据优先读取 `.Description`，再回退到同一摘要来源；不要把两条回退链混写
+- 诗词 API 适配器只接受对象本身或 `data` 包装对象中的 `content`、`author` 与 `title`；只取第一条非空 `content`，缺字段必须回退本地数据
 - `static/img/seal-yang.svg` 是没有 CSS 变量上下文的 favicon 固定品牌色例外
 
 ## 提交规范
