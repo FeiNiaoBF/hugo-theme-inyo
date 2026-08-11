@@ -19,7 +19,7 @@
 - 📦 **自托管字体**：霞鹜文楷 unicode-range 分片（OFL 1.1）随主题分发，零 CDN 依赖、无字体闪烁
 - 🔍 **SEO 元数据全家桶**：canonical / OpenGraph / Twitter Card / Person + BreadcrumbList JSON-LD / description 自动摘要兜底
 - ♿ **可访问性 WCAG AA**：skip link、全局焦点环、`prefers-reduced-motion`、ARIA 状态
-- 🧩 **内容系统**：标题锚点（hover 显示 #）、返回键、Hugo `.Summary` 优先的三行摘要（CJK=2/ASCII=1，140 全宽单位）、外链自动新窗口 + `rel=noopener`
+- 🧩 **内容系统**：标题锚点（hover 显示 #）、返回键、Hugo `.Summary` 优先的三行摘要（CJK=2/ASCII=1，140 全宽单位）、外链自动新窗口 + `rel="noopener noreferrer"`
 - 📄 **404 页**：纸墨叙事的「四〇四」引导页
 - ⚡ **性能**：图片懒加载（`loading=lazy` + LCP 首图保护）、首页脚本按页输出、字体防 FOUC、合成器属性动效
 
@@ -86,9 +86,9 @@ Hugo 官方建议把项目配置放在站点根目录的 `hugo.toml`，并且只
 font = "wenkai"
 # 是否加载 web 字体（false 则用系统字体栈）
 webfonts = true
-# 数学公式
-math = true
-# 单篇文章也可在 front matter 使用 math: true；默认关闭时按页加载 KaTeX
+# 数学公式（全站默认关闭）
+math = false
+# 全站关闭时，单篇文章也可在 front matter 使用 math: true 按页加载 KaTeX
 # 首页展示的 section
 mainSections = ["posts"]
 # 社交卡片图（不配置时默认使用 static/img/seal-yang.svg）
@@ -114,7 +114,9 @@ name = "RSS"
 url = "/index.xml"
 ```
 
-`math` 站点参数控制全局默认值，单篇 front matter 的 `math: true` 可单独启用 KaTeX。`ogImage` 未配置时使用双鱼太极 logo；`/tags/` 与 `/tags/<term>/` 由主题分别渲染标签计数和文章列表。
+`math` 站点参数控制全局默认值：设置为 `true` 会让所有页面加载 KaTeX；保持默认 `false` 时，单篇 front matter 的 `math: true` 才会单独启用 KaTeX。`ogImage` 未配置时使用双鱼太极 logo；`/tags/` 与 `/tags/<term>/` 由主题分别渲染标签计数和文章列表。
+
+远程诗词接口的最小响应合同是：对象本身或其 `data` 字段包含 `content`、`author` 和 `title`；`content` 可以是诗句数组，主题只取第一条非空诗句，作者与作品名组合为出处。响应不符合合同时会静默回退到 `data/inyo/hero_poems.toml`。
 
 ## 多语言
 
@@ -130,6 +132,8 @@ hugo-theme-inyo/
 ├── layouts/         # 模板（baseof/index/single/list + partials + _markup 渲染 hooks）
 ├── assets/css/      # main.css —— CSS 变量 token 体系
 ├── data/inyo/       # 首页 Hero 的本地诗句 fallback
+├── scripts/         # 生成物 smoke 检查与 API 响应 fixture
+├── .github/workflows/# Hugo 构建与 smoke CI 门禁
 ├── static/img/      # Logo SVG（双鱼太极，favicon 品牌色版）
 └── exampleSite/     # 演示站点（hugo server --source exampleSite）
 ```
@@ -158,7 +162,7 @@ pwsh -File scripts/verify-theme.ps1
 - 网页内联 Logo 使用 `assets/css/main.css` 的主题 token，亮暗模式自动适配。
 - `static/img/seal-yang.svg` 是 favicon 的固定品牌色版本；它没有 CSS 变量上下文，是明确记录的唯一例外。
 - 诗句 Hero 只在首页加载，远程 API 默认关闭且始终有本地 fallback；点击后先即时播放沿圆角边框的双翼墨线，再等待新诗句。
-- 文章列表优先使用 Hugo `.Summary`，支持 Front Matter `summary` 与 `<!--more-->`，`.Description` 仅作空摘要回退。
+- 文章列表优先使用 Hugo `.Summary`，支持 Front Matter `summary`、`<!--more-->` 和自动摘要；只有 `.Summary` 为空时才使用 `.Description`。
 - 发布前必须通过 Hugo 构建、P1/P2 smoke checks 和 GitHub Actions。
 
 ## 许可
