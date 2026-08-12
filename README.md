@@ -6,7 +6,7 @@
 
 ![Inyo 亮色模式截图](images/screenshot.png)
 
-发布基线：**v0.1.0** · Hugo Extended `>= 0.164.0` · Go `>= 1.26.1`（Hugo Modules）
+发布基线：**v0.1.0**（最新补丁 **v0.1.1**）· Hugo Extended `>= 0.164.0` · Go `>= 1.26.1`（Hugo Modules）
 
 ## 快速开始
 
