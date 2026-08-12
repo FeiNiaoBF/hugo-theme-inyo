@@ -18,6 +18,27 @@ function Assert-FileExists($Path, $Message) {
   if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw $Message }
 }
 
+function Assert-FileNotEmpty($Path, $Message) {
+  Assert-FileExists $Path $Message
+  if ((Get-Item -LiteralPath $Path).Length -le 0) { throw $Message }
+}
+
+function Assert-PngDimensions($Path, $MinimumWidth, $MinimumHeight, $ExactWidth, $ExactHeight, $Message) {
+  Assert-FileNotEmpty $Path $Message
+  $bytes = [System.IO.File]::ReadAllBytes($Path)
+  if ($bytes.Length -lt 24 -or $bytes[0] -ne 137 -or $bytes[1] -ne 80 -or $bytes[2] -ne 78 -or $bytes[3] -ne 71) {
+    throw ($Message + " The file is not a valid PNG.")
+  }
+  $width = ([int]$bytes[16] -shl 24) -bor ([int]$bytes[17] -shl 16) -bor ([int]$bytes[18] -shl 8) -bor [int]$bytes[19]
+  $height = ([int]$bytes[20] -shl 24) -bor ([int]$bytes[21] -shl 16) -bor ([int]$bytes[22] -shl 8) -bor [int]$bytes[23]
+  if ($width -lt $MinimumWidth -or $height -lt $MinimumHeight) {
+    throw ($Message + " Actual dimensions are " + $width + "x" + $height + ".")
+  }
+  if ($ExactWidth -gt 0 -and ($width -ne $ExactWidth -or $height -ne $ExactHeight)) {
+    throw ($Message + " Expected " + $ExactWidth + "x" + $ExactHeight + ", got " + $width + "x" + $height + ".")
+  }
+}
+
 function Assert-FileMissing($Path, $Message) {
   if (Test-Path -LiteralPath $Path) { throw $Message }
 }
@@ -55,6 +76,18 @@ function Assert-HasLongCatalogSummary($Path, $MinimumChars, $Message) {
 $themeParamsConfig = Join-Path $repoRoot "config\_default\params.toml"
 $themeMarkupConfig = Join-Path $repoRoot "config\_default\markup.toml"
 $exampleConfig = Join-Path $exampleSite "hugo.toml"
+$themeMetadata = Join-Path $repoRoot "theme.toml"
+$themeScreenshot = Join-Path $repoRoot "images\screenshot.png"
+$themeThumbnail = Join-Path $repoRoot "images\tn.png"
+$socialImage = Join-Path $repoRoot "static\img\seal-yang-og.png"
+$defaultArchetype = Join-Path $repoRoot "archetypes\default.md"
+$consumerSite = Join-Path $repoRoot "scripts\fixtures\consumer-site"
+$consumerConfig = Join-Path $consumerSite "hugo.toml"
+$consumerGoMod = Join-Path $consumerSite "go.mod"
+$consumerVerifier = Join-Path $repoRoot "scripts\verify-consumer.ps1"
+$workflow = Join-Path $repoRoot ".github\workflows\verify-theme.yml"
+$headPartial = Join-Path $repoRoot "layouts\partials\head.html"
+$baseof = Join-Path $repoRoot "layouts\_default\baseof.html"
 $demoPosts = Join-Path $exampleSite "content\posts"
 $heroPoemsData = Join-Path $repoRoot "data\inyo\hero_poems.toml"
 $apiFixture = Join-Path $repoRoot "scripts\fixtures\chinese-poetry-api-random.json"
@@ -65,6 +98,52 @@ $readme = Join-Path $repoRoot "README.md"
 $agentsDoc = Join-Path $repoRoot "AGENTS.md"
 $inyoSkill = Join-Path $repoRoot ".pi\skills\inyo-theme-development\SKILL.md"
 $skillFiles = Get-ChildItem (Join-Path $repoRoot ".pi\skills") -Recurse -Filter "SKILL.md" -File
+
+# P1 distribution contract: Hugo Themes metadata, preview assets, social image, and English onboarding.
+Assert-FileExists $themeMetadata "Distribution failure: theme.toml is missing."
+foreach ($field in @("name", "license", "licenselink", "description", "homepage", "tags", "features", "min_version")) {
+  Assert-Contains $themeMetadata ("(?m)^" + [regex]::Escape($field) + "\s*=") "Distribution failure: theme.toml is missing $field."
+}
+Assert-Contains $themeMetadata '(?m)^min_version\s*=\s*"0\.164\.0"' "Distribution failure: theme.toml must require Hugo 0.164.0."
+Assert-FileNotEmpty $themeScreenshot "Distribution failure: images/screenshot.png is missing or empty."
+Assert-FileNotEmpty $themeThumbnail "Distribution failure: images/tn.png is missing or empty."
+Assert-FileNotEmpty $socialImage "Distribution failure: static/img/seal-yang-og.png is missing or empty."
+Assert-PngDimensions $themeScreenshot 900 600 0 0 "Distribution failure: theme screenshot must be at least 900x600."
+Assert-PngDimensions $themeThumbnail 900 600 900 600 "Distribution failure: theme thumbnail must be exactly 900x600."
+Assert-PngDimensions $socialImage 1200 630 1200 630 "Distribution failure: social image must be exactly 1200x630."
+Assert-Contains $readme '(?m)^## English\s*$' "Documentation failure: README.md is missing the exact ## English heading."
+Assert-Contains $readme 'hugo mod get github\.com/FeiNiaoBF/hugo-theme-inyo' "Documentation failure: README.md is missing the Hugo Module install command."
+Assert-Contains $readme 'pwsh -File scripts/verify-consumer\.ps1' "Documentation failure: README.md is missing the consumer verification command."
+
+# P1 runtime configuration contracts.
+Assert-Contains $themeParamsConfig '(?m)^description\s*=\s*""' "Config failure: theme defaults must expose an empty site description."
+Assert-Contains $themeParamsConfig '(?m)^ogImage\s*=\s*"img/seal-yang-og\.png"' "SEO failure: the default social image must be the PNG asset."
+Assert-Contains $themeParamsConfig '(?ms)^\[navigation\].*?^tags\s*=\s*"tags".*?^about\s*=\s*"about"' "Navigation failure: default configurable tags/about paths are missing."
+Assert-Contains $exampleConfig '(?ms)^\[params\].*?^description\s*=\s*"[^"\r\n]+"' "SEO failure: exampleSite must provide a site description."
+Assert-Contains $headPartial 'partial\s+"summary-source\.html"' "SEO failure: head.html must reuse summary-source.html."
+Assert-Contains $headPartial 'site\.Params\.description' "SEO failure: head.html is missing the site description fallback."
+Assert-Contains $headPartial 'site\.Params\.subtitle' "SEO failure: head.html is missing the subtitle fallback."
+Assert-Contains $headPartial 'site\.Title' "SEO failure: head.html is missing the title fallback."
+Assert-NotContains $baseof 'site\.GetPage\s+"/(?:posts|tags|about)"' "Navigation failure: baseof.html still hard-codes a navigation path."
+Assert-Contains $baseof 'site\.Params\.mainSections' "Navigation failure: article navigation does not use mainSections."
+Assert-Contains $baseof 'site\.Params\.navigation\.tags' "Navigation failure: tags navigation is not configurable."
+Assert-Contains $baseof 'site\.Params\.navigation\.about' "Navigation failure: About navigation is not configurable."
+Assert-Contains $baseof 'aria-current="page"' "Navigation failure: active navigation does not expose aria-current."
+
+# P1 authoring and clean-consumer contracts.
+Assert-FileExists $defaultArchetype "Archetype failure: archetypes/default.md is missing."
+foreach ($field in @("title", "date", "description", "summary", "draft", "math", "categories", "tags")) {
+  Assert-Contains $defaultArchetype ("(?m)^" + [regex]::Escape($field) + "\s*=") "Archetype failure: default.md is missing $field."
+}
+Assert-Contains $defaultArchetype '(?s)^\+\+\+.*\+\+\+' "Archetype failure: default.md must use TOML front matter."
+Assert-NotContains $defaultArchetype 'hugo\.yaml|replacements\s*[:=]' "Archetype failure: default.md contains obsolete configuration syntax."
+Assert-FileExists $consumerConfig "Consumer failure: fixture hugo.toml is missing."
+Assert-FileExists $consumerGoMod "Consumer failure: fixture go.mod is missing."
+Assert-FileExists $consumerVerifier "Consumer failure: scripts/verify-consumer.ps1 is missing."
+Assert-Contains $consumerConfig '(?m)^mainSections\s*=\s*\["notes"\]' "Consumer failure: fixture must use notes as its main section."
+Assert-Contains $consumerConfig '(?m)^tag\s*=\s*"labels"' "Consumer failure: fixture must use labels as its tag taxonomy path."
+Assert-Contains $consumerGoMod 'replace github\.com/FeiNiaoBF/hugo-theme-inyo => \../\../\..' "Consumer failure: fixture must use the committed ../../.. module replacement."
+Assert-Contains $workflow 'scripts/verify-consumer\.ps1' "CI failure: consumer verification is not part of GitHub Actions."
 Assert-Contains $themeParamsConfig '(?m)^font\s*=\s*"wenkai"' "Config failure: theme default params must define the wenkai font."
 Assert-Contains $themeParamsConfig '(?m)^math\s*=\s*false' "Config failure: theme default params must disable math globally."
 Assert-Contains $themeParamsConfig '(?m)^webfonts\s*=\s*true' "Config failure: theme default params must enable webfonts."
@@ -95,6 +174,8 @@ Assert-Contains $themeMarkupConfig '(?m)^\[highlight\]\s*\r?\nnoClasses\s*=\s*fa
 Assert-Contains $exampleConfig '(?m)^_merge\s*=\s*"deep"' "Config failure: exampleSite must deep-merge its Goldmark settings with theme markup defaults."
 Assert-Contains $inyoSkill 'config/_default/params\.toml' "Skill failure: Inyo development skill is missing the theme default config contract."
 Assert-Contains $inyoSkill 'scripts/verify-theme\.ps1' "Skill failure: Inyo development skill is missing the smoke verification command."
+Assert-Contains $inyoSkill 'scripts/verify-consumer\.ps1' "Skill failure: Inyo development skill is missing the consumer verification command."
+Assert-Contains $inyoSkill 'seal-yang-og\.png' "Skill failure: Inyo development skill is missing the PNG social image contract."
 Assert-Contains $inyoSkill '0\.164\.0' "Skill failure: Inyo development skill is out of sync with the Hugo baseline."
 Assert-Contains $inyoSkill '双翼墨线' "Skill failure: Inyo development skill is missing the current Hero motion contract."
 Assert-Contains $inyoSkill '顶部中央' "Skill failure: Inyo development skill is missing the closed Hero border geometry."
@@ -119,7 +200,7 @@ $demoDocs = @(
   @{ Name = "front-matter"; Patterns = @('Front Matter 指南', 'math: true', '图片与可访问性') },
   @{ Name = "markdown-style-guide"; Patterns = @('功能展厅', '功能索引', 'data-kind="hook"') },
   @{ Name = "customization"; Patterns = @('定制主题', '--seal-disc', '双翼墨线', '\.Summary') },
-  @{ Name = "release-checklist"; Patterns = @('发布清单', 'scripts/verify-theme\.ps1', 'git diff --check', '100ms', '2–3 行') }
+  @{ Name = "release-checklist"; Patterns = @('发布清单', 'scripts/verify-theme\.ps1', 'scripts/verify-consumer\.ps1', 'git diff --check', '100ms', '2–3 行') }
 )
 foreach ($demoDoc in $demoDocs) {
   $docPath = Join-Path $demoPosts ($demoDoc.Name + ".md")
@@ -184,6 +265,14 @@ foreach ($demoPage in @(
   if (-not (Test-Path $demoPage.Path)) { throw "Demo docs failure: generated page is missing $($demoPage.Name)." }
 }
 Assert-Contains $legacyGuide 'getting-started|主题入门' "Demo docs failure: legacy theme-guide alias does not point to the renamed guide."
+
+# P1 generated SEO and navigation contracts.
+Assert-Contains $homePage '<meta\s+name=("|'')?description[^>]*content=("|'')?[^"''>\s]+' "SEO failure: homepage is missing a non-empty meta description."
+Assert-Contains $homePage '<meta\s+property=("|'')?og:description[^>]*content=("|'')?[^"''>\s]+' "SEO failure: homepage is missing a non-empty Open Graph description."
+Assert-Contains $homePage '<meta\s+name=("|'')?twitter:description[^>]*content=("|'')?[^"''>\s]+' "SEO failure: homepage is missing a non-empty Twitter description."
+Assert-Contains $article '<meta\s+name=("|'')?description[^>]*content=("|'')?用一篇真实页面检查' "SEO failure: article metadata no longer prefers the page description."
+Assert-Contains $homePage 'property=("|'')?og:image[^>]*seal-yang-og\.png' "SEO failure: homepage does not use the PNG social image."
+Assert-Contains $posts '<a\b[^>]*href=("|'')?/posts/[^>]*aria-current=("|'')?page' "Navigation failure: the posts page does not expose aria-current."
 
 # P2 Task 1: runtime color token discipline and the documented favicon exception.
 $componentCss = ([regex]::Match((Get-Content -Raw $css), '(?s)/\* ---------- 5\. 组件 ---------- \*/.*')).Value

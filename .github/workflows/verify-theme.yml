@@ -36,3 +36,24 @@ jobs:
       - name: Check diff whitespace
         shell: pwsh
         run: git diff --check
+
+  consumer:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Set up Hugo Extended
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.164.0"
+          extended: true
+
+      - name: Verify independent consumer
+        shell: pwsh
+        run: pwsh -File scripts/verify-consumer.ps1
