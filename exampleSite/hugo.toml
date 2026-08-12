@@ -13,6 +13,7 @@ weight = 1
 path = "github.com/FeiNiaoBF/hugo-theme-inyo"
 
 [params]
+description = "Inyo 是一个以纸墨、阴阳和中文阅读体验为核心的 Hugo 主题。"
 subtitle = "纸墨二元 · 落字有间"
 author = "Inyo"
 

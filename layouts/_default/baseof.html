@@ -15,10 +15,17 @@
       {{ with site.Params.subtitle }}<p class="identity-subtitle">{{ . }}</p>{{ end }}
 
       {{ $cur := .RelPermalink }}
+      {{ $mainSections := site.Params.mainSections | default (slice "posts") }}
+      {{ $mainSection := index $mainSections 0 }}
+      {{ $postsPage := site.GetPage (printf "/%s" $mainSection) }}
+      {{ $tagsPath := site.Params.navigation.tags | default "tags" }}
+      {{ $aboutPath := site.Params.navigation.about | default "about" }}
+      {{ $tagsPage := site.GetPage (printf "/%s" $tagsPath) }}
+      {{ $aboutPage := site.GetPage (printf "/%s" $aboutPath) }}
       <nav class="identity-nav" aria-label="{{ i18n "site_navigation" | default "Site navigation" }}">
-        {{ with site.GetPage "/posts" }}<a class="navlink{{ if hasPrefix $cur .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ i18n "posts" }}</a>{{ end }}
-        {{ with site.GetPage "/tags" }}<a class="navlink{{ if hasPrefix $cur .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ i18n "tags" }}</a>{{ end }}
-        {{ with site.GetPage "/about" }}<a class="navlink{{ if eq $cur .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ i18n "about" }}</a>{{ end }}
+        {{ with $postsPage }}{{ $active := hasPrefix $cur .RelPermalink }}<a class="navlink{{ if $active }} is-active{{ end }}" href="{{ .RelPermalink }}"{{ if $active }} aria-current="page"{{ end }}>{{ i18n "posts" }}</a>{{ end }}
+        {{ with $tagsPage }}{{ $active := hasPrefix $cur .RelPermalink }}<a class="navlink{{ if $active }} is-active{{ end }}" href="{{ .RelPermalink }}"{{ if $active }} aria-current="page"{{ end }}>{{ i18n "tags" }}</a>{{ end }}
+        {{ with $aboutPage }}{{ $active := eq $cur .RelPermalink }}<a class="navlink{{ if $active }} is-active{{ end }}" href="{{ .RelPermalink }}"{{ if $active }} aria-current="page"{{ end }}>{{ i18n "about" }}</a>{{ end }}
       </nav>
 
       <div class="identity-meta">

@@ -15,7 +15,9 @@
 
 {{/* ==== SEO 元数据（Google / OGP / Twitter）==== */}}
 {{ $summaryText := partial "summary-source.html" . }}
-{{ $desc := truncate 155 (or (.Description | plainify) $summaryText) }}
+{{ $pageDescription := .Description | plainify }}
+{{ $siteDescription := site.Params.description | default site.Params.subtitle | default site.Title | plainify }}
+{{ $desc := truncate 155 (or $pageDescription (or $summaryText $siteDescription)) }}
 {{ with $desc }}<meta name="description" content="{{ . }}">{{ end }}
 <link rel="canonical" href="{{ .Permalink }}">
 

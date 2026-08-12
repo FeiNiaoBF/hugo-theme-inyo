@@ -2,9 +2,14 @@
 font = "wenkai"
 math = false
 webfonts = true
+description = ""
 subtitle = ""
 mainSections = ["posts"]
-ogImage = "img/seal-yang.svg"
+ogImage = "img/seal-yang-og.png"
+
+[navigation]
+tags = "tags"
+about = "about"
 
 [heroPoetry.api]
 enabled = false
