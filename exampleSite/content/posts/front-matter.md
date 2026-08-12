@@ -9,6 +9,16 @@ tags: ["写作", "Front Matter", "SEO"]
 
 适合已经安装好主题，准备创建第一篇文章的作者。Front Matter 放在 Markdown 文件最顶部，用来告诉 Hugo 如何组织、摘要和渲染这篇内容。
 
+## 使用主题默认模板
+
+Inyo 提供 `archetypes/default.md`。在站点根目录运行：
+
+```powershell
+hugo new content posts/my-first-post.md
+```
+
+Hugo 会根据文件名和当前时间写入 TOML Front Matter，并预置 `description`、`summary`、`draft`、`math`、`categories` 和 `tags`。发布前将 `draft` 改为 `false`。
+
 ## 最小文章模板
 
 当前 Demo 使用 YAML Front Matter：
