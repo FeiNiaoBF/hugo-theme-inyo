@@ -1,7 +1,19 @@
-public/
-resources/
-.hugo_build.lock
-.DS_Store
-*.log
+# Hugo build output and caches (including exampleSite and committed fixtures).
+**/public/
+**/resources/
+**/.hugo_build.lock
 
+# Local notes and machine-specific files.
 .me/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs and editor/application temporary files.
+*.log
+*.tmp
+*.temp
+*.bak
+*.old
+*.swp
+*~

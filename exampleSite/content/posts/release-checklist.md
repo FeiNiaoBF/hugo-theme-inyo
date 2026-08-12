@@ -29,6 +29,16 @@ git diff --check
 
 GitHub Actions 会在 `push` 和 `pull_request` 上分别执行 Demo smoke 与独立 consumer smoke。CI 通过是发布主题前的必要门禁。
 
+Consumer smoke 还会用自定义的 `notes` section 和 `labels` taxonomy 构建一次站点，并覆盖 `/blog/` 子路径部署。需要单独复核时执行：
+
+```powershell
+hugo --source scripts/fixtures/consumer-site `
+     --baseURL "https://consumer.example/blog/" `
+     --minify
+```
+
+这次子路径检查应确认生成的 CSS 使用 `../fonts/` 加载自托管字体；不要把 `assets/css/wenkai.css` 改回根路径 `/fonts/...`。
+
 ## 模块发布检查
 
 如果你之前使用了本地主题替换，发布前确认模块配置指向远程仓库：
@@ -63,6 +73,9 @@ hugo mod tidy
 |---|---|
 | 代码高亮颜色异常 | 站点 `[markup]` 是否保留 `_merge = "deep"`，以及 `noClasses = false` |
 | 本地可以构建，CI 失败 | 是否残留本地模块替换、版本是否使用 Hugo Extended `0.164.0` |
+| Consumer 文章标签仍指向 `/tags/` | 检查 `params.navigation.tags`，标签链接不能在模板中硬编码 |
+| Consumer 404 仍指向 `/posts/` | 检查 `params.mainSections[0]`，404 返回入口不能固定文章 section |
+| `/blog/` 部署后字体丢失 | 检查 `assets/css/wenkai.css` 是否仍使用相对 `../fonts/` 路径 |
 | 文章没有公式 | 页面 Front Matter 是否写了 `math: true` |
 | Hero 在文章页出现 | 是否覆盖了 `baseof.html`，并把首页诗词 partial 放到了全站 |
 | 点击 Hero 没有远程诗句 | 检查 endpoint、CORS 和网络；本地 fallback 应仍然可用 |

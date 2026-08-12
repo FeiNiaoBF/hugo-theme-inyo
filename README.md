@@ -126,6 +126,8 @@ url = "/index.xml"
 
 `math` 站点参数控制全局默认值：设置为 `true` 会让所有页面加载 KaTeX；保持默认 `false` 时，单篇 front matter 的 `math: true` 才会单独启用 KaTeX。默认 `ogImage` 是 `static/img/seal-yang-og.png`；favicon 仍使用 `static/img/seal-yang.svg`。文章导航读取 `mainSections[0]`，标签与 About 路径由 `params.navigation` 控制。
 
+主题的文章标签链接会从 `params.navigation.tags` 推导，404 页面返回文章列表会从 `mainSections[0]` 推导，因此可以把文章 section 或标签 taxonomy 改成自定义路径。自托管字体使用相对于生成 CSS 的资源路径，根路径和 `/blog/` 等子路径部署都能加载；不要把字体 URL 改回 `/fonts/...`。
+
 远程诗词接口的最小响应合同是：对象本身或其 `data` 字段包含 `content`、`author` 和 `title`；`content` 可以是诗句数组，主题只取第一条非空诗句，作者与作品名组合为出处。响应不符合合同时会静默回退到 `data/inyo/hero_poems.toml`。
 
 ## 多语言
@@ -167,6 +169,16 @@ pwsh -File scripts/verify-theme.ps1
 pwsh -File scripts/verify-consumer.ps1
 git diff --check
 ```
+
+需要单独确认子路径部署时，可运行：
+
+```powershell
+hugo --source scripts/fixtures/consumer-site `
+     --baseURL "https://consumer.example/blog/" `
+     --minify
+```
+
+`scripts/verify-consumer.ps1` 已经将这项检查作为 consumer smoke 的一部分，并同时验证自定义 `notes` section、`labels` taxonomy、文章标签、404 返回链接和自托管字体。
 
 验证脚本会检查 P1/P2 生成物合同，包括 SEO、render hooks、颜色 token、首页 Hero 诗句、双翼 SVG、摘要语义、a11y 和三语 key。独立消费者 fixture 还会使用 `notes` section 和 `labels` taxonomy 验证主题没有依赖 Demo 的固定路径。Hero 交互只存在于首页，文章页不会输出本地诗句数据、API 地址或交互脚本。
 

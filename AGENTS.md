@@ -46,6 +46,8 @@
 - 诗词 API 适配器只接受对象本身或 `data` 包装对象中的 `content`、`author` 与 `title`；只取第一条非空 `content`，缺字段必须回退本地数据
 - `static/img/seal-yang.svg` 是没有 CSS 变量上下文的 favicon 固定品牌色例外
 - 默认 `ogImage` 使用 `static/img/seal-yang-og.png`；文章导航读取 `mainSections[0]`，标签和 About 路径读取 `params.navigation`
+- 文章标签链接必须从 `params.navigation.tags` 推导，404 文章入口必须从 `mainSections[0]` 推导；禁止恢复固定 `/tags/` 或 `/posts/` 路径
+- 自托管字体资源必须使用相对于生成 CSS 的路径，禁止使用假定根路径的绝对 `/fonts/` URL；`/blog/` 子路径部署必须通过 consumer smoke 验证
 
 ## 提交规范
 

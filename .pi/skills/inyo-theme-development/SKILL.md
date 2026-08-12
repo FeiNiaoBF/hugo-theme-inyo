@@ -58,7 +58,7 @@ exampleSite/
 - 新的列表条目 partial 只在标记被复用或形成稳定职责边界后提取，避免为单次调用制造碎片。
 - 需要用户定制时，优先提供小型 Hugo 覆盖 partial；不要为每个视觉细节增加配置开关。
 - **导航交互（pianpker 蒸馏）**：激活项 = 常驻下划线 + 加粗；hover = 下划线自左下扫入（`::after` + `transform-origin: bottom-right→bottom-left` + `scale-x 0→1`，≈300ms ease-out）；**暗色模式删除下划线**，改颜色 + 字重过渡。纯 CSS，零 JS。
-- **字体交付（pianpker 蒸馏，已实现）**：中文字体自托管——官方 `lxgw-wenkai-webfont` 包 vendor 进 `static/fonts/wenkai/`（`unicode-range` 分片 + `assets/css/wenkai.css`），零 CDN 依赖、无 FOUT。注意：Windows 上 `cn-font-split` 因 koffi/libffi 不可用，优先 vendor 官方分片包。
+- **字体交付（pianpker 蒸馏，已实现）**：中文字体自托管——官方 `lxgw-wenkai-webfont` 包 vendor 进 `static/fonts/wenkai/`（`unicode-range` 分片 + `assets/css/wenkai.css`），零 CDN 依赖、无 FOUT。字体 CSS 必须使用相对于生成 CSS 的 `../fonts/` 路径，确保根路径和 `/blog/` 子路径部署都能加载。注意：Windows 上 `cn-font-split` 因 koffi/libffi 不可用，优先 vendor 官方分片包。
 
 ## 精确命令（低自由度，照抄执行）
 
@@ -93,6 +93,7 @@ cd exampleSite && hugo mod tidy
 - 诗词 API 适配器只接受对象本身或 `data` 包装对象中的 `content`、`author` 与 `title`；只取第一条非空 `content`，缺字段必须回退本地数据。
 - `static/img/seal-yang.svg` 是 favicon 固定品牌色例外；网页内联 Logo 必须使用 CSS token。
 - 默认社交图使用 `static/img/seal-yang-og.png`；导航从 `mainSections[0]` 与 `params.navigation` 解析，禁止重新硬编码 `/posts`、`/tags`、`/about`。
+- 文章标签链接必须从 `params.navigation.tags` 推导，404 返回文章入口必须从 `mainSections[0]` 推导；所有自托管资源路径必须对子路径部署安全。
 
 ## 发布流程
 
@@ -125,6 +126,7 @@ cd exampleSite && hugo mod tidy
 - [ ] `hugo --source exampleSite --minify` 构建通过。
 - [ ] `pwsh -File scripts/verify-theme.ps1` 通过，且主题默认配置与项目 skill 合同存在。
 - [ ] `pwsh -File scripts/verify-consumer.ps1` 通过，独立 fixture 与动态 archetype 可用。
+- [ ] Consumer fixture 的 `notes` / `labels` 路径、文章标签、404 入口和 `/blog/` 字体加载均通过。
 - [ ] `git diff --check` 通过。
 - [ ] Hugo Extended `0.164.0` 与 Go `1.26.1` 和 CI 一致。
 - [ ] 首页包含 Hero，文章页、标签页、About、404 不包含 Hero。
