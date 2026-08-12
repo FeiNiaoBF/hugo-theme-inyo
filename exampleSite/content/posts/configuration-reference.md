@@ -26,10 +26,13 @@ Hugo Modules 会把主题默认配置合并到站点配置中；站点配置优�
 |---|---|---|---|---|
 | `font` | `"wenkai"` | `"wenkai"`、`"serif"` | 选择霞鹜文楷或思源宋体 | 全站 |
 | `webfonts` | `true` | `true`、`false` | 是否加载主题字体资源；关闭后使用系统字体栈 | 全站 |
+| `description` | `""` | 字符串 | 首页和缺少页面描述时的 SEO、Open Graph 与 Twitter 描述 | SEO |
 | `subtitle` | `""` | 字符串 | 身份栏标题下方的签名 | 全站 |
 | `math` | `false` | `true`、`false` | 全站加载 KaTeX；站点关闭时，单篇文章可用 `math: true` 补充开启 | 全站 / 单页 |
 | `mainSections` | `["posts"]` | section 名称数组 | 决定首页目录展示哪些 section | 首页 |
-| `ogImage` | `"img/seal-yang.svg"` | `static/` 下的图片路径 | Open Graph 和 Twitter 分享图 | SEO |
+| `ogImage` | `"img/seal-yang-og.png"` | `static/` 下的图片路径 | Open Graph 和 Twitter 分享图 | SEO |
+| `navigation.tags` | `"tags"` | 不带前导斜杠的路径 | 标签导航目标；页面不存在时不显示 | 全站导航 |
+| `navigation.about` | `"about"` | 不带前导斜杠的路径 | About 导航目标；页面不存在时不显示 | 全站导航 |
 | `heroPoetry.api.enabled` | `false` | `true`、`false` | 是否在用户点击 Hero 后请求远程诗词 | 仅首页 |
 | `heroPoetry.api.endpoint` | `https://poetry.palemoky.com/api/poems/random` | 可返回兼容 JSON 的 URL | 远程随机诗词端点 | 仅首页 |
 | `heroPoetry.api.lang` | `"zh-Hans"` | `"zh-Hans"`、`"zh-Hant"` | 传给诗词接口的语言参数 | 仅首页 |
@@ -40,13 +43,18 @@ Hugo Modules 会把主题默认配置合并到站点配置中；站点配置优�
 
 ```toml
 [params]
+description = "Inyo 是一个以纸墨、阴阳和中文阅读体验为核心的 Hugo 主题。"
 font = "wenkai"
 webfonts = true
 subtitle = "纸墨二元 · 落字有间"
 math = false
 mainSections = ["posts"]
-ogImage = "img/seal-yang.svg"
+ogImage = "img/seal-yang-og.png"
 author = "Inyo"
+
+[params.navigation]
+tags = "tags"
+about = "about"
 
 [params.heroPoetry.api]
 enabled = true
@@ -58,7 +66,9 @@ name = "GitHub"
 url = "https://github.com/FeiNiaoBF/hugo-theme-inyo"
 ```
 
-`ogImage` 读取 `static/` 路径。Hero 不再使用图片资源；本地诗句来自主题的 `data/inyo/hero_poems.toml`，即使远程接口关闭或失败也能正常交互。
+`ogImage` 读取 `static/` 路径，默认 PNG 用于兼容社交分享平台；favicon 仍使用固定品牌色 SVG。文章导航使用 `mainSections` 的第一项，标签和 About 导航读取 `params.navigation`，目标页面不存在时不会输出对应链接。Hero 不再使用图片资源；本地诗句来自主题的 `data/inyo/hero_poems.toml`，即使远程接口关闭或失败也能正常交互。
+
+SEO description 与首页文章摘要使用不同的回退链。页面元数据按页面 `.Description`、共享 `summary-source.html`、`params.description`、`subtitle`、站点标题依次回退；目录摘要继续由 `.Summary` 优先、`.Description` 兜底。
 
 远程接口需要返回对象本身或 `data` 包装对象，并至少提供：
 
@@ -92,8 +102,13 @@ weight = 1
 path = "github.com/FeiNiaoBF/hugo-theme-inyo"
 
 [params]
+description = "Inyo 是一个以纸墨、阴阳和中文阅读体验为核心的 Hugo 主题。"
 subtitle = "纸墨二元 · 落字有间"
 author = "Inyo"
+
+[params.navigation]
+tags = "tags"
+about = "about"
 
 [params.heroPoetry.api]
 enabled = false

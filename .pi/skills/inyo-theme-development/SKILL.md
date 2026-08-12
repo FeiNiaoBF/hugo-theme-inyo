@@ -29,9 +29,11 @@ config/_default/{params.toml,markup.toml}
 layouts/{_default,partials}/
 assets/css/main.css
 data/inyo/hero_poems.toml
-static/{fonts/wenkai,img/seal-yang.svg}
+static/{fonts/wenkai,img/seal-yang.svg,img/seal-yang-og.png}
+archetypes/default.md
 i18n/{en.toml,zh-cn.toml,ja.toml}
 scripts/verify-theme.ps1
+scripts/verify-consumer.ps1
 .github/workflows/verify-theme.yml
 .pi/skills/xxd-*/
 exampleSite/
@@ -67,6 +69,9 @@ hugo --source exampleSite --minify
 # P1/P2、配置、a11y、Hero 诗词和生成物合同
 pwsh -File scripts/verify-theme.ps1
 
+# 独立消费者、可配置导航和 archetype 合同
+pwsh -File scripts/verify-consumer.ps1
+
 # 空白字符检查
 git diff --check
 
@@ -87,6 +92,7 @@ cd exampleSite && hugo mod tidy
 - 非首页不渲染 Hero，不应出现本地诗句 JSON、诗词 API 地址或交互脚本。
 - 诗词 API 适配器只接受对象本身或 `data` 包装对象中的 `content`、`author` 与 `title`；只取第一条非空 `content`，缺字段必须回退本地数据。
 - `static/img/seal-yang.svg` 是 favicon 固定品牌色例外；网页内联 Logo 必须使用 CSS token。
+- 默认社交图使用 `static/img/seal-yang-og.png`；导航从 `mainSections[0]` 与 `params.navigation` 解析，禁止重新硬编码 `/posts`、`/tags`、`/about`。
 
 ## 发布流程
 
@@ -118,6 +124,7 @@ cd exampleSite && hugo mod tidy
 
 - [ ] `hugo --source exampleSite --minify` 构建通过。
 - [ ] `pwsh -File scripts/verify-theme.ps1` 通过，且主题默认配置与项目 skill 合同存在。
+- [ ] `pwsh -File scripts/verify-consumer.ps1` 通过，独立 fixture 与动态 archetype 可用。
 - [ ] `git diff --check` 通过。
 - [ ] Hugo Extended `0.164.0` 与 Go `1.26.1` 和 CI 一致。
 - [ ] 首页包含 Hero，文章页、标签页、About、404 不包含 Hero。
@@ -133,4 +140,4 @@ cd exampleSite && hugo mod tidy
 - **图形可见性铁律**：纯黑白图形在单一模式会隐形（白=纸色=背景）——需要固定浅色圆盘（如 `#F2EDE6`）承托，或加朱砂环
 - **动效**：优先 transform/opacity/filter 合成器属性；clip-path 动画有全屏重绘风险、mask-position 有圆心漂移坑（圆心=图像左上角+尺寸/2，动画尺寸时圆心会跑）；hover 触发动效必须 `hover:hover` 门控 + `prefers-reduced-motion` 降级
 - **诗句 Hero**：本地数据走 `data/inyo/hero_poems.toml`；远程 API 默认关闭，只在用户主动交互时请求，失败必须静默回退；点击后朱红双翼墨线沿 Hero 圆角边框从底部中央上行并在顶部中央合墨，内容就绪后再落字，并提供 reduced-motion 降级
-- **摘要链路**：目录/列表使用 `.Summary → .Description`；SEO description 使用 `.Description → .Summary`，二者不可在文档中混写。
+- **摘要链路**：目录/列表使用 `.Summary → .Description`；SEO description 使用页面 `.Description → summary-source.html → params.description → subtitle → site.Title`，二者不可在文档中混写。

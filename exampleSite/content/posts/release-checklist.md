@@ -16,16 +16,18 @@ tags: ["发布", "CI", "验证"]
 ```powershell
 hugo --source exampleSite --minify
 pwsh -File scripts/verify-theme.ps1
+pwsh -File scripts/verify-consumer.ps1
 git diff --check
 ```
 
-三条命令分别确认：
+四条命令分别确认：
 
 - Hugo 可以用当前模块和配置生成站点。
 - P1/P2、配置、SEO、a11y、颜色 token 和 Hero 诗词合同通过。
+- 独立消费者站点、可配置导航和默认 archetype 合同通过。
 - 修改没有引入尾随空格或其他空白字符错误。
 
-GitHub Actions 会在 `push` 和 `pull_request` 上执行构建与 smoke script。CI 通过是发布主题前的必要门禁。
+GitHub Actions 会在 `push` 和 `pull_request` 上分别执行 Demo smoke 与独立 consumer smoke。CI 通过是发布主题前的必要门禁。
 
 ## 模块发布检查
 

@@ -110,7 +110,7 @@
 | OpenGraph | title/type(article\|website)/url/image(双鱼logo+alt)/description/site_name/locale+alternate |
 | Twitter Card | summary 卡 |
 | JSON-LD | Person（含 sameAs 社交链接）+ 非首页 BreadcrumbList（站→section→文章） |
-| description 兜底 | `.Description` → `.Summary` plainify 截 155 字符 |
+| description 兜底 | 页面 `.Description` → 共享 `summary-source.html` → `params.description` → `params.subtitle` → `site.Title`，plainify 后截 155 字符 |
 
 ### 6.5.2 可访问性（WCAG 2.x AA）
 
@@ -175,6 +175,7 @@
 - **决策**: B 方案双鱼太极。**修正 1**（v2）: 手推弧线 sweep 方向画反不成太极 → 对照标准 Yin-Yang 路径修正；**修正 2**（v4）: 改用基本形状叠加（左半圆+上下小圆），数学验证面积对称 200π=200π，杜绝几何错误
 - **配色**: 网页内联版圆盘/墨鱼/浅色鱼使用 `--seal-disc` / `--seal-ink` / `--seal-light`，朱砂环使用 `--cinnabar`，亮暗模式自适应；鱼眼经典对位（黑鱼白点/白鱼黑点）
 - **favicon**: 无 CSS 变量上下文，继续使用品牌固定色版 `img/seal-yang.svg`（复用原文件名，内容已换）；这是明确记录的唯一固定品牌色例外
+- **社交分享图**: 默认 `ogImage` 使用 `img/seal-yang-og.png`，避免社交平台对 SVG 支持不一致；该 PNG 是固定品牌色静态输出，不进入运行时 CSS token 系统
 
 ## 8. 首页诗句 Hero
 
