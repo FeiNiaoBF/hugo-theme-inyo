@@ -88,6 +88,10 @@ $consumerVerifier = Join-Path $repoRoot "scripts\verify-consumer.ps1"
 $workflow = Join-Path $repoRoot ".github\workflows\verify-theme.yml"
 $headPartial = Join-Path $repoRoot "layouts\partials\head.html"
 $baseof = Join-Path $repoRoot "layouts\_default\baseof.html"
+$singleTemplate = Join-Path $repoRoot "layouts\_default\single.html"
+$notFoundTemplate = Join-Path $repoRoot "layouts\404.html"
+$listTemplate = Join-Path $repoRoot "layouts\_default\list.html"
+$wenkaiCss = Join-Path $repoRoot "assets\css\wenkai.css"
 $demoPosts = Join-Path $exampleSite "content\posts"
 $heroPoemsData = Join-Path $repoRoot "data\inyo\hero_poems.toml"
 $apiFixture = Join-Path $repoRoot "scripts\fixtures\chinese-poetry-api-random.json"
@@ -129,6 +133,13 @@ Assert-Contains $baseof 'site\.Params\.mainSections' "Navigation failure: articl
 Assert-Contains $baseof 'site\.Params\.navigation\.tags' "Navigation failure: tags navigation is not configurable."
 Assert-Contains $baseof 'site\.Params\.navigation\.about' "Navigation failure: About navigation is not configurable."
 Assert-Contains $baseof 'aria-current="page"' "Navigation failure: active navigation does not expose aria-current."
+Assert-Contains $singleTemplate 'site\.Params\.navigation\.tags' "Navigation failure: article tag links must use the configured taxonomy path."
+Assert-NotContains $singleTemplate '"tags/"\s*\|\s*relLangURL' "Navigation failure: article tag links still hard-code the tags path."
+Assert-Contains $notFoundTemplate 'site\.Params\.mainSections' "Navigation failure: 404 article entry must use mainSections."
+Assert-NotContains $notFoundTemplate '"posts/"\s*\|\s*relLangURL' "Navigation failure: 404 article entry still hard-codes the posts path."
+Assert-Contains $listTemplate 'site\.Params\.mainSections' "Navigation failure: section heading detection must use mainSections."
+Assert-Contains $wenkaiCss 'url\(''\.\./fonts/' "Asset failure: self-hosted font URLs must be relative to the generated CSS directory."
+Assert-NotContains $wenkaiCss 'url\(''/fonts/' "Asset failure: self-hosted font CSS still assumes a root deployment path."
 
 # P1 authoring and clean-consumer contracts.
 Assert-FileExists $defaultArchetype "Archetype failure: archetypes/default.md is missing."
@@ -273,6 +284,8 @@ Assert-Contains $homePage '<meta\s+name=("|'')?twitter:description[^>]*content=(
 Assert-Contains $article '<meta\s+name=("|'')?description[^>]*content=("|'')?用一篇真实页面检查' "SEO failure: article metadata no longer prefers the page description."
 Assert-Contains $homePage 'property=("|'')?og:image[^>]*seal-yang-og\.png' "SEO failure: homepage does not use the PNG social image."
 Assert-Contains $posts '<a\b[^>]*href=("|'')?/posts/[^>]*aria-current=("|'')?page' "Navigation failure: the posts page does not expose aria-current."
+Assert-Contains $article 'class=("|'')?tag("|'')?[^>]*href=("|'')?/tags/[^>]+/' "Navigation failure: default article tag links do not use /tags/."
+Assert-Contains $notFound 'href=("|'')?/posts/' "Navigation failure: default 404 does not link to /posts/."
 
 # P2 Task 1: runtime color token discipline and the documented favicon exception.
 $componentCss = ([regex]::Match((Get-Content -Raw $css), '(?s)/\* ---------- 5\. 组件 ---------- \*/.*')).Value
