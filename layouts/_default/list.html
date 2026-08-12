@@ -1,6 +1,7 @@
 {{ define "main" }}
 {{ $title := .Title }}
-{{ if eq .Section "posts" }}{{ $title = i18n "posts" | default .Title }}{{ end }}
+{{ $mainSections := site.Params.mainSections | default (slice "posts") }}
+{{ if eq .Section (index $mainSections 0) }}{{ $title = i18n "posts" | default .Title }}{{ end }}
 <h1>{{ $title }}</h1>
 {{ with .Content }}
 <div class="prose">{{ . }}</div>

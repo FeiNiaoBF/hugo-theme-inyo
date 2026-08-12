@@ -1,11 +1,13 @@
 {{ define "main" }}
+{{ $mainSections := site.Params.mainSections | default (slice "posts") }}
+{{ $mainSection := index $mainSections 0 }}
 <article class="notfound">
   <h1 class="notfound-code">四〇四</h1>
   <p class="notfound-msg">{{ i18n "notfound_msg" | default "此页纸已散佚，笔墨未落。" }}</p>
   <p class="notfound-hint">{{ i18n "notfound_hint" | default "链接可能已更改，或内容尚在砚台边。" }}</p>
   <nav class="notfound-nav">
     <a class="btn" href="{{ site.Home.RelPermalink }}">{{ i18n "home" | default "返回首页" }}</a>
-    <a class="btn" href="{{ "posts/" | relLangURL }}">{{ i18n "posts" | default "文章列表" }}</a>
+    {{ with site.GetPage (printf "/%s" $mainSection) }}<a class="btn" href="{{ .RelPermalink }}">{{ i18n "posts" | default "文章列表" }}</a>{{ end }}
   </nav>
 </article>
 {{ end }}

@@ -1,4 +1,6 @@
 {{ define "main" }}
+{{ $page := . }}
+{{ $tagsPath := site.Params.navigation.tags | default "tags" }}
 <article class="post-single">
   <header class="post-header">
     <a class="back-link" href="{{ .CurrentSection.RelPermalink }}">← {{ i18n "back" | default "返回" }}</a>
@@ -6,7 +8,10 @@
     <div class="post-meta">
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
       <span>{{ i18n "reading_time" .ReadingTime }}</span>
-      {{ range .Params.tags }}<a class="tag" href="{{ "tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a>{{ end }}
+      {{ with site.GetPage (printf "/%s" $tagsPath) }}
+        {{ $tagsBase := strings.TrimRight "/" .RelPermalink }}
+        {{ range $page.Params.tags }}<a class="tag" href="{{ printf "%s/%s/" $tagsBase (. | urlize) }}">{{ . }}</a>{{ end }}
+      {{ end }}
     </div>
   </header>
 
