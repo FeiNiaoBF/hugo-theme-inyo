@@ -51,10 +51,30 @@
 
 ## 提交规范
 
-- 中文或英文提交信息均可，前缀惯例：`feat:` `fix:` `docs:` `design:` `style:`
+- 中文或英文提交信息均可，前缀惯例：`feat:` `fix:` `docs:` `design:` `style:` `chore:` `perf:` `refactor:` `test:`
 - 提交前跑 `hugo --source exampleSite --minify` 确认构建通过
 - 涉及配色的提交必须附对比度数据
 - 不提交 `exampleSite/public/`、`resources/` 等生成物
+
+## 版本管理（SemVer）
+
+- **补丁 v0.1.x**：修 bug、文档、小改动
+- **次版本 v0.2.0**：新功能（向后兼容）
+- **主版本 v1.0.0**：破坏性变更、首个稳定 API
+
+## 发版流程（每次发布执行）
+
+1. 全门禁通过：`hugo --source exampleSite --minify` + `verify-theme.ps1` + `verify-consumer.ps1` + `git diff --check`
+2. 更新 `CHANGELOG.md`（Keep a Changelog 格式），把 [Unreleased] 内容归档到新版本
+3. 提交 CHANGELOG 与相关文档
+4. 打 annotated tag：`git tag -a v0.1.2 -m "Release Inyo v0.1.2"`
+5. `git push origin main` + `git push origin --tags`（需用户批准）
+6. 在 GitHub 上为 tag 写 release notes（摘要引用 CHANGELOG）
+
+## 上架与社区
+
+- 主题市场提交：向 `gohugoio/hugoThemesSiteBuilder` 提 PR，在 `themes.txt` 按字典序加入仓库 URL；PR 合并前 Netlify 预览必须通过
+- 上架要求：`theme.toml`（name/license/licenselink/description/homepage）、README 图片必须用绝对路径、`images/screenshot.png` ≥1500×1000（3:2）、`images/tn.png` ≥900×600（3:2）、MIT 等开源许可
 
 ## 验证清单
 

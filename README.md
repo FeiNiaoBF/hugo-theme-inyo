@@ -13,7 +13,7 @@ Output:
   <a href="README.en.md">English</a>
 </h3>
 
-[![Inyo 亮色模式截图](images/screenshot.png)](https://FeiNiaoBF.github.io/hugo-theme-inyo/)
+[![Inyo 亮色模式截图](https://raw.githubusercontent.com/FeiNiaoBF/hugo-theme-inyo/main/images/screenshot.png)](https://FeiNiaoBF.github.io/hugo-theme-inyo/)
 
 ## 项目状态
 
