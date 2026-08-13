@@ -23,4 +23,3 @@ All notable changes to Inyo are documented here.
 - Establish the first documented release baseline.
 
 See the [README](README.md) and [release checklist](exampleSite/content/posts/release-checklist.md) for usage and validation details.
-
