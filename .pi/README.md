@@ -13,15 +13,16 @@
 | `xxd-palette-builder` | 从 742 色筛选主/辅/背景/强调色板 + 比例 | 需要角色化色板时 |
 | `xxd-accessible-color` | WCAG 对比度检查 + 同库替代色修复 | 文字/按钮/图表可读性校验 |
 | `xxd-existing-design-audit` | 盘点旧色资产，判定保留/合并/替换/移除 | 改版/设计系统清理 |
-| `inyo-theme-development` | 执行 Inyo 模板、CSS、token 与发布约束 | 开发或发布主题时 |
+| `inyo-theme-development` | 执行 Inyo 模板、CSS、token 与运行时约束 | 开发模板、样式或交互时 |
+| `inyo-theme-release` | 检查分发元数据、consumer、Pages、文档和版本基线 | 发布、兼容性或开源入口变更时 |
 | `color-harmony-oklch` | OKLCH 和谐分析、目标对比度搜索与 742 色排序 | 主题或 UI 选色时 |
 
-开发主题时优先使用 `inyo-theme-development`；需要选色或审计时再组合 `xxd-palette-builder`、`xxd-existing-design-audit`、`xxd-accessible-color` 和 `color-harmony-oklch`。不要引用项目中不存在的 `xxd-ui-token`、`xxd-brand-system`、`xxd-palette-applier` 等名称。
+开发主题时优先使用 `inyo-theme-development`；发布、更新 README/CHANGELOG、检查 Hugo Modules 或 GitHub Pages 时使用 `inyo-theme-release`；需要选色或审计时再组合 `xxd-palette-builder`、`xxd-existing-design-audit`、`xxd-accessible-color` 和 `color-harmony-oklch`。不要引用项目中不存在的 `xxd-ui-token`、`xxd-brand-system`、`xxd-palette-applier` 等名称。
 
 ## 安装到 Claude Code（可选）
 
-```powershell
-Copy-Item -Recurse .pi\skills\xxd-* "$env:USERPROFILE\.claude\skills\"
+```shell
+cp -R .pi/skills/xxd-* "$HOME/.claude/skills/"
 ```
 
 ## 安装到 Hermes（可选）
@@ -30,7 +31,7 @@ Copy-Item -Recurse .pi\skills\xxd-* "$env:USERPROFILE\.claude\skills\"
 
 ## 主题开发门禁
 
-```powershell
+```shell
 hugo --source exampleSite --minify
 pwsh -File scripts/verify-theme.ps1
 git diff --check

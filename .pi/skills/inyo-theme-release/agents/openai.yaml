@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inyo Theme Release"
+  short_description: "Validate and release the Inyo Hugo theme safely"
+  default_prompt: "Use $inyo-theme-release when validating Inyo distribution metadata, consumer portability, GitHub Pages demo builds, release docs, or versioned theme releases."

@@ -34,7 +34,10 @@ archetypes/default.md
 i18n/{en.toml,zh-cn.toml,ja.toml}
 scripts/verify-theme.ps1
 scripts/verify-consumer.ps1
-.github/workflows/verify-theme.yml
+.github/workflows/{verify-theme.yml,verify-consumer.yml,deploy-demo.yml}
+theme.toml
+images/{screenshot.png,tn.png}
+README.md / README.en.md / CONTRIBUTING.md / CHANGELOG.md
 .pi/skills/xxd-*/
 exampleSite/
 ```
@@ -95,6 +98,15 @@ cd exampleSite && hugo mod tidy
 - 默认社交图使用 `static/img/seal-yang-og.png`；导航从 `mainSections[0]` 与 `params.navigation` 解析，禁止重新硬编码 `/posts`、`/tags`、`/about`。
 - 文章标签链接必须从 `params.navigation.tags` 推导，404 返回文章入口必须从 `mainSections[0]` 推导；所有自托管资源路径必须对子路径部署安全。
 
+## 文档与分发规则
+
+- 中文开源入口是 `README.md`，英文入口是 `README.en.md`；README 顶部保留居中、显眼的 English 切换入口。
+- README 不复制完整配置表；真实参数说明放在 `exampleSite/content/posts/configuration-reference.md`，写作规则放在对应 Demo 文档。
+- 用户文档和项目 skill 使用三反引号代码围栏；通用命令代码块使用 `shell`，不要新增 `~~~` 围栏。只有展示真实 PowerShell 脚本语法时才保留 `powershell` 标记。
+- 默认安装示例使用 `github.com/FeiNiaoBF/hugo-theme-inyo@latest`；兼容性要求以 `theme.toml`、`go.mod` 和 CI 为准。
+- 主题分发资源包括 `theme.toml`、900×600 以上预览图、1200×630 PNG 社交图和根目录 `archetypes/default.md`；不能把 `public/`、`resources/` 或 lock 文件提交进仓库。
+- 修改 README、CHANGELOG、Pages workflow 或 consumer fixture 时，优先使用 `$inyo-theme-release` skill；不要在开发 skill 中复制发布流程。
+
 ## 发布流程
 
 1. 运行完整验证清单。
@@ -127,6 +139,7 @@ cd exampleSite && hugo mod tidy
 - [ ] `pwsh -File scripts/verify-theme.ps1` 通过，且主题默认配置与项目 skill 合同存在。
 - [ ] `pwsh -File scripts/verify-consumer.ps1` 通过，独立 fixture 与动态 archetype 可用。
 - [ ] Consumer fixture 的 `notes` / `labels` 路径、文章标签、404 入口和 `/blog/` 字体加载均通过。
+- [ ] `theme.toml`、预览图、PNG 社交图、README 双语入口与 Pages workflow 合同通过。
 - [ ] `git diff --check` 通过。
 - [ ] Hugo Extended `0.164.0` 与 Go `1.26.1` 和 CI 一致。
 - [ ] 首页包含 Hero，文章页、标签页、About、404 不包含 Hero。
