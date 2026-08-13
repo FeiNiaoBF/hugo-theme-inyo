@@ -1,184 +1,221 @@
+Exit code: 0
+Wall time: 0.7 seconds
+Output:
 # Inyo 陰陽
 
-> 纸墨二元 · 日式现代简约 × 古中国水墨 — Hugo 博客主题
+[![Verify theme](https://github.com/FeiNiaoBF/hugo-theme-inyo/actions/workflows/verify-theme.yml/badge.svg)](https://github.com/FeiNiaoBF/hugo-theme-inyo/actions/workflows/verify-theme.yml)
+[![License](https://img.shields.io/github/license/FeiNiaoBF/hugo-theme-inyo)](LICENSE)
+[![在线 Demo](https://img.shields.io/badge/demo-GitHub%20Pages-8f2f2f)](https://FeiNiaoBF.github.io/hugo-theme-inyo/)
 
-**Inyo（陰陽）** 是一个为长文阅读设计的 Hugo 博客主题。亮色模式是墨在纸上（荼蘼白宣纸底 + 墨色正文），暗色模式是白墨在墨（墨色夜墨底 + 月白正文）。朱砂红是唯一的情绪色——像一枚印章盖在整个站点上。
+> 一个中文优先、面向长文阅读的 Hugo 主题：纸墨双模式、诗词 Hero、多语言、页级数学公式与可移植的文章导航。
 
-![Inyo 亮色模式截图](images/screenshot.png)
+<h3 align="center">
+  <a href="README.en.md">English</a>
+</h3>
 
-发布基线：**v0.1.0**（最新补丁 **v0.1.1**）· Hugo Extended `>= 0.164.0` · Go `>= 1.26.1`（Hugo Modules）
+[![Inyo 亮色模式截图](images/screenshot.png)](https://FeiNiaoBF.github.io/hugo-theme-inyo/)
 
-## 快速开始
+## 项目状态
 
-```bash
-hugo mod init example.org/my-site
-hugo mod get github.com/FeiNiaoBF/hugo-theme-inyo
-hugo mod tidy
-hugo server
-```
+Inyo 当前处于早期可用阶段，适合个人 Blog、作品记录和中文长文站点。安装命令默认跟随最新 release；如果你需要复现某个历史版本，请改用对应的 Git tag。
+
+兼容性要求：
+
+| 项目   | 要求                                    |
+| ------ | --------------------------------------- |
+| Hugo   | Extended `>= 0.164.0`                   |
+| Go     | `>= 1.26.1`（仅 Hugo Modules 流程需要） |
+| 运行时 | 原生 CSS + 原生 JavaScript，无前端框架  |
+
+在线 Demo：[FeiNiaoBF.github.io/hugo-theme-inyo](https://FeiNiaoBF.github.io/hugo-theme-inyo/)
 
 ## 特性
 
-- 🌗 **纸墨双模式**：亮 = 荼蘼白宣纸，暗 = 墨色夜墨；颜色全部出自《中华传统色》742 库、WCAG AA 实测
-- 🖌️ **诗句 Hero**：首页诗句 + 作者出处；点击后**两阶段**反馈——朱红双翼墨线先从底部中央沿圆角边框上行、在**顶部中央**合墨，再落字；本地数据兜底、远程 API 可选
-- 🔖 **太极 Logo**：双鱼太极 + 朱砂环，几何验证面积对称；网页内联版随主题 token 变色
-- 🧭 **可移植导航**：文章入口读 `mainSections[0]`，标签/About 路径可配置——换 section 不用改模板
-- 📖 **长文优先**：40em 阅读列、行高 2.0、霞鹜文楷自托管分片（零 CDN、支持子路径部署）
-- 🔍 **SEO 全家桶**：canonical / OpenGraph / Twitter Card / Person + BreadcrumbList JSON-LD / description 三级回退
-- ♿ **可访问性 WCAG AA**：skip link、全局焦点环、`prefers-reduced-motion`、ARIA 状态、`aria-current`
-- 🧮 **页级数学**：KaTeX 开关支持站点默认 + 单篇 `math: true` 按页启用
-- 🔤 **多语言**：zh-cn / en / ja + 语言切换器
-- ⚡ **性能**：图片懒加载（LCP 首图保护）、首页脚本按页输出、字体防 FOUC、合成器属性动效
+- 纸墨双主题：亮色纸面、暗色墨面，颜色集中在 CSS token 中管理
+- 首页诗词 Hero：诗句与作者出处，点击后沿圆角边框完成朱红双翼墨线反馈
+- 长文阅读布局：稳定的正文宽度、摘要、代码块和 Markdown 渲染
+- 可移植导航：文章 section、标签 taxonomy 和 About 路径均可配置
+- SEO：canonical、Open Graph、Twitter Card、JSON-LD 和 description 回退
+- 多语言：内置中文、英文、日文翻译接口
+- 页级数学公式：通过 `math` 参数按站点或单篇文章启用 KaTeX
+- 可访问性：skip link、焦点环、ARIA 状态和 reduced-motion 降级
+- 自托管字体：默认使用霞鹜文楷，支持子路径部署
 
-## 安装
+## 快速开始
 
-### Hugo Modules（推荐）
+### 环境要求
 
-```toml
-# hugo.toml
-[module]
-[[module.imports]]
-path = "github.com/FeiNiaoBF/hugo-theme-inyo"
+安装 Hugo Extended `0.164.0` 或更高版本。只有使用 Hugo Modules 时才需要 Go。
+
+```shell
+hugo version
+go version
 ```
 
-```bash
+### 创建站点并安装主题
+
+```shell
+hugo new site my-inyo-site
+cd my-inyo-site
+
+hugo mod init example.com/my-inyo-site
+hugo mod get github.com/FeiNiaoBF/hugo-theme-inyo@latest
 hugo mod tidy
 ```
 
-本地开发用 `replace` 指向本地路径：
+在站点根目录创建或编辑 `hugo.toml`：
 
 ```toml
-[module]
-replacements = "github.com/FeiNiaoBF/hugo-theme-inyo -> ../hugo-theme-inyo"
+baseURL = "https://example.org/"
+title = "我的 Inyo Blog"
+defaultContentLanguage = "zh-cn"
 
+[module]
 [[module.imports]]
 path = "github.com/FeiNiaoBF/hugo-theme-inyo"
+
+[params]
+description = "我的个人博客。"
+author = "你的名字"
+subtitle = "纸墨二元 · 落字有间"
 ```
 
-### 经典 themes/ 目录
+启动本地预览：
 
-```bash
+```shell
+hugo server --buildDrafts
+```
+
+### 直接预览 Demo
+
+克隆仓库后，可以直接启动内置 Demo：
+
+```shell
+git clone https://github.com/FeiNiaoBF/hugo-theme-inyo.git
+cd hugo-theme-inyo
+hugo server --source exampleSite
+```
+
+### 经典 `themes/` 安装
+
+不使用 Hugo Modules 时，可以将主题源码放入站点的 `themes/` 目录：
+
+```shell
 git clone https://github.com/FeiNiaoBF/hugo-theme-inyo.git themes/inyo
 ```
+
+然后在 `hugo.toml` 中配置：
 
 ```toml
 theme = "inyo"
 ```
 
-## 配置
+两种安装方式选择一种即可，不需要同时配置 `module.imports` 和 `theme`。
 
-主题默认值在 `config/_default/params.toml` 与 `markup.toml`（Hugo Modules 深合并，站点配置优先）。只写偏离默认值的部分：
+## 基础配置
+
+主题默认配置位于 `config/_default/params.toml` 和 `config/_default/markup.toml`。站点只需要覆盖自己的身份信息和需要改变的选项：
 
 ```toml
 [params]
-description = "一个使用 Inyo 构建的长文博客。"   # 站点 SEO 描述（无页级描述时兜底）
-font = "wenkai"                    # wenkai（霞鹜文楷，默认，自托管）| serif（思源宋体，CDN）
-math = false                       # 全站 KaTeX；单篇可 front matter math: true 按页开启
-mainSections = ["posts"]           # 首页目录与文章导航使用的 section
+description = "一个使用 Inyo 构建的长文博客。"
+font = "wenkai"       # wenkai（默认）或 serif
+math = false
+mainSections = ["posts"]
 subtitle = "纸墨二元 · 落字有间"
-author = "Inyo"                    # SEO Person schema + 文章作者
-# ogImage = "img/your-og.png"      # 社交分享图；默认 img/seal-yang-og.png（PNG）
+author = "你的名字"
 
 [params.navigation]
-tags = "tags"                      # 标签 taxonomy 路径
-about = "about"                    # About 页面路径
+tags = "tags"
+about = "about"
 
 [params.heroPoetry.api]
-enabled = false                    # 远程诗句，默认关闭；失败静默回退本地
-endpoint = "https://poetry.palemoky.com/api/poems/random"
-lang = "zh-Hans"
-
-[[params.social]]
-name = "GitHub"
-url = "https://github.com/FeiNiaoBF/hugo-theme-inyo"
-
-[[params.social]]
-name = "RSS"
-url = "/index.xml"
+enabled = false       # 默认关闭，失败时使用本地诗句
 ```
 
-要点：
+完整配置和 Front Matter 规则见[配置参考](exampleSite/content/posts/configuration-reference.md)与 [Front Matter 指南](exampleSite/content/posts/front-matter.md)。
 
-- 文章导航与 404 返回链接读 `mainSections[0]`；标签链接读 `params.navigation.tags`——section 和 taxonomy 可自由改名
-- 远程诗词 API 最小合同：对象本身或 `data` 包装含 `content`（数组取首条非空）、`author`、`title`；不符即静默回退 `data/inyo/hero_poems.toml`
-- 若站点自定义 `[markup]`（如 Goldmark `unsafe`），必须保留 `_merge = "deep"`，主题的 class-based Chroma 才会生效
-- 完整参数表见演示站 [配置参考](/posts/configuration-reference/)；更多定制见 [定制主题](/posts/customization/)
+## 文档
 
-## 多语言
+- [主题入门](exampleSite/content/posts/getting-started.md)：安装、启动和首次预览
+- [配置参考](exampleSite/content/posts/configuration-reference.md)：真实参数与配置职责
+- [Front Matter 指南](exampleSite/content/posts/front-matter.md)：文章字段和摘要写法
+- [功能展厅](exampleSite/content/posts/markdown-style-guide.md)：查看主题实际渲染效果
+- [定制主题](exampleSite/content/posts/customization.md)：字体、token、Logo 和 Hero 定制
+- [发布清单](exampleSite/content/posts/release-checklist.md)：构建、检查和发布前复核
+- [设计文档](DESIGN.md)：视觉方向、token 和交互约束
+- [变更记录](CHANGELOG.md)：版本与发布说明
 
-内置 zh-cn / en / ja 翻译；站点配置多个 `[languages.*]` 后，右侧栏自动显示语言切换器。
+## GitHub Pages Demo
 
-## 目录结构
+Demo 使用 `exampleSite` 构建，并由 GitHub Actions 发布到项目 Pages：
 
-```
-hugo-theme-inyo/
-├── DESIGN.md        # 设计文档（配色 token 权威来源 + ADR + 动效规范）
-├── theme.toml       # Hugo Themes 分发元数据
-├── archetypes/      # hugo new content 默认 Front Matter
-├── images/          # 主题市场截图与缩略图
-├── config/_default/ # 可合并的默认参数与 Markdown 配置
-├── layouts/         # 模板 + partials + _markup 渲染 hooks
-├── assets/css/      # main.css（token 体系）+ wenkai.css（自托管字体分片）
-├── data/inyo/       # Hero 诗句本地 fallback
-├── scripts/         # verify-theme / verify-consumer smoke 门禁 + consumer fixture
-├── .github/workflows/ # Windows Hugo 构建与双 smoke CI
-├── static/img/      # favicon SVG 与社交分享 PNG
-└── exampleSite/     # 演示站点（hugo server --source exampleSite）
+```text
+https://FeiNiaoBF.github.io/hugo-theme-inyo/
 ```
 
-## 验证
+如果你 Fork 了本项目并希望启用自己的 Demo：
 
-```bash
-hugo --source exampleSite --minify
-pwsh -File scripts/verify-theme.ps1      # 生成物 / SEO / a11y / i18n / token 合同
-pwsh -File scripts/verify-consumer.ps1   # 独立消费者（notes section + labels taxonomy）可移植性
+1. 打开仓库的 `Settings → Pages`；
+2. 将 `Source` 设置为 `GitHub Actions`；
+3. 推送到 `main`，或在 Actions 页面手动运行 Demo 发布 workflow。
+
+项目站点使用子路径构建，主题资源会通过 `baseURL` 正确生成，不要把字体、CSS 或文章链接改回假定根路径的绝对地址。
+
+## 开发与验证
+
+修改主题后，在仓库根目录运行：
+
+```shell
+hugo --source exampleSite --minify --printPathWarnings
+pwsh -File scripts/verify-theme.ps1
+pwsh -File scripts/verify-consumer.ps1
 git diff --check
 ```
 
-GitHub Actions 在每次 push / PR 上运行上述两组门禁（Windows runner、Go 1.26.1、Hugo Extended 0.164.0）。通过 CI 是发布前提。
+不要提交 `exampleSite/public/`、`resources/`、`.hugo_build.lock` 等构建产物。完整贡献流程见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
-## 质量门禁
+## 常见问题
 
-- 网页内联 Logo 使用主题 token，亮暗自适应；`static/img/seal-yang.svg` 是 favicon 固定品牌色例外（无 CSS 变量上下文）
-- 诗句 Hero 只输出在首页；远程 API 默认关闭、必有本地 fallback；`prefers-reduced-motion` 降级
-- 文章列表优先 `.Summary`（支持 front matter `summary` / `<!--more-->` / 自动），为空才回退 `.Description`
-- 新建内容：`hugo new content posts/my-first-post.md`（archetype 自动填标题/日期/摘要等）
+### 远程诗词 API 是必须的吗？
 
-## English
+不是。主题默认关闭远程 API，诗句来自 `data/inyo/hero_poems.toml`。Demo 为了展示完整能力而开启远程 API，接口失败时仍会回退本地数据。
 
-Inyo is a Chinese-first editorial Hugo theme for long-form reading: paper-and-ink dual themes, a homepage poetry interaction, multilingual UI (zh-cn/en/ja), taxonomy pages, page-level KaTeX, accessible navigation, and self-hosted LXGW WenKai fonts.
+### 可以部署在 `/blog/` 子路径吗？
 
-**Compatibility:** Inyo `v0.1.0` · Hugo Extended `>= 0.164.0` · Go `>= 1.26.1` (Modules)
+可以。主题的导航、字体和静态资源已经按相对路径和 `RelPermalink` 处理，并在 consumer fixture 中验证了 `/blog/` 场景。
 
-**Install (Modules):**
+### 如何关闭自托管字体？
 
-```powershell
-hugo mod init example.com/my-site
-hugo mod get github.com/FeiNiaoBF/hugo-theme-inyo
-```
+在站点配置中设置：
 
 ```toml
-[module]
-[[module.imports]]
-path = "github.com/FeiNiaoBF/hugo-theme-inyo"
+[params]
+webfonts = false
 ```
 
-Theme defaults live in `config/_default/`. Configure site identity, `params.description`, `mainSections`, navigation paths, author, and social links in your `hugo.toml`. The remote poetry API is disabled by default; local poems in `data/inyo/hero_poems.toml` are the fallback.
+关闭后主题会使用系统字体栈。字体加载策略仍是后续计划，详见下方“未来计划”。
 
-**Verify:**
+## 贡献
 
-```powershell
-hugo --source exampleSite --minify
-pwsh -File scripts/verify-theme.ps1
-pwsh -File scripts/verify-consumer.ps1
-```
+欢迎提交 Issue、改进文档或创建 Pull Request。开始前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
-New posts use the theme's TOML archetype. Released under the MIT License.
+## 致谢与参考
 
-## 许可
+Inyo 的设计和实现借鉴了以下开源项目与工具：
 
-MIT © FeiNiaoBF
+- [zhongguo-traditional-colors](https://github.com/nevertoday/zhongguo-traditional-colors)：中国传统色资料与配色研究参考
+- [pianpker](https://pianpker.pages.dev/) 与 [astro-theme-pianpker](https://github.com/DRAG0NM/astro-theme-pianpker)：编辑感、长文阅读与视觉表达参考
+- [LXGW WenKai](https://github.com/lxgw/LxgwWenKai)：默认自托管字体
+- [Hugo](https://github.com/gohugoio/hugo)：静态站点生成器与主题生态基础
 
----
+Inyo 的模板、样式、交互和集成代码由本项目维护；上述项目的许可证和版权归其原作者所有。
 
-配色与设计决策的完整记录见 [DESIGN.md](DESIGN.md)。
+## 未来计划(TODO)
+
+-  **字体加载性能优化**：当前霞鹜文楷采用自托管分片，完整字体资源约 8.8MB，页面会根据实际字符按需加载部分分片。当前优先保持 Inyo 的阅读字体和视觉稳定性，暂不调整字体实现；使用一段时间后，再根据真实设备和网络反馈评估减少分片、按需加载或可选字体策略。
+
+
+## 许可证
+
+MIT，详见 [LICENSE](LICENSE)。
