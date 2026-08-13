@@ -2,9 +2,9 @@
 
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 与 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [Unreleased]
+## Unreleased
 
-## [v0.1.1] - 2026-08-12
+## v0.1.1 - 2026-08-12
 
 ### Changed
 
@@ -17,7 +17,7 @@
 - 自托管字体资源路径改为相对 `../fonts/`，支持 `/blog/` 等子路径部署
 - `.gitignore` 扩展：忽略所有 `**/public/`、`**/resources/`、锁文件与临时文件
 
-## [v0.1.0] - 2026-08-12
+## v0.1.0 - 2026-08-12
 
 首个发布基线：纸墨二元 Hugo 主题，可分发、可上架 Hugo Themes。
 
