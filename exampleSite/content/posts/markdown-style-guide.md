@@ -41,13 +41,6 @@ math: true
 
 ## 图片
 
-手写 `<figure>` 可以提供图注：
-
-<figure>
-  <img src="/img/seal-yang.svg" alt="双鱼太极品牌图形" />
-  <figcaption>双鱼太极是 Inyo 的品牌图形。</figcaption>
-</figure>
-
 Markdown 图片会经过主题的 image render hook：
 
 ![双鱼太极 Markdown 图片](/img/seal-yang.svg)

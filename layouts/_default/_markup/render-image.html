@@ -7,5 +7,15 @@
   {{- $lazy = "decoding=\"async\"" -}}
   {{- .Page.Scratch.Set "inyo-first-img" true -}}
 {{- end -}}
-{{- $img := printf "<img src=\"%s\" alt=\"%s\" %s>" (.Destination | safeURL) (.Text | plainify | htmlEscape) $lazy -}}
+{{- $destination := .Destination -}}
+{{- $lowerDestination := lower $destination -}}
+{{- $isExternal := or (hasPrefix $lowerDestination "http://") (hasPrefix $lowerDestination "https://") (hasPrefix $lowerDestination "//") (hasPrefix $lowerDestination "data:") -}}
+{{- $src := $destination -}}
+{{- $assetPath := $destination -}}
+{{- $isRootAsset := or (hasPrefix $destination "/") (hasPrefix $destination "img/") (hasPrefix $destination "fonts/") -}}
+{{- if and (not $isExternal) $isRootAsset -}}
+  {{- if not (hasPrefix $assetPath "/") }}{{ $assetPath = printf "/%s" $assetPath }}{{ end -}}
+  {{- $src = urls.JoinPath (urls.Parse site.BaseURL).Path (strings.TrimPrefix "/" $assetPath) -}}
+{{- end -}}
+{{- $img := printf "<img src=\"%s\" alt=\"%s\" %s>" ($src | safeURL) (.Text | plainify | htmlEscape) $lazy -}}
 {{- $img | safeHTML -}}

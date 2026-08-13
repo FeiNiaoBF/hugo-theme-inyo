@@ -6,4 +6,8 @@
 {{- $lowerDestination := lower $destination -}}
 {{- $isExternal := or (hasPrefix $lowerDestination "http://") (hasPrefix $lowerDestination "https://") (hasPrefix $lowerDestination "//") -}}
 {{- $isUnsafe := or (hasPrefix $lowerDestination "javascript:") (hasPrefix $lowerDestination "data:") (hasPrefix $lowerDestination "vbscript:") -}}
-<a href="{{ if $isUnsafe }}#{{ else }}{{ $destination | safeURL }}{{ end }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ if $isExternal }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .Text | safeHTML }}</a>
+{{- $href := $destination -}}
+{{- if and (not $isExternal) (not (hasPrefix $lowerDestination "#")) (hasPrefix $destination "/") -}}
+  {{- $href = urls.JoinPath (urls.Parse site.BaseURL).Path (strings.TrimPrefix "/" $destination) -}}
+{{- end -}}
+<a href="{{ if $isUnsafe }}#{{ else }}{{ $href | safeURL }}{{ end }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ if $isExternal }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .Text | safeHTML }}</a>

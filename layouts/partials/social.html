@@ -2,7 +2,13 @@
 <p class="rail-social">
   {{ range site.Params.social }}
   {{ $isInternal := and (hasPrefix .url "/") (not (hasPrefix .url "//")) }}
-  <a href="{{ .url }}"{{ if not $isInternal }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .name }}</a>
+  {{ $href := .url }}
+  {{ if eq .url "/index.xml" }}
+    {{ with site.Home.OutputFormats.Get "rss" }}{{ $href = .RelPermalink }}{{ end }}
+  {{ else if $isInternal }}
+    {{ $href = urls.JoinPath (urls.Parse site.BaseURL).Path (strings.TrimPrefix "/" .url) }}
+  {{ end }}
+  <a href="{{ $href }}"{{ if not $isInternal }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .name }}</a>
   {{ end }}
 </p>
 {{ end }}

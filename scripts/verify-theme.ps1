@@ -99,6 +99,10 @@ $oldHeroPartial = Join-Path $repoRoot "layouts\partials\inky-overlay.html"
 $oldHeroAsset = Join-Path $repoRoot "assets\img\hero-beauty.jpg"
 $designDoc = Join-Path $repoRoot "DESIGN.md"
 $readme = Join-Path $repoRoot "README.md"
+$readmeEn = Join-Path $repoRoot "README.en.md"
+$contributing = Join-Path $repoRoot "CONTRIBUTING.md"
+$changelog = Join-Path $repoRoot "CHANGELOG.md"
+$pagesWorkflow = Join-Path $repoRoot ".github\workflows\deploy-demo.yml"
 $agentsDoc = Join-Path $repoRoot "AGENTS.md"
 $inyoSkill = Join-Path $repoRoot ".pi\skills\inyo-theme-development\SKILL.md"
 $skillFiles = Get-ChildItem (Join-Path $repoRoot ".pi\skills") -Recurse -Filter "SKILL.md" -File
@@ -115,8 +119,33 @@ Assert-FileNotEmpty $socialImage "Distribution failure: static/img/seal-yang-og.
 Assert-PngDimensions $themeScreenshot 900 600 0 0 "Distribution failure: theme screenshot must be at least 900x600."
 Assert-PngDimensions $themeThumbnail 900 600 900 600 "Distribution failure: theme thumbnail must be exactly 900x600."
 Assert-PngDimensions $socialImage 1200 630 1200 630 "Distribution failure: social image must be exactly 1200x630."
-Assert-Contains $readme '(?m)^## English\s*$' "Documentation failure: README.md is missing the exact ## English heading."
-Assert-Contains $readme 'hugo mod get github\.com/FeiNiaoBF/hugo-theme-inyo' "Documentation failure: README.md is missing the Hugo Module install command."
+Assert-FileExists $readmeEn "Documentation failure: README.en.md is missing."
+Assert-FileExists $contributing "Documentation failure: CONTRIBUTING.md is missing."
+Assert-FileExists $changelog "Documentation failure: CHANGELOG.md is missing."
+Assert-FileExists $pagesWorkflow "Pages failure: deploy-demo.yml is missing."
+Assert-Contains $readme 'hugo mod get github\.com/FeiNiaoBF/hugo-theme-inyo@latest' "Documentation failure: README.md must install the latest release."
+Assert-Contains $readme 'README\.en\.md' "Documentation failure: README.md is missing the English README link."
+Assert-Contains $readme '(?s)<h3\s+align="center">\s*<a\s+href="README\.en\.md">English</a>\s*</h3>' "Documentation failure: README.md must expose a centered, prominent English entry near the top."
+Assert-Contains $readme 'CONTRIBUTING\.md' "Documentation failure: README.md is missing the contribution guide link."
+Assert-Contains $readme 'CHANGELOG\.md' "Documentation failure: README.md is missing the changelog link."
+Assert-Contains $readme 'FeiNiaoBF\.github\.io/hugo-theme-inyo' "Documentation failure: README.md is missing the GitHub Pages demo URL."
+Assert-NotContains $readme '\]\(/posts/' "Documentation failure: README.md contains a deployment-only root-relative posts link."
+Assert-Contains $readmeEn '(?m)^## Quick Start\s*$' "Documentation failure: README.en.md is missing the English Quick Start heading."
+Assert-Contains $readmeEn 'hugo mod get github\.com/FeiNiaoBF/hugo-theme-inyo@latest' "Documentation failure: README.en.md must install the latest release."
+Assert-Contains $readmeEn 'README\.md' "Documentation failure: README.en.md is missing the Chinese README link."
+Assert-Contains $contributing 'scripts/verify-theme\.ps1' "Documentation failure: CONTRIBUTING.md is missing the theme verification command."
+Assert-Contains $contributing 'zhongguo-traditional-colors' "Documentation failure: CONTRIBUTING.md is missing the acknowledgements section."
+Assert-Contains $changelog '(?m)^## Unreleased\s*$' "Documentation failure: CHANGELOG.md is missing the Unreleased section."
+Assert-Contains $changelog '(?m)^## v0\.1\.1' "Documentation failure: CHANGELOG.md is missing the v0.1.1 entry."
+Assert-Contains $changelog '(?m)^## v0\.1\.0' "Documentation failure: CHANGELOG.md is missing the v0.1.0 entry."
+Assert-Contains $pagesWorkflow 'actions/configure-pages@' "Pages failure: deploy-demo.yml must configure GitHub Pages."
+Assert-Contains $pagesWorkflow 'actions/upload-pages-artifact@' "Pages failure: deploy-demo.yml must upload the Pages artifact."
+Assert-Contains $pagesWorkflow 'actions/deploy-pages@' "Pages failure: deploy-demo.yml must deploy the Pages artifact."
+Assert-Contains $pagesWorkflow 'pages:\s*write' "Pages failure: deploy-demo.yml is missing pages write permission."
+Assert-Contains $pagesWorkflow 'id-token:\s*write' "Pages failure: deploy-demo.yml is missing OIDC permission."
+Assert-Contains $pagesWorkflow 'steps\.pages\.outputs\.base_url' "Pages failure: deploy-demo.yml must use the GitHub Pages base URL."
+Assert-Contains $pagesWorkflow '--baseURL' "Pages failure: deploy-demo.yml must pass a base URL to Hugo."
+Assert-Contains $pagesWorkflow 'exampleSite/public' "Pages failure: deploy-demo.yml must publish exampleSite/public."
 Assert-Contains $readme 'pwsh -File scripts/verify-consumer\.ps1' "Documentation failure: README.md is missing the consumer verification command."
 
 # P1 runtime configuration contracts.
@@ -194,9 +223,9 @@ Assert-Contains $inyoSkill '\.Summary' "Skill failure: Inyo development skill is
 Assert-NotContains $inyoSkill 'seal-yin\.svg' "Skill failure: Inyo development skill references a nonexistent seal-yin.svg asset."
 Assert-Contains $designDoc '朱红双翼墨线' "Design failure: DESIGN.md is missing the accepted Hero motion direction."
 Assert-Contains $designDoc '底部中央.*顶部中央' "Design failure: DESIGN.md does not describe the closed double-wing line geometry."
-Assert-Contains $readme '两阶段' "Documentation failure: README.md does not describe the immediate-feedback Hero flow."
-Assert-Contains $readme '顶部中央' "Documentation failure: README.md does not describe the closed Hero border geometry."
-Assert-Contains $readme '\.Summary' "Documentation failure: README.md does not describe catalog summary semantics."
+Assert-Contains $readme '贡献|CONTRIBUTING' "Documentation failure: README.md does not expose the contribution entry point."
+Assert-Contains $readme '致谢与参考|Acknowledgements' "Documentation failure: README.md does not expose the acknowledgements section."
+Assert-Contains $readme '圆角边框' "Documentation failure: README.md does not describe the Hero border interaction."
 Assert-Contains $agentsDoc '双翼墨线' "Agent rules failure: AGENTS.md is missing the current Hero motion contract."
 Assert-Contains $agentsDoc '顶部中央' "Agent rules failure: AGENTS.md is missing the closed Hero border geometry."
 Assert-Contains $agentsDoc '\.Summary' "Agent rules failure: AGENTS.md is missing the Hugo summary contract."
@@ -222,6 +251,11 @@ foreach ($demoDoc in $demoDocs) {
   Assert-NotContains $docPath '<!--more-->' "Demo docs failure: $($demoDoc.Name).md contains a raw summary divider that shadows its front matter summary."
   Assert-Contains $docPath '## 下一步' "Demo docs failure: $($demoDoc.Name).md is missing its next-step navigation."
 }
+$userDocs = @($readme, $readmeEn, $contributing) + ($demoDocs | ForEach-Object { Join-Path $demoPosts ($_.Name + ".md") })
+foreach ($docPath in $userDocs) {
+  Assert-NotContains $docPath '(?m)^~~~' "Documentation failure: $docPath uses tildes instead of fenced backticks."
+  Assert-NotContains $docPath '(?m)^```(?:powershell|pwsh)\s*$' "Documentation failure: $docPath labels a generic shell command block as PowerShell."
+}
 $oldGuidePath = Join-Path $demoPosts "theme-guide.md"
 if (Test-Path $oldGuidePath) { throw "Demo docs failure: obsolete theme-guide.md source file still exists." }
 foreach ($stalePattern in @('0\.140\.0', 'hugo\.yaml', 'languageName', 'replacements\s*[:=]')) {
@@ -240,6 +274,10 @@ foreach ($staleHeroPattern in @('heroImage', 'hero-beauty', 'inky-overlay', '墨
 & hugo --source $exampleSite --minify --destination $out
 Write-Output "Verification output: $out"
 
+$pagesOut = Join-Path ([System.IO.Path]::GetTempPath()) "inyo-theme-pages-$PID"
+& hugo --source $exampleSite --baseURL "https://FeiNiaoBF.github.io/hugo-theme-inyo/" --minify --printPathWarnings --destination $pagesOut
+Write-Output "Pages verification output: $pagesOut"
+
 $homePage = Join-Path $out "index.html"
 $article = Join-Path $out "posts\markdown-style-guide\index.html"
 $gettingStarted = Join-Path $out "posts\getting-started\index.html"
@@ -253,6 +291,11 @@ $posts = Join-Path $out "posts\index.html"
 $tags = Join-Path $out "tags\index.html"
 $term = Join-Path $out "tags\inyo\index.html"
 $notFound = Join-Path $out "404.html"
+$pagesHomePage = Join-Path $pagesOut "index.html"
+$pagesArticle = Join-Path $pagesOut "posts\getting-started\index.html"
+$pagesFeatureArticle = Join-Path $pagesOut "posts\markdown-style-guide\index.html"
+$pagesCss = Get-ChildItem (Join-Path $pagesOut "css") -Filter "main*.css" -File | Select-Object -First 1
+$pagesFontCss = Get-ChildItem (Join-Path $pagesOut "css") -Filter "wenkai*.css" -File | Select-Object -First 1
 $css = Join-Path $repoRoot "assets\css\main.css"
 $sealTemplate = Join-Path $repoRoot "layouts\partials\seal.html"
 $favicon = Join-Path $repoRoot "static\img\seal-yang.svg"
@@ -286,6 +329,21 @@ Assert-Contains $homePage 'property=("|'')?og:image[^>]*seal-yang-og\.png' "SEO 
 Assert-Contains $posts '<a\b[^>]*href=("|'')?/posts/[^>]*aria-current=("|'')?page' "Navigation failure: the posts page does not expose aria-current."
 Assert-Contains $article 'class=("|'')?tag("|'')?[^>]*href=("|'')?/tags/[^>]+/' "Navigation failure: default article tag links do not use /tags/."
 Assert-Contains $notFound 'href=("|'')?/posts/' "Navigation failure: default 404 does not link to /posts/."
+
+# GitHub Pages project-site contract: generated URLs must retain the repository subpath.
+if (-not $pagesCss) { throw "Pages failure: generated main CSS is missing from the project-site build." }
+if (-not $pagesFontCss) { throw "Pages failure: generated WenKai CSS is missing from the project-site build." }
+Assert-Contains $pagesHomePage 'https://FeiNiaoBF\.github\.io/hugo-theme-inyo/' "Pages failure: homepage canonical or metadata lost the project base URL."
+Assert-Contains $pagesHomePage 'href=("|'')?/hugo-theme-inyo/css/' "Pages failure: homepage CSS link lost the project subpath."
+Assert-Contains $pagesHomePage 'href=("|'')?/hugo-theme-inyo/posts/' "Pages failure: homepage article link lost the project subpath."
+Assert-Contains $pagesArticle 'href=("|'')?/hugo-theme-inyo/(?:tags|about|posts)/' "Pages failure: article navigation lost the project subpath."
+Assert-Contains $pagesArticle 'href=("|'')?/hugo-theme-inyo/index\.xml' "Pages failure: internal RSS link lost the project subpath."
+Assert-Contains $pagesFeatureArticle 'src=("|'')?/hugo-theme-inyo/img/seal-yang\.svg' "Pages failure: Markdown image lost the project subpath."
+Assert-NotContains $pagesHomePage 'href=("|'')?/(?:css|fonts|img|posts|tags|about)/' "Pages failure: homepage contains a root-relative URL that bypasses the project subpath."
+Assert-NotContains $pagesArticle 'href=("|'')?/(?:css|fonts|img|posts|tags|about|index\.xml)/' "Pages failure: article page contains a root-relative URL that bypasses the project subpath."
+Assert-NotContains $pagesFeatureArticle 'src=("|'')?/(?:img|fonts)/' "Pages failure: Markdown image contains a root-relative asset URL."
+Assert-Contains $pagesFontCss.FullName 'url\(\s*(?:"|'')?\.\./fonts/' "Pages failure: WenKai CSS must resolve fonts relative to the generated CSS path."
+Assert-NotContains $pagesFontCss.FullName 'url\(\s*(?:"|'')?/fonts/' "Pages failure: WenKai CSS contains an absolute root font URL."
 
 # P2 Task 1: runtime color token discipline and the documented favicon exception.
 $componentCss = ([regex]::Match((Get-Content -Raw $css), '(?s)/\* ---------- 5\. 组件 ---------- \*/.*')).Value
