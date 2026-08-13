@@ -13,7 +13,7 @@ tags: ["写作", "Front Matter", "SEO"]
 
 Inyo 提供 `archetypes/default.md`。在站点根目录运行：
 
-```powershell
+```shell
 hugo new content posts/my-first-post.md
 ```
 

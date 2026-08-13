@@ -2,7 +2,7 @@
 title: "发布清单"
 date: 2026-08-07
 description: "在部署 Inyo 站点前，完成构建、生成物合同、空白字符和浏览器复核。"
-summary: "本文整理 Inyo 发布前必须执行的 Hugo 构建、PowerShell smoke test 与 Git 空白检查。清单还覆盖亮暗模式、移动端、诗词 API fallback、双翼墨线和 reduced-motion 的浏览器复核。"
+summary: "本文整理 Inyo 发布前必须执行的 Hugo 构建、自动化 smoke test 与 Git 空白检查。清单还覆盖亮暗模式、移动端、诗词 API fallback、双翼墨线和 reduced-motion 的浏览器复核。"
 categories: ["文档"]
 tags: ["发布", "CI", "验证"]
 ---
@@ -13,7 +13,7 @@ tags: ["发布", "CI", "验证"]
 
 在主题仓库根目录执行：
 
-```powershell
+```shell
 hugo --source exampleSite --minify
 pwsh -File scripts/verify-theme.ps1
 pwsh -File scripts/verify-consumer.ps1
@@ -31,9 +31,9 @@ GitHub Actions 会在 `push` 和 `pull_request` 上分别执行 Demo smoke 与�
 
 Consumer smoke 还会用自定义的 `notes` section 和 `labels` taxonomy 构建一次站点，并覆盖 `/blog/` 子路径部署。需要单独复核时执行：
 
-```powershell
-hugo --source scripts/fixtures/consumer-site `
-     --baseURL "https://consumer.example/blog/" `
+```shell
+hugo --source scripts/fixtures/consumer-site \
+     --baseURL "https://consumer.example/blog/" \
      --minify
 ```
 
@@ -43,7 +43,7 @@ hugo --source scripts/fixtures/consumer-site `
 
 如果你之前使用了本地主题替换，发布前确认模块配置指向远程仓库：
 
-```powershell
+```shell
 hugo mod graph
 hugo mod tidy
 ```

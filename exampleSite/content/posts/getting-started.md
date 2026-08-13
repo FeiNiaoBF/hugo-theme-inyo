@@ -21,7 +21,7 @@ aliases:
 
 确认版本：
 
-```powershell
+```shell
 hugo version
 go version
 ```
@@ -30,9 +30,9 @@ go version
 
 这是新站点的推荐方式。先创建站点并初始化模块：
 
-```powershell
+```shell
 hugo new site my-inyo-site
-Set-Location my-inyo-site
+cd my-inyo-site
 hugo mod init example.org/my-inyo-site
 ```
 
@@ -57,7 +57,7 @@ _merge = "deep"
 
 拉取模块并启动本地服务器：
 
-```powershell
+```shell
 hugo mod tidy
 hugo server --buildDrafts
 ```
@@ -74,7 +74,7 @@ replace github.com/FeiNiaoBF/hugo-theme-inyo => ../hugo-theme-inyo
 
 本仓库的 `exampleSite/go.mod` 使用 `../` 指向仓库根目录；你的站点应按实际目录关系填写路径。修改后运行：
 
-```powershell
+```shell
 hugo mod tidy
 ```
 
@@ -84,7 +84,7 @@ hugo mod tidy
 
 不使用 Hugo Modules 时，可以将主题放进站点的 `themes/` 目录：
 
-```powershell
+```shell
 git clone https://github.com/FeiNiaoBF/hugo-theme-inyo.git themes/inyo
 ```
 
