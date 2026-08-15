@@ -8,4 +8,5 @@ min_version = "0.164.0"
 # can merge them with the consuming site's project configuration.
 
 [module.hugoVersion]
+extended = true
 min = "0.164.0"

@@ -3,6 +3,7 @@ license = "MIT"
 licenselink = "https://github.com/FeiNiaoBF/hugo-theme-inyo/blob/main/LICENSE"
 description = "A Chinese-first editorial Hugo theme with paper-and-ink dual themes, poetry interaction, multilingual support, taxonomy pages, and page-level math."
 homepage = "https://github.com/FeiNiaoBF/hugo-theme-inyo"
+demosite = "https://FeiNiaoBF.github.io/hugo-theme-inyo/"
 tags = ["blog", "editorial", "minimal", "responsive", "dark-mode", "multilingual"]
 features = ["responsive", "dark-mode", "multilingual", "math", "taxonomy", "rss"]
 min_version = "0.164.0"
