@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inyo Content Authoring"
+  short_description: "Write and maintain the Inyo demo content"
+  default_prompt: "Use $inyo-content-authoring when writing or updating Inyo demo articles, About content, YAML front matter, Markdown examples, or content cross-links."

@@ -34,7 +34,9 @@ Inyo 当前处于早期可用阶段，适合个人 Blog、作品记录和中文�
 - 纸墨双主题：亮色纸面、暗色墨面，颜色集中在 CSS token 中管理
 - 首页诗词 Hero：诗句与作者出处，点击后沿圆角边框完成朱红双翼墨线反馈
 - 长文阅读布局：稳定的正文宽度、摘要、代码块和 Markdown 渲染
-- 可移植导航：文章 section、标签 taxonomy 和 About 路径均可配置
+- 单一博客结构：首页、博客、标签、归档、关于；单篇文章作为博客详情页，About 与其他主导航项保持一致
+- 支持多篇置顶：在文章 Front Matter 设置 `pinned: true`，首页置顶区按日期倒序展示
+- 可移植导航：文章 section、标签 taxonomy、归档和 About 路径均可配置
 - SEO：canonical、Open Graph、Twitter Card、JSON-LD 和 description 回退
 - 多语言：内置中文、英文、日文翻译接口
 - 页级数学公式：通过 `math` 参数按站点或单篇文章启用 KaTeX
@@ -55,7 +57,7 @@ go version
 ### 创建站点并安装主题
 
 ```shell
-hugo new site my-inyo-site
+hugo new site my-inyo-site --format yaml
 cd my-inyo-site
 
 hugo mod init example.com/my-inyo-site
@@ -63,21 +65,21 @@ hugo mod get github.com/FeiNiaoBF/hugo-theme-inyo@latest
 hugo mod tidy
 ```
 
-在站点根目录创建或编辑 `hugo.toml`：
+在站点根目录创建或编辑 `hugo.yaml`：
 
-```toml
-baseURL = "https://example.org/"
-title = "我的 Inyo Blog"
-defaultContentLanguage = "zh-cn"
+```yaml
+baseURL: "https://example.com/"
+title: "我的 Inyo Blog"
+defaultContentLanguage: "zh-cn"
 
-[module]
-[[module.imports]]
-path = "github.com/FeiNiaoBF/hugo-theme-inyo"
+module:
+  imports:
+    - path: "github.com/FeiNiaoBF/hugo-theme-inyo"
 
-[params]
-description = "我的个人博客。"
-author = "你的名字"
-subtitle = "纸墨二元 · 落字有间"
+params:
+  description: "我的个人博客。"
+  author: "你的名字"
+  subtitle: "纸墨二元 · 落字有间"
 ```
 
 启动本地预览：
@@ -104,45 +106,68 @@ hugo server --source exampleSite
 git clone https://github.com/FeiNiaoBF/hugo-theme-inyo.git themes/inyo
 ```
 
-然后在 `hugo.toml` 中配置：
+然后在 `hugo.yaml` 中配置：
 
-```toml
-theme = "inyo"
+```yaml
+theme:
+  - "inyo"
 ```
 
 两种安装方式选择一种即可，不需要同时配置 `module.imports` 和 `theme`。
 
 ## 基础配置
 
-主题默认配置位于 `config/_default/params.toml` 和 `config/_default/markup.toml`。站点只需要覆盖自己的身份信息和需要改变的选项：
+主题默认配置位于 [`config/_default/params.toml`](config/_default/params.toml) 和 [`config/_default/markup.toml`](config/_default/markup.toml)。站点只需要覆盖自己的身份信息和需要改变的选项：
 
-```toml
-[params]
-description = "一个使用 Inyo 构建的长文博客。"
-font = "wenkai"       # wenkai（默认）或 serif
-math = false
-mainSections = ["posts"]
-subtitle = "纸墨二元 · 落字有间"
-author = "你的名字"
+```yaml
+params:
+  description: "一个使用 Inyo 构建的长文博客。"
+  font: "wenkai"
+  math: false
+  mainSections:
+    - "posts"
+  subtitle: "纸墨二元 · 落字有间"
+  author: "你的名字"
 
-[params.navigation]
-tags = "tags"
-about = "about"
+  taxonomy:
+    tag: "tags"
 
-[params.heroPoetry.api]
-enabled = false       # 默认关闭，失败时使用本地诗句
+  navigation:
+    tags: "tags"
+    archives: "archives"
+    about: "about"
+
+  heroPoetry:
+    api:
+      enabled: false
+
+markup:
+  _merge: "deep"
 ```
 
-完整配置和 Front Matter 规则见[配置参考](exampleSite/content/posts/configuration-reference.md)与 [Front Matter 指南](exampleSite/content/posts/front-matter.md)。
+`params.taxonomy.tag` 是文章 Front Matter 使用的 taxonomy plural 键，`params.navigation.tags` 只是标签索引页路径。若将标签 taxonomy 改为 `labels`，请同时设置 Hugo 的 `taxonomies.tag: "labels"`、`params.taxonomy.tag: "labels"` 和相应导航路径。站点覆盖 `markup` 时必须保留 `_merge: "deep"`，否则会覆盖主题的 class-based Chroma 配色默认值。
+
+```yaml
+taxonomies:
+  tag: "labels"
+
+params:
+  taxonomy:
+    tag: "labels"
+  navigation:
+    tags: "labels"
+```
+
+[`exampleSite/hugo.yaml`](exampleSite/hugo.yaml) 是用于展示完整能力的 Demo 配置，不要求用户原样复制。主题默认值位于 `config/_default/`，用户站点只需覆盖自己的身份信息和需要修改的参数。Demo 文章使用 YAML Front Matter；主题参数的最终事实以默认配置和模板读取点为准，设计约束见 `DESIGN.md`。
 
 ## 文档
 
-- [主题入门](exampleSite/content/posts/getting-started.md)：安装、启动和首次预览
-- [配置参考](exampleSite/content/posts/configuration-reference.md)：真实参数与配置职责
-- [Front Matter 指南](exampleSite/content/posts/front-matter.md)：文章字段和摘要写法
-- [功能展厅](exampleSite/content/posts/markdown-style-guide.md)：查看主题实际渲染效果
-- [定制主题](exampleSite/content/posts/customization.md)：字体、token、Logo 和 Hero 定制
-- [发布清单](exampleSite/content/posts/release-checklist.md)：构建、检查和发布前复核
+- [用 Inyo 写一篇文章](exampleSite/content/posts/theme-usage.md)：安装主题、创建文章和使用置顶
+- [Markdown 基础](exampleSite/content/posts/markdown-basics.md)：标题、图片、代码、表格和链接
+- [Markdown 高效写作](exampleSite/content/posts/markdown-efficient.md)：摘要、长文组织和链接边界
+- [KaTeX 数学格式](exampleSite/content/posts/katex.md)：页面级数学公式示例
+- [常见问题](exampleSite/content/posts/faq.md)：FAQ 记录入口
+- [品牌设计核心](exampleSite/content/posts/brand-design.md)：Inyo 的纸墨、朱红和阅读取舍
 - [设计文档](DESIGN.md)：视觉方向、token 和交互约束
 - [变更记录](CHANGELOG.md)：版本与发布说明
 
@@ -170,10 +195,13 @@ https://FeiNiaoBF.github.io/hugo-theme-inyo/
 hugo --source exampleSite --minify --printPathWarnings
 pwsh -File scripts/verify-theme.ps1
 pwsh -File scripts/verify-consumer.ps1
+pwsh -File scripts/verify-hugo-basic-example.ps1
 git diff --check
 ```
 
 不要提交 `exampleSite/public/`、`resources/`、`.hugo_build.lock` 等构建产物。完整贡献流程见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+`verify-hugo-basic-example.ps1` 会使用官方空白 HugoBasicExample 和当前工作区主题运行一次兼容性构建，模拟 Hugo 主题生态的基础检查。
 
 ## 常见问题
 
@@ -189,9 +217,9 @@ git diff --check
 
 在站点配置中设置：
 
-```toml
-[params]
-webfonts = false
+```yaml
+params:
+  webfonts: false
 ```
 
 关闭后主题会使用系统字体栈。字体加载策略仍是后续计划，详见下方“未来计划”。
@@ -211,10 +239,9 @@ Inyo 的设计和实现借鉴了以下开源项目与工具：
 
 Inyo 的模板、样式、交互和集成代码由本项目维护；上述项目的许可证和版权归其原作者所有。
 
-## 未来计划(TODO)
+## 路线图
 
--  **字体加载性能优化**：当前霞鹜文楷采用自托管分片，完整字体资源约 8.8MB，页面会根据实际字符按需加载部分分片。当前优先保持 Inyo 的阅读字体和视觉稳定性，暂不调整字体实现；使用一段时间后，再根据真实设备和网络反馈评估减少分片、按需加载或可选字体策略。
-
+- **字体加载性能优化**：当前霞鹜文楷采用自托管分片，浏览器按页面实际字符请求所需分片。现阶段优先观察真实设备与网络表现，之后再评估减少分片、调整加载策略或提供更轻量的默认字体。
 
 ## 许可证
 

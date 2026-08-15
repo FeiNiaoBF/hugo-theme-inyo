@@ -54,7 +54,7 @@ metadata:
 - 742 色 CSV 过滤与感知距离排序
 - 已知真值自测与命令行入口
 
-```bash
+```shell
 python .pi/skills/color-harmony-oklch/scripts/oklch_palette.py self-test
 python .pi/skills/color-harmony-oklch/scripts/oklch_palette.py analyze '#D92121'
 python .pi/skills/color-harmony-oklch/scripts/oklch_palette.py contrast '#D92121' '#F8F4F0'

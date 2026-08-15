@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inyo Theme Development"
+  short_description: "Safely develop Inyo templates, CSS, and runtime behavior"
+  default_prompt: "Use $inyo-theme-development when changing Inyo templates, parameters, CSS tokens, navigation, SEO, accessibility, fonts, or the homepage poetry interaction."

@@ -17,8 +17,8 @@ Inyo 目前处于早期可用阶段。提交功能改动前，请先说明使用
 
 环境要求：
 
-- Hugo Extended `0.164.0+`
-- Go `1.26.1+`（Hugo Modules 和 consumer fixture 需要）
+- Hugo Extended `>= 0.164.0`
+- Go `>= 1.26.1`（Hugo Modules 和 consumer fixture 需要）
 - PowerShell 7（smoke 脚本需要）
 
 启动 Demo：
@@ -27,7 +27,7 @@ Inyo 目前处于早期可用阶段。提交功能改动前，请先说明使用
 hugo server --source exampleSite
 ```
 
-如果需要同时修改主题源码和 Demo，请保留 `exampleSite/go.mod` 中的本地 `replace`，不要把临时绝对路径提交进去。
+如果需要同时修改主题源码和 Demo，请保留 `exampleSite/go.mod` 中的相对 `replace`。用户配置示例只写正式 Module 路径，不要把本地 `replace` 或绝对路径写进 `exampleSite/hugo.yaml`。
 
 ## 修改约束
 
@@ -40,6 +40,20 @@ hugo server --source exampleSite
 - 主题必须继续支持自定义 section、taxonomy 和 `/blog/` 子路径；
 - 不修改 `demo-shots/`、`public/` 或 `resources/` 等非本轮目标文件。
 
+## 文档与配置同步
+
+配置、模板和文档不是彼此独立的副本。改动公开行为时，请按下面的最小范围同步：
+
+| 改动 | 同步位置 |
+| --- | --- |
+| Inyo 参数 | `config/_default/`、模板读取点、`exampleSite/hugo.yaml`、README 示例、smoke 断言 |
+| 导航或 URL | 默认 Demo、consumer fixture、README 特性说明、可移植性测试 |
+| Demo 文章 | 六篇文章、`exampleSite/content/about.md`、README 文档索引、内容 authoring skill |
+| 发布或兼容性 | README 双语、CHANGELOG、workflow、release skill |
+| 设计 token 或动效 | `DESIGN.md`、CSS、必要的 AGENTS/skill 规则和浏览器复核 |
+
+`docs/superpowers/plans/` 与 `docs/superpowers/specs/` 保存当时的计划和决策，不要把它们批量改写成当前状态。维护文档使用三个反引号代码围栏；通用命令块使用 `shell`。
+
 ## 提交前验证
 
 从仓库根目录运行：
@@ -48,6 +62,7 @@ hugo server --source exampleSite
 hugo --source exampleSite --minify --printPathWarnings
 pwsh -File scripts/verify-theme.ps1
 pwsh -File scripts/verify-consumer.ps1
+pwsh -File scripts/verify-hugo-basic-example.ps1
 git diff --check
 ```
 

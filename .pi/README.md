@@ -1,6 +1,6 @@
 # Inyo 项目本地 pi Skills
 
-本项目在 `.pi/skills/` 内提供 Inyo 主题开发与配色设计技能，pi 会在信任该项目后自动发现。源数据来自 [zhongguo-traditional-colors](https://github.com/nevertoday/zhongguo-traditional-colors)（MIT License，作者 xiaoxiaodong）。
+本项目在 `.pi/skills/` 内提供 Inyo 主题开发、内容写作、发布和配色设计技能，pi 会在信任该项目后自动发现。配色 skills 的源数据来自 [zhongguo-traditional-colors](https://github.com/nevertoday/zhongguo-traditional-colors)（MIT License，作者 xiaoxiaodong）。
 
 技能不是项目规范的第二份事实来源：颜色、布局、版本和验证规则以根目录 `AGENTS.md`、`DESIGN.md`、`config/_default/` 与 `scripts/verify-theme.ps1` 为准；skill 只负责把这些规则转成可执行的工作流。
 
@@ -14,10 +14,11 @@
 | `xxd-accessible-color` | WCAG 对比度检查 + 同库替代色修复 | 文字/按钮/图表可读性校验 |
 | `xxd-existing-design-audit` | 盘点旧色资产，判定保留/合并/替换/移除 | 改版/设计系统清理 |
 | `inyo-theme-development` | 执行 Inyo 模板、CSS、token 与运行时约束 | 开发模板、样式或交互时 |
+| `inyo-content-authoring` | 维护六篇 Demo 文章、About、YAML Front Matter 与 Markdown 展示 | 写作或重构示例内容时 |
 | `inyo-theme-release` | 检查分发元数据、consumer、Pages、文档和版本基线 | 发布、兼容性或开源入口变更时 |
 | `color-harmony-oklch` | OKLCH 和谐分析、目标对比度搜索与 742 色排序 | 主题或 UI 选色时 |
 
-开发主题时优先使用 `inyo-theme-development`；发布、更新 README/CHANGELOG、检查 Hugo Modules 或 GitHub Pages 时使用 `inyo-theme-release`；需要选色或审计时再组合 `xxd-palette-builder`、`xxd-existing-design-audit`、`xxd-accessible-color` 和 `color-harmony-oklch`。不要引用项目中不存在的 `xxd-ui-token`、`xxd-brand-system`、`xxd-palette-applier` 等名称。
+开发主题时使用 `inyo-theme-development`；修改 Demo 文章或 Front Matter 时使用 `inyo-content-authoring`；发布、更新 README/CHANGELOG、检查 Hugo Modules 或 GitHub Pages 时使用 `inyo-theme-release`。需要选色或审计时再组合 `xxd-palette-builder`、`xxd-existing-design-audit`、`xxd-accessible-color` 和 `color-harmony-oklch`。不要引用项目中不存在的 `xxd-ui-token`、`xxd-brand-system`、`xxd-palette-applier` 等名称。
 
 ## 安装到 Claude Code（可选）
 
@@ -34,10 +35,12 @@ cp -R .pi/skills/xxd-* "$HOME/.claude/skills/"
 ```shell
 hugo --source exampleSite --minify
 pwsh -File scripts/verify-theme.ps1
+pwsh -File scripts/verify-consumer.ps1
+pwsh -File scripts/verify-hugo-basic-example.ps1
 git diff --check
 ```
 
-`inyo-theme-development` 必须与以下项目事实保持同步：Hugo Extended `0.164.0`、Go `1.26.1`、`config/_default/` 默认配置、首页 Hero 资源边界、favicon 固定品牌色例外，以及 `.github/workflows/verify-theme.yml` 的 CI 门禁。
+三个 Inyo 专用 skills 必须与以下事实保持同步：Hugo Extended `0.164.0`、Go `1.26.1`、`exampleSite/hugo.yaml`、`config/_default/`、六篇 Demo 文章、首页 Hero 资源边界，以及三个 `scripts/verify-*.ps1` 门禁。具体规则以 `AGENTS.md` 和 `DESIGN.md` 为准。
 
 ## 与 Inyo 主题的关系
 

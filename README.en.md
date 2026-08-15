@@ -6,7 +6,11 @@
 
 > A Chinese-first Hugo theme for long-form reading, with paper-and-ink themes, a poetry hero, multilingual UI, page-level math, and portable navigation.
 
-[![Inyo light theme](images/screenshot.png)](https://FeiNiaoBF.github.io/hugo-theme-inyo/)
+<h3 align="center">
+  <a href="README.md">中文</a>
+</h3>
+
+[![Inyo light theme](https://raw.githubusercontent.com/FeiNiaoBF/hugo-theme-inyo/main/images/screenshot.png)](https://FeiNiaoBF.github.io/hugo-theme-inyo/)
 
 ## Status
 
@@ -25,7 +29,9 @@ Live demo: [FeiNiaoBF.github.io/hugo-theme-inyo](https://FeiNiaoBF.github.io/hug
 - Paper-and-ink light and dark themes driven by CSS tokens
 - Homepage poetry hero with a restrained red double-wing border animation
 - Long-form reading layout with summaries, code blocks, and Markdown rendering
-- Portable navigation for custom content sections and taxonomy paths
+- A focused blog structure: Home, Blog, Tags, Archives, and About; articles remain detail pages, with About aligned to the primary navigation
+- Multiple pinned posts via `pinned: true`, shown before the latest-post stream
+- Portable navigation for custom content sections, taxonomy, archive, and About paths
 - SEO metadata, Open Graph, Twitter Cards, JSON-LD, and description fallbacks
 - Built-in Chinese, English, and Japanese translation keys
 - Page-level KaTeX controlled by the `math` parameter
@@ -46,7 +52,7 @@ go version
 ### Create a site and install Inyo
 
 ```shell
-hugo new site my-inyo-site
+hugo new site my-inyo-site --format yaml
 cd my-inyo-site
 
 hugo mod init example.com/my-inyo-site
@@ -54,21 +60,21 @@ hugo mod get github.com/FeiNiaoBF/hugo-theme-inyo@latest
 hugo mod tidy
 ```
 
-Create or edit `hugo.toml`:
+Create or edit `hugo.yaml`:
 
-```toml
-baseURL = "https://example.org/"
-title = "My Inyo Blog"
-defaultContentLanguage = "en"
+```yaml
+baseURL: "https://example.com/"
+title: "My Inyo Blog"
+defaultContentLanguage: "en"
 
-[module]
-[[module.imports]]
-path = "github.com/FeiNiaoBF/hugo-theme-inyo"
+module:
+  imports:
+    - path: "github.com/FeiNiaoBF/hugo-theme-inyo"
 
-[params]
-description = "My personal blog."
-author = "Your Name"
-subtitle = "Paper and ink."
+params:
+  description: "My personal blog."
+  author: "Your Name"
+  subtitle: "Paper and ink."
 ```
 
 Start the local server:
@@ -87,8 +93,9 @@ git clone https://github.com/FeiNiaoBF/hugo-theme-inyo.git themes/inyo
 
 Then configure:
 
-```toml
-theme = "inyo"
+```yaml
+theme:
+  - "inyo"
 ```
 
 Choose one installation method. Do not configure both `module.imports` and `theme`.
@@ -113,34 +120,56 @@ If you fork the repository, open `Settings → Pages`, select `GitHub Actions` a
 
 ## Configuration
 
-Runtime defaults live in `config/_default/params.toml` and `config/_default/markup.toml`. Configure site identity and only override the options you need:
+Runtime defaults live in [`config/_default/params.toml`](config/_default/params.toml) and [`config/_default/markup.toml`](config/_default/markup.toml). Configure site identity and only override the options you need:
 
-```toml
-[params]
-description = "My long-form blog."
-font = "wenkai"
-math = false
-mainSections = ["posts"]
-author = "Your Name"
+```yaml
+params:
+  description: "My long-form blog."
+  font: "wenkai"
+  math: false
+  mainSections:
+    - "posts"
+  author: "Your Name"
 
-[params.navigation]
-tags = "tags"
-about = "about"
+  taxonomy:
+    tag: "tags"
 
-[params.heroPoetry.api]
-enabled = false
+  navigation:
+    tags: "tags"
+    archives: "archives"
+    about: "about"
+
+  heroPoetry:
+    api:
+      enabled: false
+
+markup:
+  _merge: "deep"
 ```
 
-See the [configuration reference](exampleSite/content/posts/configuration-reference.md) and [Front Matter guide](exampleSite/content/posts/front-matter.md) for the complete documentation.
+`params.taxonomy.tag` is the taxonomy plural key used in article front matter, while `params.navigation.tags` is only the taxonomy index path. To rename the tag taxonomy to `labels`, align Hugo's `taxonomies.tag: "labels"`, `params.taxonomy.tag: "labels"`, and the navigation path. Keep `markup._merge: "deep"` whenever the site overrides `markup`, or the theme's class-based Chroma defaults will be replaced.
+
+```yaml
+taxonomies:
+  tag: "labels"
+
+params:
+  taxonomy:
+    tag: "labels"
+  navigation:
+    tags: "labels"
+```
+
+[`exampleSite/hugo.yaml`](exampleSite/hugo.yaml) is the complete demo configuration, not a file users must copy verbatim. Runtime defaults remain in `config/_default/`; a consumer site only needs to override its identity and the options it changes. Demo articles use YAML Front Matter. The final parameter contract is defined by the defaults and their template consumers; design constraints live in `DESIGN.md`.
 
 ## Documentation
 
-- [Getting started](exampleSite/content/posts/getting-started.md)
-- [Configuration reference](exampleSite/content/posts/configuration-reference.md)
-- [Front Matter guide](exampleSite/content/posts/front-matter.md)
-- [Markdown feature gallery](exampleSite/content/posts/markdown-style-guide.md)
-- [Customization](exampleSite/content/posts/customization.md)
-- [Release checklist](exampleSite/content/posts/release-checklist.md)
+- [Using Inyo](exampleSite/content/posts/theme-usage.md)
+- [Markdown basics](exampleSite/content/posts/markdown-basics.md)
+- [Efficient Markdown writing](exampleSite/content/posts/markdown-efficient.md)
+- [KaTeX mathematics](exampleSite/content/posts/katex.md)
+- [FAQ placeholder](exampleSite/content/posts/faq.md)
+- [Brand design core](exampleSite/content/posts/brand-design.md)
 - [Design document](DESIGN.md)
 - [Changelog](CHANGELOG.md)
 
@@ -154,10 +183,13 @@ Run the following checks from the repository root:
 hugo --source exampleSite --minify --printPathWarnings
 pwsh -File scripts/verify-theme.ps1
 pwsh -File scripts/verify-consumer.ps1
+pwsh -File scripts/verify-hugo-basic-example.ps1
 git diff --check
 ```
 
 Do not commit `exampleSite/public/`, `resources/`, or `.hugo_build.lock`. See [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+
+`verify-hugo-basic-example.ps1` runs a compatibility build with the official empty HugoBasicExample site and the current workspace theme.
 
 ## FAQ
 
@@ -173,12 +205,16 @@ Yes. Navigation, fonts, and static resources are designed for subpath deployment
 
 Yes:
 
-```toml
-[params]
-webfonts = false
+```yaml
+params:
+  webfonts: false
 ```
 
 The font loading strategy is documented as a future improvement while the current reading experience is evaluated.
+
+## Roadmap
+
+- **Font loading performance**: LXGW WenKai is currently delivered as self-hosted Unicode-range subsets, so browsers request the subsets needed by the page. The current priority is collecting real-device and network feedback before considering fewer subsets, a different loading strategy, or a lighter default font.
 
 ## Contributing
 
