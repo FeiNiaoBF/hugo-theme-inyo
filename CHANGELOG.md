@@ -4,17 +4,26 @@
 
 ## Unreleased
 
+## v0.2.0 - 2026-08-15
+
 ### Added
 
 - 首页多篇置顶与独立归档页：主导航保持“首页、博客、标签、归档、关于”，归档按年份输出文章日期与标题
 - `scripts/verify-hugo-basic-example.ps1` 与对应 CI job，使用官方 HugoBasicExample 验证主题基础兼容性
 - `inyo-content-authoring` 项目 skill，用于约束 Demo 文章、YAML Front Matter、Markdown 展示和内容互链
+- `inyo-git-release` 项目 skill，用于分组提交、commit 质量、SemVer Tag 与经授权的 push 流程
 
 ### Changed
 
 - Demo 与 consumer 站点配置统一为 `exampleSite/hugo.yaml` 和 `scripts/fixtures/consumer-site/hugo.yaml`；根目录 `hugo.toml` 继续只承担主题模块兼容性声明
 - Demo 内容收敛为主题使用、Markdown 基础、高效写作、KaTeX、FAQ 和品牌设计六篇文章，默认 archetype 与内容 fixture 统一使用 YAML Front Matter
 - 同步 README 双语、CONTRIBUTING、DESIGN、AGENTS 与项目 skills 的配置边界、验证命令和职责说明
+
+### Fixed
+
+- 页脚从 `position: fixed` 浮层改为全宽、文档流内的页面页脚（任何视口均在正文之后），修复平板/桌面下页脚悬浮叠内容的问题
+- `scrollbar-gutter: stable` 固定滚动条槽位，避免跨页切换时内容列横向跳动
+- 路由与可访问性合同加固：多语言 fixture、外链安全、地标顺序与 aria-current 语义
 
 ## v0.1.1 - 2026-08-12
 
