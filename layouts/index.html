@@ -45,14 +45,37 @@
 </button>
 <script type="application/json" id="hero-poetry-data">{{ $poems | jsonify | safeJS }}</script>
 
-{{ $all := where site.RegularPages "Section" "in" (site.Params.mainSections | default (slice "posts")) }}
+{{ $mainSections := site.Params.mainSections | default (slice "posts") }}
+{{ $all := where site.RegularPages "Section" "in" $mainSections }}
 {{ if eq (len $all) 0 }}
 <p class="home-empty">{{ i18n "no_posts" }}</p>
 {{ else }}
-  {{/* 按日期分组（组标题=发布日期）；同日多篇共一组，倒序 */}}
-  {{ $groups := $all.GroupByDate "2006-01-02" "desc" }}
+  {{ $pinned := where $all "Params.pinned" true }}
+  {{ $latest := where $all "Params.pinned" "ne" true }}
 
-  {{ range $group := $groups }}
+  {{ with $pinned }}
+    <section class="catalog-group catalog-group--pinned">
+      <h2 class="catalog-group-title">{{ i18n "pinned" }}</h2>
+      <ul class="catalog">
+        {{ range .ByDate.Reverse }}
+        <li class="catalog-item">
+          <div class="catalog-head">
+            <h3 class="catalog-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+            <div class="catalog-meta">
+              <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
+              <span>{{ i18n "reading_time" .ReadingTime }}</span>
+            </div>
+          </div>
+          {{ partial "summary.html" . }}
+        </li>
+        {{ end }}
+      </ul>
+    </section>
+  {{ end }}
+
+  {{/* 普通文章按发布日期分组；同日多篇共一组，倒序 */}}
+  {{ with $latest }}<h2 class="catalog-section-title">{{ i18n "latest" }}</h2>{{ end }}
+  {{ range $group := $latest.GroupByDate "2006-01-02" "desc" }}
     {{ $pages := $group.Pages.ByDate.Reverse }}
     <section class="catalog-group">
       <h2 class="catalog-group-title">

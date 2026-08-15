@@ -2,7 +2,16 @@
 other = "ホーム"
 
 [posts]
-other = "記事"
+other = "ブログ"
+
+[archives]
+other = "アーカイブ"
+
+[pinned]
+other = "固定記事"
+
+[latest]
+other = "最新記事"
 
 [about]
 other = "このサイトについて"

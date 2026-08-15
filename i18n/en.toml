@@ -2,7 +2,16 @@
 other = "Home"
 
 [posts]
-other = "Posts"
+other = "Blog"
+
+[archives]
+other = "Archives"
+
+[pinned]
+other = "Pinned"
+
+[latest]
+other = "Latest"
 
 [about]
 other = "About"
