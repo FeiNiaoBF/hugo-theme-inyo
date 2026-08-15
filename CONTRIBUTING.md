@@ -38,7 +38,7 @@ hugo server --source exampleSite
 - 正文、导航和页脚保持横排；
 - 自托管资源不能假定站点部署在根路径；
 - 主题必须继续支持自定义 section、taxonomy 和 `/blog/` 子路径；
-- 不修改 `demo-shots/`、`public/` 或 `resources/` 等非本轮目标文件。
+- 不提交 `public/`、`resources/` 或锁文件等构建产物。
 
 ## 文档与配置同步
 
@@ -52,7 +52,7 @@ hugo server --source exampleSite
 | 发布或兼容性 | README 双语、CHANGELOG、workflow、release skill |
 | 设计 token 或动效 | `DESIGN.md`、CSS、必要的 AGENTS/skill 规则和浏览器复核 |
 
-`docs/superpowers/plans/` 与 `docs/superpowers/specs/` 保存当时的计划和决策，不要把它们批量改写成当前状态。维护文档使用三个反引号代码围栏；通用命令块使用 `shell`。
+维护文档使用三个反引号代码围栏；通用命令块使用 `shell`。
 
 ## 提交前验证
 

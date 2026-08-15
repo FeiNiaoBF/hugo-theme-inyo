@@ -10,7 +10,7 @@
 4. `scripts/verify-*.ps1`、`.github/workflows/`：可执行合同。
 5. `.pi/skills/`：任务工作流，不是第二份产品规范。
 
-若内容冲突，先以源码和门禁确认现状，再修正上层文档。`docs/superpowers/plans/` 与 `docs/superpowers/specs/` 是历史决策记录，不应被当成当前 API，也不要为消除旧术语而重写历史。
+若内容冲突，先以源码和门禁确认现状，再修正上层文档。
 
 ## 技术基线
 

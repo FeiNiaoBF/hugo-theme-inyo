@@ -23,8 +23,8 @@ Keep the public project entry points and release machinery aligned with the them
 
 1. Run `git status --short --untracked-files=all` and preserve unrelated changes.
 2. Read the current implementation and verifier before editing claims.
-3. Treat `docs/superpowers/plans/` and `docs/superpowers/specs/` as historical records, not current API documentation.
-4. Do not mutate `demo-shots/` or commit generated `public/`, `resources/`, lock files, or temporary fixture output.
+3. Use Git history for superseded implementation records; current API documentation lives in the maintained project documents.
+4. Do not commit generated `public/`, `resources/`, lock files, or temporary fixture output.
 
 ## Documentation synchronization
 

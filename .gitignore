@@ -5,6 +5,7 @@
 
 # Local notes and machine-specific files.
 .me/
+demo-shots/
 .DS_Store
 Thumbs.db
 Desktop.ini
