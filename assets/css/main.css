@@ -78,7 +78,11 @@
 /* ---------- 2. Base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+html {
+  -webkit-text-size-adjust: 100%;
+  /* 预留滚动条空间：内容超出/未超出时页面宽度恒定，避免滚动条出现/消失导致布局跳动 */
+  scrollbar-gutter: stable;
+}
 
 body {
   margin: 0;
