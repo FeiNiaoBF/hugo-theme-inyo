@@ -1,6 +1,6 @@
 ---
 name: inyo-theme-release
-description: Use when maintaining Inyo's README or CHANGELOG, distribution metadata, compatibility fixtures, GitHub Actions, GitHub Pages demo, version tags, or release readiness. Also use for project-wide documentation synchronization after public behavior changes.
+description: Use when maintaining Inyo's README or CHANGELOG, distribution metadata, compatibility fixtures, GitHub Actions, GitHub Pages demo, or release readiness. Also use for project-wide documentation synchronization after public behavior changes.
 ---
 
 # Inyo Theme Release
@@ -65,13 +65,11 @@ After verification, confirm `git status --short` contains only intended source a
 
 Only when the user explicitly requests a release:
 
-1. Move verified `Unreleased` entries into the selected SemVer version and date.
-2. Commit the release changes intentionally.
-3. Create an annotated tag using the selected version, for example `git tag -a vX.Y.Z -m "Release Inyo vX.Y.Z"`.
-4. Push the branch and matching tag together only with user approval.
-5. Create release notes from the corresponding CHANGELOG entry.
+1. Prepare the verified release notes and public documentation.
+2. Hand off commit grouping, release commits, annotated tags, and any approved push to `inyo-git-release`.
+3. Create release notes from the corresponding CHANGELOG entry only when the user requests a GitHub Release.
 
-Never infer the next version, tag, push, pull request, or GitHub Release from a documentation-only request.
+Never infer the next version, tag, push, pull request, or GitHub Release from a documentation-only request. `inyo-git-release` owns the Git mutation boundary.
 
 ## Failure routing
 

@@ -71,7 +71,8 @@ README 面向主题用户，CONTRIBUTING 面向贡献者，AGENTS 面向代理�
 
 - 模板、CSS、配置或交互：`inyo-theme-development`。
 - Demo 文章、About、Front Matter 或 Markdown 展示：`inyo-content-authoring`。
-- README、CHANGELOG、CI、Pages、consumer 或发布：`inyo-theme-release`。
+- README、CHANGELOG、CI、Pages、consumer 或发布资料：`inyo-theme-release`。
+- 分组提交、commit 质量、SemVer Tag 或经明确授权的 push：`inyo-git-release`。
 - 选色与对比度：按需组合 `xxd-palette-builder`、`xxd-accessible-color`、`xxd-existing-design-audit` 与 `color-harmony-oklch`。
 
 skill 与本文件、`DESIGN.md` 或源码冲突时，必须修 skill，不得用 skill 覆盖事实源。
@@ -95,6 +96,7 @@ git diff --check
 ## 提交与发布
 
 - 保留用户已有工作区修改，只暂存本次任务的显式路径。
-- 提交前缀使用 `feat:`、`fix:`、`docs:`、`design:`、`style:`、`chore:`、`perf:`、`refactor:` 或 `test:`。
+- 提交前缀使用 `feat:`、`fix:`、`docs:`、`design:`、`style:`、`chore:`、`perf:`、`refactor:`、`test:` 或 `ci:`。
 - 补丁、次版本和主版本遵循 SemVer；实际版本号从 CHANGELOG、Git tag 和用户发布目标确定，不在规范中硬编码“下一个版本”。
 - 只有用户明确要求时才 commit、tag、push、创建 PR 或 GitHub Release。
+- commit、Tag 与 push 的具体安全流程以 `inyo-git-release` 为准；发布资料与兼容性门禁仍由 `inyo-theme-release` 维护。

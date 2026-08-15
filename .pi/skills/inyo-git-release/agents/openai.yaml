@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inyo Git Release"
+  short_description: "Commit, tag, and push Inyo releases safely"
+  default_prompt: "Use $inyo-git-release to group Inyo changes into commits, create a verified release tag, or safely push an approved release."
