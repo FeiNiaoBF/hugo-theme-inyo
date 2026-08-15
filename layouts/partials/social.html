@@ -6,7 +6,7 @@
   {{ if eq .url "/index.xml" }}
     {{ with site.Home.OutputFormats.Get "rss" }}{{ $href = .RelPermalink }}{{ end }}
   {{ else if $isInternal }}
-    {{ $href = urls.JoinPath (urls.Parse site.BaseURL).Path (strings.TrimPrefix "/" .url) }}
+    {{ $href = strings.TrimPrefix "/" .url | relLangURL }}
   {{ end }}
   <a href="{{ $href }}"{{ if not $isInternal }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .name }}</a>
   {{ end }}

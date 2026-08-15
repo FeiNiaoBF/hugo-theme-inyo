@@ -1,0 +1,17 @@
+baseURL: "https://example.com/project/"
+defaultContentLanguageInSubdir: true
+
+languages:
+  zh-cn:
+    label: "中文"
+    locale: "zh-CN"
+    weight: 1
+  en:
+    label: "English"
+    locale: "en-US"
+    weight: 2
+
+params:
+  social:
+    - name: "Social About"
+      url: "/about/"

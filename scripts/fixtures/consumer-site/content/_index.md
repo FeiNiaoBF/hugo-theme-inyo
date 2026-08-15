@@ -1,3 +1,3 @@
-+++
-title = "Consumer Fixture"
-+++
+---
+title: "Consumer Fixture"
+---

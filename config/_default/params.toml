@@ -7,9 +7,13 @@ subtitle = ""
 mainSections = ["posts"]
 ogImage = "img/seal-yang-og.png"
 
+[taxonomy]
+tag = "tags"
+
 [navigation]
 tags = "tags"
 about = "about"
+archives = "archives"
 
 [heroPoetry.api]
 enabled = false
