@@ -8,6 +8,16 @@ languages:
     locale: "zh-CN"
     weight: 1
     title: "Inyo 陰陽"
+  en:
+    label: "English"
+    locale: "en-US"
+    weight: 2
+    title: "Inyo"
+  ja:
+    label: "日本語"
+    locale: "ja-JP"
+    weight: 3
+    title: "Inyo"
 
 module:
   imports:
