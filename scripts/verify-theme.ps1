@@ -441,6 +441,11 @@ $multilingualConfig = "$exampleConfig,$multilingualOverlay"
 & hugo --source $exampleSite --config $multilingualConfig --minify --printPathWarnings --noBuildLock --destination $multilingualOut
 if ($LASTEXITCODE -ne 0) { throw "Multilingual project-site build failure: Hugo exited with code $LASTEXITCODE." }
 
+$markdownFixture = Join-Path $repoRoot "scripts\fixtures\markdown-rendering"
+$markdownOut = Join-Path $tempRoot "markdown-rendering"
+& hugo --source $markdownFixture --minify --noBuildLock --destination $markdownOut
+if ($LASTEXITCODE -ne 0) { throw "Markdown rendering fixture build failure: Hugo exited with code $LASTEXITCODE." }
+
 $homePage = Join-Path $out "index.html"
 $article = Join-Path $out "posts\katex\index.html"
 $basicsArticle = Join-Path $out "posts\markdown-basics\index.html"
@@ -476,6 +481,10 @@ $heroScript = Join-Path $repoRoot "layouts\partials\hero-poetry-script.html"
 $summarySource = Join-Path $repoRoot "layouts\partials\summary-source.html"
 $langPartial = Join-Path $repoRoot "layouts\partials\lang.html"
 $headingHook = Join-Path $repoRoot "layouts\_default\_markup\render-heading.html"
+$linkHook = Join-Path $repoRoot "layouts\_default\_markup\render-link.html"
+$imageHook = Join-Path $repoRoot "layouts\_default\_markup\render-image.html"
+$tableHook = Join-Path $repoRoot "layouts\_default\_markup\render-table.html"
+$markdownBundle = Join-Path $markdownOut "posts\bundle-smoke\index.html"
 $linkHook = Join-Path $repoRoot "layouts\_default\_markup\render-link.html"
 
 Assert-Contains $css '(?s)\.shell-footer\s*\{[^}]*position:\s*fixed;[^}]*max-height:\s*7em;[^}]*overflow-y:\s*auto;' "Responsive footer failure: desktop footer must stay bounded at the rail bottom."
@@ -556,8 +565,18 @@ Assert-Contains $pagesFontCss.FullName 'url\(\s*(?:"|'')?\.\./fonts/' "Pages fai
 Assert-NotContains $pagesFontCss.FullName 'url\(\s*(?:"|'')?/fonts/' "Pages failure: WenKai CSS contains an absolute root font URL."
 
 # Multilingual project-site contract: authored page links retain both project and language prefixes.
-Assert-Contains $linkHook 'strings\.TrimPrefix\s+"/"\s+\$destination\s*\|\s*relLangURL' "Multilingual failure: root-relative Markdown links must use relLangURL after removing the leading slash."
-Assert-Contains $linkHook '\(not\s+\(hasPrefix\s+\$lowerDestination\s+"#"\)\)' "Multilingual failure: fragment-only links must bypass URL rewriting."
+Assert-Contains $linkHook 'strings\.TrimPrefix\s+"/"\s+\$u\.Path\s*\|\s*relLangURL' "Multilingual failure: root-relative Markdown links must use relLangURL after removing the leading slash."
+Assert-Contains $linkHook '\.Page\.GetPage' "Markdown failure: link hook must resolve relative page links via .Page.GetPage."
+Assert-Contains $imageHook '\.Page\.Resources\.Get' "Markdown failure: image hook must resolve page-bundle resources."
+Assert-Contains $imageHook 'reflect\.IsImageResource' "Markdown failure: image hook must guard raster-only width/height access."
+Assert-FileExists $tableHook "Markdown failure: table render hook is missing."
+Assert-Contains $langPartial 'site\.Home\.AllTranslations' "Multilingual failure: language switcher must use site.Home.AllTranslations."
+Assert-NotContains $langPartial 'site\.Languages' "Multilingual failure: language switcher still uses deprecated site.Languages."
+Assert-Contains $markdownBundle 'href=("|'')?/posts/target/' "Markdown failure: relative .md links must resolve to the target page RelPermalink."
+Assert-Contains $markdownBundle 'href=("|'')?/posts/target/#intro' "Markdown failure: relative links must preserve fragments."
+Assert-Contains $markdownBundle 'width=("|'')?120[^>]*height=("|'')?60' "Markdown failure: page-bundle images must include width and height."
+Assert-Contains $markdownBundle 'title=("|'')?Bundle' "Markdown failure: image titles must be preserved."
+Assert-Contains $linkHook 'hasPrefix\s+\$lowerDestination\s+"#"' "Multilingual failure: fragment-only links must bypass URL rewriting."
 Assert-Contains $socialPartial 'strings\.TrimPrefix\s+"/"\s+\.url\s*\|\s*relLangURL' "Multilingual failure: ordinary internal social links must use relLangURL after removing the leading slash."
 Assert-FileExists $multilingualArticle "Multilingual failure: source article was not generated under zh-cn."
 Assert-FileExists $multilingualTarget "Multilingual failure: root-relative Markdown target was not generated under zh-cn."

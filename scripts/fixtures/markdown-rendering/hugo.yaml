@@ -1,0 +1,13 @@
+baseURL: "https://example.com/"
+title: "Markdown Rendering Fixture"
+defaultContentLanguage: "zh-cn"
+enableRobotsTXT: true
+
+module:
+  imports:
+    - path: "github.com/FeiNiaoBF/hugo-theme-inyo"
+
+params:
+  mainSections:
+    - "posts"
+  webfonts: false
