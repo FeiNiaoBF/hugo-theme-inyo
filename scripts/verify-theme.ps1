@@ -465,6 +465,7 @@ $pagesCss = Get-ChildItem (Join-Path $pagesOut "css") -Filter "main*.css" -File 
 $pagesFontCss = Get-ChildItem (Join-Path $pagesOut "css") -Filter "wenkai*.css" -File | Select-Object -First 1
 $css = Join-Path $repoRoot "assets\css\main.css"
 $taxonomyTemplate = Join-Path $repoRoot "layouts\_default\taxonomy.html"
+$archivesTemplate = Join-Path $repoRoot "layouts\archives\list.html"
 $categories = Join-Path $out "categories\index.html"
 $sealTemplate = Join-Path $repoRoot "layouts\partials\seal.html"
 $favicon = Join-Path $repoRoot "static\img\seal-yang.svg"
@@ -515,7 +516,14 @@ foreach ($demoPage in @(
 Assert-FileMissing $legacyGuide "Demo docs failure: obsolete theme-guide alias page was generated."
 if (-not (Test-Path $archives)) { throw "Archive failure: generated /archives/ page is missing." }
 Assert-Contains $archives '<h1>归档</h1>' "Archive failure: archive page heading is not localized."
-Assert-Contains $archives '<h2[^>]*>20[0-9]{2}</h2>' "Archive failure: archive page does not contain a year group."
+Assert-Contains $archives 'class=("|'''')?archive-year' "Archive failure: archive page does not contain a year group."
+Assert-Contains $archives '(?s)二〇二六.*年' "Archive failure: Chinese archive years must use Chinese numerals."
+Assert-Contains $archivesTemplate '\$year\s*=\s*replace\s+\$year\s+"0"\s+"〇"' "Archive failure: all locales must use the Chinese numeral year conversion."
+Assert-NotContains $archivesTemplate 'archivePage\.Lang' "Archive failure: Chinese numeral year conversion must not be locale-gated."
+Assert-Contains $archives 'class=("|'''')?archive-list__title' "Archive failure: archive rows must render titles before dates."
+Assert-Contains $archives '>[0-9]{2}/[0-9]{2}<' "Archive failure: Chinese archive rows must render compact dates."
+Assert-Contains $css '(?s)\.archive-year__suffix\s*\{[^}]*background:\s*var\(--cinnabar\)' "Archive failure: the Chinese year suffix must use the cinnabar seal role."
+Assert-Contains $css '(?s)\.archive-year__suffix\s*\{[^}]*border-radius:\s*50%' "Archive failure: the Chinese year suffix must be circular."
 
 # P1 generated SEO and navigation contracts.
 Assert-Contains $homePage '<meta\s+name=("|'')?description[^>]*content=("|'')?[^"''>\s]+' "SEO failure: homepage is missing a non-empty meta description."
@@ -660,7 +668,7 @@ Assert-Contains $headingHook 'i18n\s+"heading_anchor"' "P2 failure: heading anch
 
 $requiredI18nKeys = @(
   "home", "posts", "archives", "pinned", "latest", "about", "prev", "back", "next", "read_more", "tag", "tags",
-  "date_format", "reading_time", "no_posts", "skip_to_content", "toggle_theme",
+  "date_format", "archive_date_format", "archive_year_suffix", "reading_time", "no_posts", "skip_to_content", "toggle_theme",
   "site_navigation", "language", "heading_anchor", "hero_poetry_label", "tag_count", "tag_cloud", "notfound_msg", "notfound_hint"
 )
 foreach ($locale in @("zh-cn", "en", "ja")) {
@@ -668,13 +676,16 @@ foreach ($locale in @("zh-cn", "en", "ja")) {
   foreach ($key in $requiredI18nKeys) {
     Assert-Contains $localePath ("(?m)^\[" + [regex]::Escape($key) + "\]") "P2 failure: i18n/$locale.toml is missing [$key]."
   }
+  Assert-Contains $localePath '(?ms)\[archive_year_suffix\]\s*other\s*=\s*"年"' "Archive failure: i18n/$locale.toml must use the unified 年 seal label."
 }
 
 # Tags editorial cloud
 Assert-Contains $tags 'class=("|'')?tag-cloud' "Tags failure: configured tag taxonomy must render the editorial cloud."
 Assert-Contains $tags 'class=("|'')?tag-cloud__item\s+ink-(?:1|2)' "Tags failure: tags must render weighted cloud links."
 Assert-Contains $tags 'class=("|'')?tag-cloud__count' "Tags failure: tag counts must be visible in the cloud."
+Assert-Contains $tags 'class=("|'')?tag-cloud__count("|'')?[^>]*>\d{2}<' "Tags failure: tag counts must use two-digit folio notation."
 Assert-Contains $tags 'aria-label=("|'')?[^"''>]*篇文章' "Tags failure: cloud links must expose article counts."
+Assert-Contains $term 'class=("|'')?taxonomy-back' "Tags failure: tag term pages must offer a return link to the tag index."
 Assert-Contains $categories 'class=("|'')?taxonomy-list' "Taxonomy failure: non-tag taxonomies must retain the generic list."
 Assert-NotContains $categories 'class=("|'')?tag-cloud' "Taxonomy failure: categories must not use the tag cloud layout."
 Assert-Contains $taxonomyTemplate 'site\.Params\.taxonomy\.tag' "Taxonomy failure: cloud layout must follow the configured tag taxonomy."
@@ -684,6 +695,7 @@ Assert-Contains $taxonomyTemplate 'ge\s+\.Count\s+4' "Tags failure: ink-3 thresh
 Assert-Contains $taxonomyTemplate 'ge\s+\.Count\s+7' "Tags failure: ink-4 threshold is missing."
 Assert-Contains $css '(?s)\.tag-cloud\s*\{[^}]*flex-direction:\s*row' "Tags failure: cloud must use a horizontal flow."
 Assert-Contains $css '(?s)\.tag-cloud__item\s*\{[^}]*white-space:\s*nowrap' "Tags failure: cloud items must remain intact while wrapping."
+Assert-Contains $css '(?s)\.tag-cloud__item\s*\{[^}]*min-height:\s*24px' "Tags failure: cloud links must provide a 24px minimum target height."
 Assert-NotContains $css 'writing-mode\s*:\s*vertical-rl' "Tags failure: editorial cloud must not use vertical writing."
 Assert-Contains $css '(?s)@media\s*\(hover:\s*hover\).*?\.tag-cloud__item:hover' "Tags failure: cloud hover must be pointer-capability gated."
 
