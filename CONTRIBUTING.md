@@ -4,6 +4,8 @@
 
 ## 开始之前
 
+> 该项目使用 AI 编码代理辅助开发。
+
 请先了解：
 
 - [README.md](README.md)：项目定位、安装方式和文档入口
@@ -44,13 +46,13 @@ hugo server --source exampleSite
 
 配置、模板和文档不是彼此独立的副本。改动公开行为时，请按下面的最小范围同步：
 
-| 改动 | 同步位置 |
-| --- | --- |
-| Inyo 参数 | `config/_default/`、模板读取点、`exampleSite/hugo.yaml`、README 示例、smoke 断言 |
-| 导航或 URL | 默认 Demo、consumer fixture、README 特性说明、可移植性测试 |
-| Demo 文章 | 六篇文章、`exampleSite/content/about.md`、README 文档索引、内容 authoring skill |
-| 发布或兼容性 | README 双语、CHANGELOG、workflow、release skill |
-| 设计 token 或动效 | `DESIGN.md`、CSS、必要的 AGENTS/skill 规则和浏览器复核 |
+| 改动              | 同步位置                                                                         |
+| ----------------- | -------------------------------------------------------------------------------- |
+| Inyo 参数         | `config/_default/`、模板读取点、`exampleSite/hugo.yaml`、README 示例、smoke 断言 |
+| 导航或 URL        | 默认 Demo、consumer fixture、README 特性说明、可移植性测试                       |
+| Demo 文章         | 六篇文章、`exampleSite/content/about.md`、README 文档索引、内容 authoring skill  |
+| 发布或兼容性      | README 双语、CHANGELOG、workflow、release skill                                  |
+| 设计 token 或动效 | `DESIGN.md`、CSS、必要的 AGENTS/skill 规则和浏览器复核                           |
 
 维护文档使用三个反引号代码围栏；通用命令块使用 `shell`。
 

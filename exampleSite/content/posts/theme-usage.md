@@ -27,6 +27,18 @@ hugo mod get github.com/FeiNiaoBF/hugo-theme-inyo@latest
 hugo server
 ```
 
+## 更新主题
+
+Hugo Modules 会把解析后的主题版本写入站点的 `go.mod`。更新 Inyo 时，在站点根目录运行：
+
+```shell
+hugo mod get github.com/FeiNiaoBF/hugo-theme-inyo@latest
+hugo mod tidy
+hugo --minify
+```
+
+`@latest` 只出现在更新命令中，不要直接写进 `go.mod`。如果 Go 代理还没有同步最新 release，可以临时使用 `GOPROXY=direct` 后重试；PowerShell 可先执行 `$env:GOPROXY = "direct"`。对于 Hugo 站点，请使用 `hugo mod tidy`；单独运行 `go mod tidy` 可能因为站点没有 Go 包而移除主题依赖。
+
 站点的 `hugo.yaml` 可以先保持简单：
 
 ```yaml
@@ -47,6 +59,22 @@ markup:
 ```
 
 这里的 `hugo.yaml` 是站点配置，不是文章 Front Matter。文章本身也使用 YAML，但写在 Markdown 文件最上方并由 `---` 包围。
+
+## 启动 Hugo
+
+完成站点配置后，在站点根目录启动本地预览：
+
+```shell
+hugo server --buildDrafts
+```
+
+然后访问 `http://localhost:1313/`。`--buildDrafts` 会同时渲染标记为 `draft: true` 的文章；如果只想预览正式内容，可以运行 `hugo server`。按 `Ctrl+C` 停止本地服务器。
+
+正式发布前，可以先生成压缩后的静态文件：
+
+```shell
+hugo --minify
+```
 
 ## 写下第一篇文章
 

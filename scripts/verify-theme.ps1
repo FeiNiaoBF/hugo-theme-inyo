@@ -373,11 +373,11 @@ foreach ($skillFile in $skillFiles) {
 
 # Demo documentation contracts: keep the example site task-oriented and in sync with the current theme.
 $demoDocs = @(
-  @{ Name = "theme-usage"; Patterns = @('用 Inyo 写一篇文章', 'hugo mod get github\.com/FeiNiaoBF/hugo-theme-inyo@latest', 'pinned:\s*true') },
+  @{ Name = "theme-usage"; Patterns = @('用 Inyo 写一篇文章', 'hugo mod get github\.com/FeiNiaoBF/hugo-theme-inyo@latest', 'hugo server --buildDrafts', 'pinned:\s*true') },
   @{ Name = "markdown-basics"; Patterns = @('Markdown 基础', 'data-kind="hook"', '双鱼印章图形') },
   @{ Name = "markdown-efficient"; Patterns = @('Markdown 高效写作', '<kbd>', 'javascript:alert') },
   @{ Name = "katex"; Patterns = @('把公式写进文章', 'math:\s*true', '\\begin\{aligned\}', '\\begin\{bmatrix\}') },
-  @{ Name = "faq"; Patterns = @('常见问题', '如何更新 Inyo 主题', 'hugo mod get github\.com/FeiNiaoBF/hugo-theme-inyo@latest') },
+  @{ Name = "faq"; Patterns = @('常见问题', '如何更新 Inyo 主题', 'hugo mod get github\.com/FeiNiaoBF/hugo-theme-inyo@latest', 'pinned:\s*true') },
   @{ Name = "brand-design"; Patterns = @('纸、墨与朱红', '阅读先于功能', 'Hero 要有诗句') }
 )
 $expectedDemoNames = @($demoDocs | ForEach-Object { $_.Name } | Sort-Object)
