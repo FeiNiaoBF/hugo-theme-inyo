@@ -9,11 +9,13 @@ languages:
     weight: 1
     title: "Inyo 陰陽"
   en:
+    contentDir: "content/en"
     label: "English"
     locale: "en-US"
     weight: 2
     title: "Inyo"
   ja:
+    contentDir: "content/ja"
     label: "日本語"
     locale: "ja-JP"
     weight: 3
