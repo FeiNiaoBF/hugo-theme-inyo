@@ -7,6 +7,7 @@ date: 2026-08-15
 
 - [同级相对链接](../target.md)
 - [带片段](../target.md#intro)
+- [带 query 和片段](../target.md?view=full#intro)
 - [Page Bundle 图片](image.png)
 
 图片（Page Bundle 资源）：

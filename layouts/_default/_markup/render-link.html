@@ -18,15 +18,15 @@
     {{- if hasPrefix $destination "/" -}}
       {{- /* 根相对：relLangURL + fragment/query */ -}}
       {{- $href = strings.TrimPrefix "/" $u.Path | relLangURL -}}
-      {{- with $u.Fragment }}{{ $href = printf "%s#%s" $href . }}{{ end -}}
       {{- with $u.RawQuery }}{{ $href = printf "%s?%s" $href . }}{{ end -}}
+      {{- with $u.Fragment }}{{ $href = printf "%s#%s" $href . }}{{ end -}}
     {{- else -}}
       {{- /* 相对：页面解析 */ -}}
       {{- $target := .Page.GetPage $u.Path -}}
       {{- with $target -}}
         {{- $href = .RelPermalink -}}
-        {{- with $u.Fragment }}{{ $href = printf "%s#%s" $href . }}{{ end -}}
         {{- with $u.RawQuery }}{{ $href = printf "%s?%s" $href . }}{{ end -}}
+        {{- with $u.Fragment }}{{ $href = printf "%s#%s" $href . }}{{ end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

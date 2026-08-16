@@ -16,8 +16,12 @@
 {{- $width := "" -}}
 {{- $height := "" -}}
 {{- if not $isExternal -}}
-  {{- /* Page Bundle 资源优先（按 basename 匹配） */ -}}
-  {{- $res := .Page.Resources.Get (path.Base $destination) -}}
+  {{- /* Page Bundle 资源：全路径优先，basename 兜底（支持嵌套、避免同名冲突） */ -}}
+  {{- $resName := strings.TrimPrefix "./" $destination -}}
+  {{- $res := .Page.Resources.Get $resName -}}
+  {{- if not $res -}}
+    {{- $res = .Page.Resources.Get (path.Base $resName) -}}
+  {{- end -}}
   {{- with $res -}}
     {{- $src = .RelPermalink -}}
     {{- if reflect.IsImageResource $res -}}
