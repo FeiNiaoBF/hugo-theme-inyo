@@ -1,8 +1,22 @@
 {{ if hugo.IsMultilingual }}
+{{ $page := . }}
 <nav class="lang" aria-label="{{ i18n "language" | default "Language" }}">
-  {{ range .Translations }}
-  <a href="{{ .RelPermalink }}" lang="{{ .Language.Lang }}" hreflang="{{ .Language.Lang }}">{{ .Language.Label }}</a>
+  {{ range site.Languages }}
+    {{ $lang := . }}
+    {{ if eq $lang.Lang $page.Lang }}
+      <span class="lang-current" aria-current="page">{{ $lang.Label }}</span>
+    {{ else }}
+      {{ $href := "" }}
+      {{ range $page.Translations }}
+        {{ if eq .Lang $lang.Lang }}{{ $href = .RelPermalink }}{{ end }}
+      {{ end }}
+      {{ if not $href }}
+        {{ range site.Home.AllTranslations }}
+          {{ if eq .Lang $lang.Lang }}{{ $href = .RelPermalink }}{{ end }}
+        {{ end }}
+      {{ end }}
+      <a href="{{ $href }}" lang="{{ $lang.Lang }}" hreflang="{{ $lang.Lang }}">{{ $lang.Label }}</a>
+    {{ end }}
   {{ end }}
-  <span class="lang-current">{{ .Language.Label }}</span>
 </nav>
 {{ end }}
