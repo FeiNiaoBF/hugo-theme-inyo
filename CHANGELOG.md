@@ -4,6 +4,16 @@
 
 ## Unreleased
 
+## v0.3.0 - 2026-08-15
+
+### Added
+
+- tags 索引页改为**横向编辑型标签云**：标签按文章数降序，映射 `ink-1..4` 权重分级（字号 + 墨色浓淡，高频标签更粗更深）；每枚标签显示等宽文章计数；categories 等其它 taxonomy 保留列表；标签云仅用于 `params.taxonomy.tag` 配置的 taxonomy
+
+### Changed
+
+- 标签索引一律横排（`writing-mode` 不使用竖排）；文档与门禁同步更新，竖排仅限题签的例外已撤销
+
 ## v0.2.2 - 2026-08-15
 
 ### Fixed
