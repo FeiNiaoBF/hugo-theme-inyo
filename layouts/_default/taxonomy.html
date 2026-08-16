@@ -10,13 +10,16 @@
   {{ end }}
 
   {{ if eq $page.Type $tagTaxonomy }}
-    <nav class="tag-scroll" aria-label="{{ i18n "tag_cloud" | default "标签云" }}">
+    <nav class="tag-cloud" aria-label="{{ i18n "tag_cloud" | default "标签云" }}">
       {{ range .ByCount }}
         {{ $ink := "ink-1" }}
         {{ if ge .Count 2 }}{{ $ink = "ink-2" }}{{ end }}
         {{ if ge .Count 4 }}{{ $ink = "ink-3" }}{{ end }}
         {{ if ge .Count 7 }}{{ $ink = "ink-4" }}{{ end }}
-        <a class="tag-stamp {{ $ink }}" href="{{ .Page.RelPermalink }}" aria-label="{{ .Page.Title }}：{{ i18n "tag_count" .Count }}">{{ .Page.Title }}</a>
+        <a class="tag-cloud__item {{ $ink }}" href="{{ .Page.RelPermalink }}" aria-label="{{ .Page.Title }}：{{ i18n "tag_count" .Count }}">
+          <span class="tag-cloud__name">{{ .Page.Title }}</span>
+          <span class="tag-cloud__count" aria-hidden="true">{{ .Count }}</span>
+        </a>
       {{ end }}
     </nav>
   {{ else }}
