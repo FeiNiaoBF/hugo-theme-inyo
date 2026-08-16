@@ -4,9 +4,16 @@
 
 ## Unreleased
 
-### Changed
+## v0.2.1 - 2026-08-15
+
+### Fixed
 
 - 页脚回退为桌面/平板固定在右侧 rail 底部、移动端正文之后；语言切换与主题切换按钮重新钉回 rail 底部（撤销 v0.2.0 的全宽页面页脚改动）
+
+### Changed
+
+- 新增英文 README（`README.en.md`）并加入更新 Inyo 指南（`hugo mod get @latest` + `GOPROXY=direct` 说明）
+- 同步 CONTRIBUTING 与 demo 指南（`--buildDrafts`、`pinned: true` 示例）及对应 smoke 断言
 
 ## v0.2.0 - 2026-08-15
 
