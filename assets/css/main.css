@@ -769,6 +769,14 @@ h6:hover .heading-anchor,
   .tag-cloud__item:hover { transform: none; }
 }
 
+/* 宽表格：容器内横向滚动，不撑破阅读列 */
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+.table-scroll table { min-width: 100%; }
+
 /* 文章页 v2 */
 .post-single { width: 100%; min-width: 0; max-width: 42em; }
 .post-header { margin-bottom: 2.5em; }

@@ -1,7 +1,9 @@
 {{- /* render-image.html — 图片渲染 hook
-    性能（web.dev 标准）: loading="lazy" + decoding="async" 默认懒加载
-    LCP 保护: 每页首个 Markdown 图片不加 lazy（首屏视口内图片需即时加载）
-    对齐: pianpker 图注（figure/figcaption）由作者用 HTML 写, hook 只处理普通 img */ -}}
+    Page Bundle 资源: .Page.Resources.Get 解析 → RelPermalink + width/height
+    静态资源 (/img/...): 保持现有子路径处理
+    外部 URL (http/https///data): 不处理
+    title: Markdown 写法 .Title 优先
+    loading/decoding: 首图 eager，后续 lazy */ -}}
 {{- $lazy := "loading=\"lazy\" decoding=\"async\"" -}}
 {{- if not (.Page.Scratch.Get "inyo-first-img") -}}
   {{- $lazy = "decoding=\"async\"" -}}
@@ -11,11 +13,28 @@
 {{- $lowerDestination := lower $destination -}}
 {{- $isExternal := or (hasPrefix $lowerDestination "http://") (hasPrefix $lowerDestination "https://") (hasPrefix $lowerDestination "//") (hasPrefix $lowerDestination "data:") -}}
 {{- $src := $destination -}}
-{{- $assetPath := $destination -}}
-{{- $isRootAsset := or (hasPrefix $destination "/") (hasPrefix $destination "img/") (hasPrefix $destination "fonts/") -}}
-{{- if and (not $isExternal) $isRootAsset -}}
-  {{- if not (hasPrefix $assetPath "/") }}{{ $assetPath = printf "/%s" $assetPath }}{{ end -}}
-  {{- $src = urls.JoinPath (urls.Parse site.BaseURL).Path (strings.TrimPrefix "/" $assetPath) -}}
+{{- $width := "" -}}
+{{- $height := "" -}}
+{{- if not $isExternal -}}
+  {{- /* Page Bundle 资源优先（按 basename 匹配） */ -}}
+  {{- $res := .Page.Resources.Get (path.Base $destination) -}}
+  {{- with $res -}}
+    {{- $src = .RelPermalink -}}
+    {{- if reflect.IsImageResource $res -}}
+      {{- $width = printf " width=\"%d\"" .Width -}}
+      {{- $height = printf " height=\"%d\"" .Height -}}
+    {{- end -}}
+  {{- else -}}
+    {{- /* 静态资源回退 */ -}}
+    {{- $assetPath := $destination -}}
+    {{- $isRootAsset := or (hasPrefix $destination "/") (hasPrefix $destination "img/") (hasPrefix $destination "fonts/") -}}
+    {{- if $isRootAsset -}}
+      {{- if not (hasPrefix $assetPath "/") }}{{ $assetPath = printf "/%s" $assetPath }}{{ end -}}
+      {{- $src = urls.JoinPath (urls.Parse site.BaseURL).Path (strings.TrimPrefix "/" $assetPath) -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
-{{- $img := printf "<img src=\"%s\" alt=\"%s\" %s>" ($src | safeURL) (.Text | plainify | htmlEscape) $lazy -}}
+{{- $title := "" -}}
+{{- with .Title }}{{ $title = printf " title=\"%s\"" (. | htmlEscape) }}{{ end -}}
+{{- $img := printf "<img src=\"%s\" alt=\"%s\"%s%s%s %s>" ($src | safeURL) (.Text | plainify | htmlEscape) $width $height $title $lazy -}}
 {{- $img | safeHTML -}}

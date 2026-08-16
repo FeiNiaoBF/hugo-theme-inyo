@@ -1,13 +1,34 @@
 {{- /* render-link.html — 链接渲染 hook（统一目标地址策略）
-    外链 (http/https): target="_blank" + rel="noopener noreferrer"（新窗口 + 安全）
-    站内链接 / 锚点 / 相对路径: 原样，同窗口跳转
-    设计对齐 pianpker：外链新窗口，站内不打断阅读流 */ -}}
+    外链 (http/https///mailto): target="_blank" + rel="noopener noreferrer"
+    javascript:/data:/vbscript:: 清理为 "#"
+    #anchor: 保持当前页锚点
+    /path/: relLangURL 处理子路径与语言前缀，保留 fragment/query
+    相对站内链接 (article.md / ../x/): .Page.GetPage 解析为目标页面 RelPermalink
+    解析失败: 保留原链接，不静默生成错误路径 */ -}}
 {{- $destination := .Destination -}}
 {{- $lowerDestination := lower $destination -}}
-{{- $isExternal := or (hasPrefix $lowerDestination "http://") (hasPrefix $lowerDestination "https://") (hasPrefix $lowerDestination "//") -}}
+{{- $isExternal := or (hasPrefix $lowerDestination "http://") (hasPrefix $lowerDestination "https://") (hasPrefix $lowerDestination "//") (hasPrefix $lowerDestination "mailto:") -}}
 {{- $isUnsafe := or (hasPrefix $lowerDestination "javascript:") (hasPrefix $lowerDestination "data:") (hasPrefix $lowerDestination "vbscript:") -}}
 {{- $href := $destination -}}
-{{- if and (not $isExternal) (not (hasPrefix $lowerDestination "#")) (hasPrefix $destination "/") -}}
-  {{- $href = strings.TrimPrefix "/" $destination | relLangURL -}}
+{{- if and (not $isUnsafe) (not $isExternal) -}}
+  {{- if hasPrefix $lowerDestination "#" -}}
+    {{- /* 锚点，保持 */ -}}
+  {{- else -}}
+    {{- $u := urls.Parse $destination -}}
+    {{- if hasPrefix $destination "/" -}}
+      {{- /* 根相对：relLangURL + fragment/query */ -}}
+      {{- $href = strings.TrimPrefix "/" $u.Path | relLangURL -}}
+      {{- with $u.Fragment }}{{ $href = printf "%s#%s" $href . }}{{ end -}}
+      {{- with $u.RawQuery }}{{ $href = printf "%s?%s" $href . }}{{ end -}}
+    {{- else -}}
+      {{- /* 相对：页面解析 */ -}}
+      {{- $target := .Page.GetPage $u.Path -}}
+      {{- with $target -}}
+        {{- $href = .RelPermalink -}}
+        {{- with $u.Fragment }}{{ $href = printf "%s#%s" $href . }}{{ end -}}
+        {{- with $u.RawQuery }}{{ $href = printf "%s?%s" $href . }}{{ end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 <a href="{{ if $isUnsafe }}#{{ else }}{{ $href | safeURL }}{{ end }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ if $isExternal }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .Text | safeHTML }}</a>
