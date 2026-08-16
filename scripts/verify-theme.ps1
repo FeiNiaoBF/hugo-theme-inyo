@@ -377,7 +377,7 @@ $demoDocs = @(
   @{ Name = "markdown-basics"; Patterns = @('Markdown 基础', 'data-kind="hook"', '双鱼印章图形') },
   @{ Name = "markdown-efficient"; Patterns = @('Markdown 高效写作', '<kbd>', 'javascript:alert') },
   @{ Name = "katex"; Patterns = @('把公式写进文章', 'math:\s*true', '\\begin\{aligned\}', '\\begin\{bmatrix\}') },
-  @{ Name = "faq"; Patterns = @('常见问题', '这页暂时不急着填满') },
+  @{ Name = "faq"; Patterns = @('常见问题', '如何更新 Inyo 主题', 'hugo mod get github\.com/FeiNiaoBF/hugo-theme-inyo@latest') },
   @{ Name = "brand-design"; Patterns = @('纸、墨与朱红', '阅读先于功能', 'Hero 要有诗句') }
 )
 $expectedDemoNames = @($demoDocs | ForEach-Object { $_.Name } | Sort-Object)
@@ -475,10 +475,10 @@ $langPartial = Join-Path $repoRoot "layouts\partials\lang.html"
 $headingHook = Join-Path $repoRoot "layouts\_default\_markup\render-heading.html"
 $linkHook = Join-Path $repoRoot "layouts\_default\_markup\render-link.html"
 
-Assert-Contains $css '(?s)\.shell-footer\s*\{[^}]*grid-area:\s*footer;[^}]*border-top:\s*1px solid var\(--border\);' "Responsive footer failure: footer must be a full-width in-flow page footer with a top border."
-Assert-Contains $css '(?s)\.identity-toolbar\s*\{[^}]*overflow-y:\s*auto;' "Responsive identity failure: the desktop toolbar must scroll within the identity rail."
-Assert-Contains $css '(?s)@media\s*\(max-width:\s*1000px\).*?\.identity-nav a::after\s*\{[^}]*height:\s*2px;' "Responsive tablet failure: the 14em rail must use the reduced active underline."
-Assert-Contains $css '(?s)@media\s*\(max-width:\s*768px\).*?grid-template-areas:\s*"identity"\s*"content"\s*"footer";' "Responsive mobile failure: footer must follow content in the document flow."
+Assert-Contains $css '(?s)\.shell-footer\s*\{[^}]*position:\s*fixed;[^}]*max-height:\s*7em;[^}]*overflow-y:\s*auto;' "Responsive footer failure: desktop footer must stay bounded at the rail bottom."
+Assert-Contains $css '(?s)\.identity-toolbar\s*\{[^}]*overflow-y:\s*auto;' "Responsive identity failure: the desktop toolbar must scroll above the bounded footer."
+Assert-Contains $css '(?s)@media\s*\(max-width:\s*1000px\).*?\.shell-footer\s*\{[^}]*max-height:\s*6\.5em;.*?\.identity-nav a::after\s*\{[^}]*height:\s*2px;' "Responsive tablet failure: the 14em rail must bound its footer and use the reduced active underline."
+Assert-Contains $css '(?s)@media\s*\(max-width:\s*768px\).*?grid-template-areas:\s*"identity"\s*"content"\s*"footer";.*?min-height:\s*14em;.*?\.shell-footer\s*\{[^}]*position:\s*static;[^}]*max-height:\s*none;' "Responsive mobile failure: footer must follow content and leave the fixed rail mode."
 Assert-Contains $css '(?s)@media\s*\(min-width:\s*481px\)\s*and\s*\(max-width:\s*768px\).*?--responsive-gutter:\s*max\(1\.25em,\s*calc\(\(100% - var\(--container\)\) / 2 \+ 1\.25em\)\);' "Responsive tablet failure: the top identity area must share the 42em content axis."
 Assert-Contains $css '(?s)\.theme-toggle\s*\{[^}]*width:\s*1\.75rem;[^}]*height:\s*1\.75rem;' "Responsive controls failure: the theme toggle target must remain 28 by 28 pixels."
 Assert-Contains $css '(?s)@media\s*\(hover:\s*hover\).*?\.identity-nav a:hover::after' "Interaction failure: navigation underline hover must be gated by pointer capability."

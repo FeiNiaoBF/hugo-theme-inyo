@@ -59,7 +59,6 @@ Do not reintroduce removed `heroImage` parameters or add generic Hugo options th
 - Runtime colors come from `assets/css/main.css` tokens; record new roles and measured contrast in `DESIGN.md`.
 - Links on `--paper-2` use `--link-raised`, Chroma keywords use `--syntax-keyword`, and prose links retain a solid non-color underline cue.
 - Support both paper and ink modes. Keep body, navigation, and footer horizontal.
-- Footer is a single semantic `<footer>` (`shell-footer`) in document flow after `main`; a full-width page footer with a `--border` top rule on every viewport — never `position: fixed` over the identity rail.
 - Gate hover effects with `@media (hover: hover)` and provide `prefers-reduced-motion` behavior.
 - Preserve skip link, focus ring, landmarks, image alt text, safe external links, and theme-button ARIA.
 - Self-hosted font URLs remain relative to generated CSS through `../fonts/`; `/blog/` is a required fixture scenario.
