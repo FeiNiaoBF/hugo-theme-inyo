@@ -464,6 +464,8 @@ $multilingualFeatureArticle = Join-Path $multilingualOut "zh-cn\posts\markdown-b
 $pagesCss = Get-ChildItem (Join-Path $pagesOut "css") -Filter "main*.css" -File | Select-Object -First 1
 $pagesFontCss = Get-ChildItem (Join-Path $pagesOut "css") -Filter "wenkai*.css" -File | Select-Object -First 1
 $css = Join-Path $repoRoot "assets\css\main.css"
+$taxonomyTemplate = Join-Path $repoRoot "layouts\_default\taxonomy.html"
+$categories = Join-Path $out "categories\index.html"
 $sealTemplate = Join-Path $repoRoot "layouts\partials\seal.html"
 $favicon = Join-Path $repoRoot "static\img\seal-yang.svg"
 $socialPartial = Join-Path $repoRoot "layouts\partials\social.html"
@@ -660,7 +662,7 @@ Assert-Contains $headingHook 'i18n\s+"heading_anchor"' "P2 failure: heading anch
 $requiredI18nKeys = @(
   "home", "posts", "archives", "pinned", "latest", "about", "prev", "back", "next", "read_more", "tag", "tags",
   "date_format", "reading_time", "no_posts", "skip_to_content", "toggle_theme",
-  "site_navigation", "language", "heading_anchor", "hero_poetry_label", "tag_count", "notfound_msg", "notfound_hint"
+  "site_navigation", "language", "heading_anchor", "hero_poetry_label", "tag_count", "tag_cloud", "notfound_msg", "notfound_hint"
 )
 foreach ($locale in @("zh-cn", "en", "ja")) {
   $localePath = Join-Path $repoRoot "i18n\$locale.toml"
@@ -668,6 +670,22 @@ foreach ($locale in @("zh-cn", "en", "ja")) {
     Assert-Contains $localePath ("(?m)^\[" + [regex]::Escape($key) + "\]") "P2 failure: i18n/$locale.toml is missing [$key]."
   }
 }
+
+# Tags 手卷题签
+Assert-Contains $tags 'class=("|'')?tag-scroll' "Tags failure: configured tag taxonomy must render the scroll container."
+Assert-Contains $tags 'class=("|'')?tag-stamp\s+ink-(?:1|2)' "Tags failure: tags must render weighted stamp links."
+Assert-Contains $tags 'aria-label=("|'')?[^"''>]*篇文章' "Tags failure: stamp links must expose article counts."
+Assert-Contains $categories 'class=("|'')?taxonomy-list' "Taxonomy failure: non-tag taxonomies must retain the generic list."
+Assert-NotContains $categories 'class=("|'')?tag-scroll' "Taxonomy failure: categories must not use the tag stamp layout."
+Assert-Contains $taxonomyTemplate 'site\.Params\.taxonomy\.tag' "Taxonomy failure: stamp layout must follow the configured tag taxonomy."
+Assert-Contains $taxonomyTemplate '\.ByCount' "Tags failure: terms must be ordered by count."
+Assert-Contains $taxonomyTemplate 'ge\s+\.Count\s+7' "Tags failure: ink-4 threshold is missing."
+Assert-Contains $css '(?s)\.tag-stamp\s*\{[^}]*writing-mode:\s*vertical-rl' "Tags failure: stamps must use vertical writing."
+Assert-Contains $css '(?s)\.tag-stamp\s*\{[^}]*text-orientation:\s*mixed' "Tags failure: stamps must use mixed text orientation."
+Assert-Contains $css 'flex-direction:\s*row-reverse' "Tags failure: scroll must flow right-to-left."
+Assert-Contains $css '(?s)@media\s*\(hover:\s*hover\).*?\.tag-stamp:hover' "Tags failure: stamp hover must be pointer-capability gated."
+$verticalCount = ([regex]::Matches($cssText, 'writing-mode:\s*vertical-rl')).Count
+if ($verticalCount -ne 1) { throw "P2 failure: vertical-rl must appear exactly once (the tag stamp rule); found $verticalCount occurrences." }
 
 Assert-Contains $article "katex\.min\.css" "P1 failure: page-level math did not load KaTeX on the math fixture."
 Assert-Contains $article 'property="og:description"' "P1 failure: shared summary source did not produce an article description."

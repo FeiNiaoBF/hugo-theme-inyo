@@ -24,7 +24,7 @@
 
 1. 运行时颜色来自 `assets/css/main.css` 的 CSS token。新增颜色先更新 `DESIGN.md`，并验证正文对比度至少 `4.5:1`、大文本至少 `3:1`。
 2. 暗色抬升面 `--paper-2` 上如需链接，必须先定义专用角色 token 并映射到 `DESIGN.md` 记录的舌红，不能直接使用对比度不足的 `--cinnabar`；浅档表面色只用于弱化文字、边框或装饰。
-3. 正文、导航和页脚永远横排，禁止恢复 `writing-mode: vertical-rl`。
+3. 正文、导航和页脚永远横排，禁止恢复 `writing-mode: vertical-rl`；唯一例外是 `params.taxonomy.tag` 对应的标签页题签（展示性短标签，见 DESIGN.md）
 4. 新样式同时覆盖亮色纸面和暗色墨面；暗色差异通过 `[data-theme="dark"]` 或既有角色 token 表达。
 5. hover 反馈必须由 `@media (hover: hover)` 门控；非必要动画必须提供 `prefers-reduced-motion` 降级。
 6. `static/img/seal-yang.svg` 是无 CSS 变量上下文的固定品牌色 favicon 例外；网页内联 Logo 必须使用 token，默认社交图使用 `static/img/seal-yang-og.png`。
