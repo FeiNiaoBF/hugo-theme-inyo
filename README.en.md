@@ -83,6 +83,18 @@ Start the local server:
 hugo server --buildDrafts
 ```
 
+### Update Inyo
+
+Run these commands from the site root to fetch the latest release, tidy Hugo Modules, and verify the build:
+
+```shell
+hugo mod get github.com/FeiNiaoBF/hugo-theme-inyo@latest
+hugo mod tidy
+hugo --minify
+```
+
+`@latest` resolves to a concrete version and writes it to the site's `go.mod`; do not write `@latest` directly in `go.mod`. If a Go proxy has not synchronized the newest release yet, retry with `GOPROXY=direct`; in PowerShell, set `$env:GOPROXY = "direct"` first. For Hugo sites, use `hugo mod tidy` instead of running `go mod tidy` alone, because the theme may be referenced only through the Hugo Module configuration in `hugo.yaml`.
+
 ### Classic `themes/` installation
 
 If you do not use Hugo Modules, clone the theme into your site's `themes/` directory:
@@ -168,7 +180,7 @@ params:
 - [Markdown basics](exampleSite/content/posts/markdown-basics.md)
 - [Efficient Markdown writing](exampleSite/content/posts/markdown-efficient.md)
 - [KaTeX mathematics](exampleSite/content/posts/katex.md)
-- [FAQ placeholder](exampleSite/content/posts/faq.md)
+- [FAQ](exampleSite/content/posts/faq.md)
 - [Brand design core](exampleSite/content/posts/brand-design.md)
 - [Design document](DESIGN.md)
 - [Changelog](CHANGELOG.md)

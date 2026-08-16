@@ -88,6 +88,18 @@ params:
 hugo server --buildDrafts
 ```
 
+### 更新 Inyo
+
+在站点根目录运行以下命令，获取最新 release、整理 Hugo Modules 并验证构建：
+
+```shell
+hugo mod get github.com/FeiNiaoBF/hugo-theme-inyo@latest
+hugo mod tidy
+hugo --minify
+```
+
+`@latest` 会解析为具体版本并写入站点的 `go.mod`；不要把 `@latest` 直接写进 `go.mod`。如果 Go 代理尚未同步最新 release，可临时使用 `GOPROXY=direct` 后重试；PowerShell 可先执行 `$env:GOPROXY = "direct"`。Hugo 站点应使用 `hugo mod tidy`，不要单独使用 `go mod tidy`，因为主题可能只通过 `hugo.yaml` 的 Module 配置被引用。
+
 ### 直接预览 Demo
 
 克隆仓库后，可以直接启动内置 Demo：
