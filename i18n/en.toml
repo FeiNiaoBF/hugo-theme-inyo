@@ -70,3 +70,6 @@ other = "This page has drifted away, like ink not yet set."
 other = "The link may have changed, or the writing still sits at the inkstone."
 [hero_poetry_label]
 other = "Show another homepage poem"
+
+[tag_cloud]
+other = "Tag cloud"
