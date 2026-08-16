@@ -4,6 +4,18 @@
 
 ## Unreleased
 
+## v0.2.2 - 2026-08-15
+
+### Fixed
+
+- 语言切换器列出所有已配置语言且顺序固定（当前语言原位高亮，不再跳位）；未翻译页面回退到对应语言首页
+- `content/en`、`content/ja` 未映射到对应语言，导致 en/ja 页面外壳（`<html lang>`、标题、导航）停留默认语言——通过显式 `contentDir` 修复
+- 弃用的 `.Language.LanguageName` 改为 `.Language.Label`
+
+### Changed
+
+- demo 启用 en/ja 语言并翻译 About 页；语言切换器使用 `/` 分隔（与社交链接风格统一）
+
 ## v0.2.1 - 2026-08-15
 
 ### Fixed
