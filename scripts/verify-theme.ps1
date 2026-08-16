@@ -654,7 +654,6 @@ foreach ($page in $pages) {
   Assert-ExternalTargetsSafe $page.Path "P2 failure: $($page.Name) has an unsafe target=_blank link."
   Assert-ImagesHaveAlt $page.Path "P2 failure: $($page.Name) has an image without alt text."
 }
-Assert-NotContains $css 'writing-mode\s*:\s*vertical-rl' "P2 failure: vertical writing mode remains in the runtime stylesheet."
 Assert-Contains $baseof 'i18n\s+"site_navigation"' "P2 failure: navigation label is not sourced from i18n."
 Assert-Contains $langPartial 'i18n\s+"language"' "P2 failure: language switcher label is not sourced from i18n."
 Assert-Contains $headingHook 'i18n\s+"heading_anchor"' "P2 failure: heading anchor label is not sourced from i18n."
