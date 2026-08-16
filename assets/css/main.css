@@ -658,6 +658,41 @@ h6:hover .heading-anchor,
 .taxonomy-item a:hover { color: var(--cinnabar); }
 .taxonomy-count { color: var(--camel); font-family: var(--font-mono); font-size: 0.78em; }
 
+/* 标签索引题签：从右往左、竖排、权重分级 */
+.tag-scroll {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  gap: 1.1em 1.6em;
+  padding: 2em 0 4em;
+}
+.tag-stamp {
+  display: inline-block;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;   /* 中文直立；英文/数字自动侧写 90°（书脊） */
+  border: 0;
+  line-height: 1.25;
+  letter-spacing: 0.18em;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.tag-stamp.ink-1 { font-size: 0.85em; color: color-mix(in srgb, var(--ink) 62%, var(--paper)); }
+.tag-stamp.ink-2 { font-size: 1.08em; color: color-mix(in srgb, var(--ink) 76%, var(--paper)); }
+.tag-stamp.ink-3 { font-size: 1.35em; color: color-mix(in srgb, var(--ink) 90%, var(--paper)); }
+.tag-stamp.ink-4 { font-size: 1.65em; color: var(--ink); }
+
+/* 错落：用 margin，避免与 hover transform 冲突 */
+.tag-stamp:nth-child(4n+1) { margin-top: 0.35em; }
+.tag-stamp:nth-child(4n+3) { margin-top: -0.25em; }
+
+@media (hover: hover) {
+  .tag-stamp:hover { color: var(--cinnabar); transform: translateY(-2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tag-stamp { transition: none; }
+  .tag-stamp:hover { transform: none; }
+}
+
 /* 文章页 v2 */
 .post-single { width: 100%; min-width: 0; max-width: 42em; }
 .post-header { margin-bottom: 2.5em; }
