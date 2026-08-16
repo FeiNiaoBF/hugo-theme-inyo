@@ -7,6 +7,7 @@ $legacyConsumerConfig = Join-Path $consumerSite "hugo.toml"
 $out = Join-Path ([System.IO.Path]::GetTempPath()) "inyo-consumer-verify-$PID"
 $subpathOut = Join-Path ([System.IO.Path]::GetTempPath()) "inyo-consumer-subpath-verify-$PID"
 $archetypeSmoke = Join-Path $consumerSite "content\notes\archetype-smoke.md"
+$archetypeClock = "2026-08-12T12:00:00Z"
 $createdArchetypeSmoke = $false
 
 function Assert-Contains($Path, $Pattern, $Message) {
@@ -108,7 +109,7 @@ try {
     throw "Archetype failure: fixture already contains notes/archetype-smoke.md."
   }
 
-  & hugo new content notes/archetype-smoke.md --source $consumerSite --clock "2026-08-12T00:00:00+08:00" --noBuildLock
+  & hugo new content notes/archetype-smoke.md --source $consumerSite --clock $archetypeClock --noBuildLock
   if ($LASTEXITCODE -ne 0) { throw "Archetype failure: hugo new content exited with code $LASTEXITCODE." }
   $createdArchetypeSmoke = $true
   Assert-FileExists $archetypeSmoke "Archetype failure: Hugo did not create the smoke article."
@@ -118,7 +119,18 @@ try {
     Assert-Contains $archetypeSmoke ("(?m)^" + [regex]::Escape($field) + "\s*:") "Archetype failure: generated content is missing YAML field $field."
   }
   Assert-NotContains $archetypeSmoke '(?m)^tags\s*:' "Archetype failure: custom-taxonomy content still uses the default tags field."
-  Assert-Contains $archetypeSmoke '(?m)^date\s*:\s*("|'')?2026-08-12T00:00:00\+08:00' "Archetype failure: generated content did not use Hugo's dynamic date."
+  $generatedArchetypeText = Get-Content -Raw $archetypeSmoke
+  $generatedDateMatch = [regex]::Match($generatedArchetypeText, '(?m)^date\s*:\s*(?<value>\S+)')
+  if (-not $generatedDateMatch.Success) { throw "Archetype failure: generated content is missing a parseable date." }
+  try {
+    $generatedArchetypeDate = [DateTimeOffset]::Parse($generatedDateMatch.Groups["value"].Value, [Globalization.CultureInfo]::InvariantCulture)
+    $expectedArchetypeDate = [DateTimeOffset]::Parse($archetypeClock, [Globalization.CultureInfo]::InvariantCulture)
+  } catch {
+    throw "Archetype failure: generated content did not use a valid ISO date."
+  }
+  if ($generatedArchetypeDate.ToUniversalTime().Ticks -ne $expectedArchetypeDate.ToUniversalTime().Ticks) {
+    throw "Archetype failure: generated content did not preserve Hugo's dynamic date."
+  }
 
   Write-Output "Consumer and archetype checks passed."
 } finally {
