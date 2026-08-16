@@ -670,21 +670,22 @@ foreach ($locale in @("zh-cn", "en", "ja")) {
   }
 }
 
-# Tags 手卷题签
-Assert-Contains $tags 'class=("|'')?tag-scroll' "Tags failure: configured tag taxonomy must render the scroll container."
-Assert-Contains $tags 'class=("|'')?tag-stamp\s+ink-(?:1|2)' "Tags failure: tags must render weighted stamp links."
-Assert-Contains $tags 'aria-label=("|'')?[^"''>]*篇文章' "Tags failure: stamp links must expose article counts."
+# Tags editorial cloud
+Assert-Contains $tags 'class=("|'')?tag-cloud' "Tags failure: configured tag taxonomy must render the editorial cloud."
+Assert-Contains $tags 'class=("|'')?tag-cloud__item\s+ink-(?:1|2)' "Tags failure: tags must render weighted cloud links."
+Assert-Contains $tags 'class=("|'')?tag-cloud__count' "Tags failure: tag counts must be visible in the cloud."
+Assert-Contains $tags 'aria-label=("|'')?[^"''>]*篇文章' "Tags failure: cloud links must expose article counts."
 Assert-Contains $categories 'class=("|'')?taxonomy-list' "Taxonomy failure: non-tag taxonomies must retain the generic list."
-Assert-NotContains $categories 'class=("|'')?tag-scroll' "Taxonomy failure: categories must not use the tag stamp layout."
-Assert-Contains $taxonomyTemplate 'site\.Params\.taxonomy\.tag' "Taxonomy failure: stamp layout must follow the configured tag taxonomy."
-Assert-Contains $taxonomyTemplate '\.ByCount' "Tags failure: terms must be ordered by count."
+Assert-NotContains $categories 'class=("|'')?tag-cloud' "Taxonomy failure: categories must not use the tag cloud layout."
+Assert-Contains $taxonomyTemplate 'site\.Params\.taxonomy\.tag' "Taxonomy failure: cloud layout must follow the configured tag taxonomy."
+Assert-Contains $taxonomyTemplate '\.ByCount' "Tags failure: terms must be ordered by count descending."
+Assert-Contains $taxonomyTemplate 'ge\s+\.Count\s+2' "Tags failure: ink-2 threshold is missing."
+Assert-Contains $taxonomyTemplate 'ge\s+\.Count\s+4' "Tags failure: ink-3 threshold is missing."
 Assert-Contains $taxonomyTemplate 'ge\s+\.Count\s+7' "Tags failure: ink-4 threshold is missing."
-Assert-Contains $css '(?s)\.tag-stamp\s*\{[^}]*writing-mode:\s*vertical-rl' "Tags failure: stamps must use vertical writing."
-Assert-Contains $css '(?s)\.tag-stamp\s*\{[^}]*text-orientation:\s*mixed' "Tags failure: stamps must use mixed text orientation."
-Assert-Contains $css 'flex-direction:\s*row-reverse' "Tags failure: scroll must flow right-to-left."
-Assert-Contains $css '(?s)@media\s*\(hover:\s*hover\).*?\.tag-stamp:hover' "Tags failure: stamp hover must be pointer-capability gated."
-$verticalCount = ([regex]::Matches($cssText, 'writing-mode:\s*vertical-rl')).Count
-if ($verticalCount -ne 1) { throw "P2 failure: vertical-rl must appear exactly once (the tag stamp rule); found $verticalCount occurrences." }
+Assert-Contains $css '(?s)\.tag-cloud\s*\{[^}]*flex-direction:\s*row' "Tags failure: cloud must use a horizontal flow."
+Assert-Contains $css '(?s)\.tag-cloud__item\s*\{[^}]*white-space:\s*nowrap' "Tags failure: cloud items must remain intact while wrapping."
+Assert-NotContains $css 'writing-mode\s*:\s*vertical-rl' "Tags failure: editorial cloud must not use vertical writing."
+Assert-Contains $css '(?s)@media\s*\(hover:\s*hover\).*?\.tag-cloud__item:hover' "Tags failure: cloud hover must be pointer-capability gated."
 
 Assert-Contains $article "katex\.min\.css" "P1 failure: page-level math did not load KaTeX on the math fixture."
 Assert-Contains $article 'property="og:description"' "P1 failure: shared summary source did not produce an article description."

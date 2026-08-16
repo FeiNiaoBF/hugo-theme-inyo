@@ -84,7 +84,7 @@ try {
   Assert-Contains $article 'class=("|'')?chroma("|'')?' "Consumer failure: fenced code did not use class-based Chroma markup."
   Assert-NotContains $article '#272822|#f8f8f2|#f92672' "Consumer failure: fenced code contains inline Monokai colors."
   Assert-Contains $labels 'href=("|'')?/labels/portability/' "Consumer failure: labels taxonomy does not link to the generated portability term."
-  Assert-Contains $labels 'class=("|'')?tag-scroll' "Consumer failure: configured labels taxonomy must use the tag stamp layout."
+  Assert-Contains $labels 'class=("|'')?tag-cloud' "Consumer failure: configured labels taxonomy must use the editorial tag cloud layout."
   Assert-NotContains $article 'href=("|'')?/tags/portability/' "Consumer failure: article tag links still use the hard-coded tags taxonomy."
   Assert-Contains $notFound 'href=("|'')?/notes/' "Consumer failure: 404 article entry does not use the configured notes section."
   Assert-NotContains $notFound 'href=("|'')?/posts/' "Consumer failure: 404 article entry still uses the hard-coded posts section."
