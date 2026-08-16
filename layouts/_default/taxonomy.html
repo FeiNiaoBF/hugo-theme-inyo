@@ -1,6 +1,8 @@
 {{ define "main" }}
 {{ $page := . }}
 {{ $tagTaxonomy := site.Params.taxonomy.tag | default "tags" }}
+{{ $tagsPath := site.Params.navigation.tags | default $tagTaxonomy }}
+{{ $tagsPage := site.GetPage (printf "/%s" $tagsPath) }}
 {{ with .Data.Terms }}
   {{ $title := $page.Title }}
   {{ if eq $page.Type $tagTaxonomy }}{{ $title = i18n "tags" | default $page.Title }}{{ end }}
@@ -16,9 +18,9 @@
         {{ if ge .Count 2 }}{{ $ink = "ink-2" }}{{ end }}
         {{ if ge .Count 4 }}{{ $ink = "ink-3" }}{{ end }}
         {{ if ge .Count 7 }}{{ $ink = "ink-4" }}{{ end }}
-        <a class="tag-cloud__item {{ $ink }}" href="{{ .Page.RelPermalink }}" aria-label="{{ .Page.Title }}：{{ i18n "tag_count" .Count }}">
+        <a class="tag-cloud__item {{ $ink }}" href="{{ .Page.RelPermalink }}" aria-label="{{ .Page.Title }} — {{ i18n "tag_count" .Count }}">
           <span class="tag-cloud__name">{{ .Page.Title }}</span>
-          <span class="tag-cloud__count" aria-hidden="true">{{ .Count }}</span>
+          <span class="tag-cloud__count" aria-hidden="true">{{ printf "%02d" .Count }}</span>
         </a>
       {{ end }}
     </nav>
@@ -33,6 +35,11 @@
     </ul>
   {{ end }}
 {{ else }}
+  {{ if eq $page.Type $tagTaxonomy }}
+    {{ with $tagsPage }}
+    <a class="taxonomy-back" href="{{ .RelPermalink }}">← {{ i18n "tags" | default "标签" }}</a>
+    {{ end }}
+  {{ end }}
   <h1>{{ $page.Title }}</h1>
   {{ with $page.Content }}
   <div class="prose">{{ . }}</div>

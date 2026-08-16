@@ -1,4 +1,11 @@
 {{ define "main" }}
+{{ $page := . }}
+{{ $tagTaxonomy := site.Params.taxonomy.tag | default "tags" }}
+{{ $tagsPath := site.Params.navigation.tags | default $tagTaxonomy }}
+{{ $tagsPage := site.GetPage (printf "/%s" $tagsPath) }}
+{{ if eq $page.Type $tagTaxonomy }}
+  {{ with $tagsPage }}<a class="taxonomy-back" href="{{ .RelPermalink }}">← {{ i18n "tags" | default "标签" }}</a>{{ end }}
+{{ end }}
 <h1>{{ .Title }}</h1>
 {{ with .Content }}
 <div class="prose">{{ . }}</div>

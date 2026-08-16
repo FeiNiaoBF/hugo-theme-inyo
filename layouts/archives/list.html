@@ -8,12 +8,28 @@
 {{ $pages := where site.RegularPages "Section" "in" $mainSections }}
 {{ range $pages.GroupByDate "2006" "desc" }}
 <section class="archive-group">
-  <h2>{{ .Key }}</h2>
+  {{ $year := .Key }}
+  {{ $year = replace $year "0" "〇" }}
+  {{ $year = replace $year "1" "一" }}
+  {{ $year = replace $year "2" "二" }}
+  {{ $year = replace $year "3" "三" }}
+  {{ $year = replace $year "4" "四" }}
+  {{ $year = replace $year "5" "五" }}
+  {{ $year = replace $year "6" "六" }}
+  {{ $year = replace $year "7" "七" }}
+  {{ $year = replace $year "8" "八" }}
+  {{ $year = replace $year "9" "九" }}
+  <h2 class="archive-year">
+    <span class="archive-year__digits">{{ $year }}</span>
+    {{ with i18n "archive_year_suffix" }}<span class="archive-year__suffix">{{ . }}</span>{{ end }}
+  </h2>
   <ul class="archive-list">
     {{ range .Pages.ByDate.Reverse }}
     <li>
-      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
-      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      <a href="{{ .RelPermalink }}">
+        <span class="archive-list__title">{{ .Title }}</span>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "archive_date_format" | default "01/02") }}</time>
+      </a>
     </li>
     {{ end }}
   </ul>

@@ -37,6 +37,12 @@ other = "标签"
 [date_format]
 other = "2006年1月2日"
 
+[archive_date_format]
+other = "01/02"
+
+[archive_year_suffix]
+other = "年"
+
 [reading_time]
 other = "阅读约 {{ .Count }} 分钟"
 
