@@ -13,3 +13,4 @@ date: 2026-08-15
 图片（Page Bundle 资源）：
 
 ![Bundle 图标](image.png "Bundle 图标")
+![带参数的 Bundle 图标](image.png?size=small#cover "带参数图标")

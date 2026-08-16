@@ -17,24 +17,29 @@
 {{- $height := "" -}}
 {{- if not $isExternal -}}
   {{- /* Page Bundle 资源：全路径优先，basename 兜底（支持嵌套、避免同名冲突） */ -}}
-  {{- $resName := strings.TrimPrefix "./" $destination -}}
+  {{- $imageURL := urls.Parse $destination -}}
+  {{- $resName := strings.TrimPrefix "./" $imageURL.Path -}}
   {{- $res := .Page.Resources.Get $resName -}}
   {{- if not $res -}}
     {{- $res = .Page.Resources.Get (path.Base $resName) -}}
   {{- end -}}
   {{- with $res -}}
     {{- $src = .RelPermalink -}}
+    {{- with $imageURL.RawQuery }}{{ $src = printf "%s?%s" $src . }}{{ end -}}
+    {{- with $imageURL.Fragment }}{{ $src = printf "%s#%s" $src . }}{{ end -}}
     {{- if reflect.IsImageResource $res -}}
       {{- $width = printf " width=\"%d\"" .Width -}}
       {{- $height = printf " height=\"%d\"" .Height -}}
     {{- end -}}
   {{- else -}}
     {{- /* 静态资源回退 */ -}}
-    {{- $assetPath := $destination -}}
+    {{- $assetPath := $imageURL.Path -}}
     {{- $isRootAsset := or (hasPrefix $destination "/") (hasPrefix $destination "img/") (hasPrefix $destination "fonts/") -}}
     {{- if $isRootAsset -}}
       {{- if not (hasPrefix $assetPath "/") }}{{ $assetPath = printf "/%s" $assetPath }}{{ end -}}
       {{- $src = urls.JoinPath (urls.Parse site.BaseURL).Path (strings.TrimPrefix "/" $assetPath) -}}
+      {{- with $imageURL.RawQuery }}{{ $src = printf "%s?%s" $src . }}{{ end -}}
+      {{- with $imageURL.Fragment }}{{ $src = printf "%s#%s" $src . }}{{ end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
