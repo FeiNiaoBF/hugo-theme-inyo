@@ -1,8 +1,8 @@
 {{ if hugo.IsMultilingual }}
 {{ $page := . }}
 <nav class="lang" aria-label="{{ i18n "language" | default "Language" }}">
-  {{ range site.Languages }}
-    {{ $lang := . }}
+  {{ range site.Home.AllTranslations }}
+    {{ $lang := .Language }}
     {{ if eq $lang.Lang $page.Lang }}
       <span class="lang-current" aria-current="page">{{ $lang.Label }}</span>
     {{ else }}
