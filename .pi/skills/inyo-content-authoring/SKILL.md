@@ -24,7 +24,7 @@ The Demo article set contains exactly six files:
 | `faq.md` | Hold only questions learned from real use; honest placeholders are allowed |
 | `brand-design.md` | Explain paper, ink, cinnabar, reading priority, and the poetry Hero |
 
-`exampleSite/content/about.md` is the Demo index and must link to all six. Do not restore removed guide files or aliases unless a separate migration task explicitly requires them.
+`exampleSite/content/zh-cn/about.md` is the Chinese Demo index and must link to all six. English and Japanese pages live under `exampleSite/content/en/` and `exampleSite/content/ja/`. Do not restore removed guide files or aliases unless a separate migration task explicitly requires them.
 
 ## Voice and editing standard
 

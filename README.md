@@ -174,12 +174,12 @@ params:
 
 ## 文档
 
-- [用 Inyo 写一篇文章](exampleSite/content/posts/theme-usage.md)：安装主题、创建文章和使用置顶
-- [Markdown 基础](exampleSite/content/posts/markdown-basics.md)：标题、图片、代码、表格和链接
-- [Markdown 高效写作](exampleSite/content/posts/markdown-efficient.md)：摘要、长文组织和链接边界
-- [KaTeX 数学格式](exampleSite/content/posts/katex.md)：页面级数学公式示例
-- [常见问题](exampleSite/content/posts/faq.md)：FAQ 记录入口
-- [品牌设计核心](exampleSite/content/posts/brand-design.md)：Inyo 的纸墨、朱红和阅读取舍
+- [用 Inyo 写一篇文章](exampleSite/content/zh-cn/posts/theme-usage.md)：安装主题、创建文章和使用置顶
+- [Markdown 基础](exampleSite/content/zh-cn/posts/markdown-basics.md)：标题、图片、代码、表格和链接
+- [Markdown 高效写作](exampleSite/content/zh-cn/posts/markdown-efficient.md)：摘要、长文组织和链接边界
+- [KaTeX 数学格式](exampleSite/content/zh-cn/posts/katex.md)：页面级数学公式示例
+- [常见问题](exampleSite/content/zh-cn/posts/faq.md)：FAQ 记录入口
+- [品牌设计核心](exampleSite/content/zh-cn/posts/brand-design.md)：Inyo 的纸墨、朱红和阅读取舍
 - [设计文档](DESIGN.md)：视觉方向、token 和交互约束
 - [变更记录](CHANGELOG.md)：版本与发布说明
 

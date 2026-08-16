@@ -130,10 +130,10 @@ $singleTemplate = Join-Path $repoRoot "layouts\_default\single.html"
 $notFoundTemplate = Join-Path $repoRoot "layouts\404.html"
 $listTemplate = Join-Path $repoRoot "layouts\_default\list.html"
 $archiveTemplate = Join-Path $repoRoot "layouts\archives\list.html"
-$archiveContent = Join-Path $exampleSite "content\archives\_index.md"
+$archiveContent = Join-Path $exampleSite "content\zh-cn\archives\_index.md"
 $wenkaiCss = Join-Path $repoRoot "assets\css\wenkai.css"
-$demoPosts = Join-Path $exampleSite "content\posts"
-$aboutDoc = Join-Path $exampleSite "content\about.md"
+$demoPosts = Join-Path $exampleSite "content\zh-cn\posts"
+$aboutDoc = Join-Path $exampleSite "content\zh-cn\about.md"
 $themeUsageDoc = Join-Path $demoPosts "theme-usage.md"
 $heroPoemsData = Join-Path $repoRoot "data\inyo\hero_poems.toml"
 $apiFixture = Join-Path $repoRoot "scripts\fixtures\chinese-poetry-api-random.json"
@@ -240,7 +240,7 @@ Assert-NotContains $notFoundTemplate '"posts/"\s*\|\s*relLangURL' "Navigation fa
 Assert-Contains $listTemplate 'site\.Params\.mainSections' "Navigation failure: section heading detection must use mainSections."
 Assert-FileExists $archiveTemplate "Archive failure: layouts/archives/list.html is missing."
 Assert-Contains $archiveTemplate 'GroupByDate' "Archive failure: archive template must group articles by date."
-Assert-FileExists $archiveContent "Archive failure: exampleSite/content/archives/_index.md is missing."
+Assert-FileExists $archiveContent "Archive failure: exampleSite/content/zh-cn/archives/_index.md is missing."
 Assert-Contains $indexTemplate '(?s)pinned.*?latest|latest.*?pinned' "Homepage failure: pinned and latest collections are not both present."
 Assert-Contains $indexTemplate 'Params\.pinned' "Homepage failure: homepage does not read the pinned front matter field."
 Assert-Contains $wenkaiCss 'url\(''\.\./fonts/' "Asset failure: self-hosted font URLs must be relative to the generated CSS directory."
@@ -384,7 +384,7 @@ $expectedDemoNames = @($demoDocs | ForEach-Object { $_.Name } | Sort-Object)
 $actualDemoNames = @(Get-ChildItem -LiteralPath $demoPosts -Filter "*.md" -File | ForEach-Object { $_.BaseName } | Sort-Object)
 $demoNameDiff = @(Compare-Object -ReferenceObject $expectedDemoNames -DifferenceObject $actualDemoNames)
 if ($demoNameDiff.Count -gt 0) {
-  throw "Demo docs failure: exampleSite/content/posts must contain exactly: $($expectedDemoNames -join ', '). Actual: $($actualDemoNames -join ', ')."
+  throw "Demo docs failure: exampleSite/content/zh-cn/posts must contain exactly: $($expectedDemoNames -join ', '). Actual: $($actualDemoNames -join ', ')."
 }
 $oldDemoNames = @(
   "configuration-reference", "customization", "front-matter", "getting-started",
@@ -395,7 +395,7 @@ foreach ($oldDemoName in $oldDemoNames) {
 }
 foreach ($demoDoc in $demoDocs) {
   $docPath = Join-Path $demoPosts ($demoDoc.Name + ".md")
-  if (-not (Test-Path $docPath)) { throw "Demo docs failure: missing exampleSite/content/posts/$($demoDoc.Name).md." }
+  if (-not (Test-Path $docPath)) { throw "Demo docs failure: missing exampleSite/content/zh-cn/posts/$($demoDoc.Name).md." }
   Assert-Contains $docPath '(?s)^---\r?\n.*?\r?\n---\r?\n' "Demo docs failure: $($demoDoc.Name).md must use YAML front matter."
   Assert-NotContains $docPath '(?m)^\+\+\+$' "Demo docs failure: $($demoDoc.Name).md must not use TOML front matter."
   foreach ($field in @("title", "date", "description", "summary", "categories", "tags")) {
@@ -431,15 +431,18 @@ foreach ($staleHeroPattern in @('heroImage', 'hero-beauty', 'inky-overlay', '墨
 
 try {
 New-Item -ItemType Directory -Path $tempRoot | Out-Null
-& hugo --source $exampleSite --minify --noBuildLock --destination $out
-if ($LASTEXITCODE -ne 0) { throw "Demo build failure: Hugo exited with code $LASTEXITCODE." }
+$demoBuildLog = (& hugo --source $exampleSite --minify --printPathWarnings --noBuildLock --destination $out 2>&1 | Out-String)
+if ($LASTEXITCODE -ne 0) { throw "Demo build failure: Hugo exited with code $LASTEXITCODE.`n$demoBuildLog" }
+if ($demoBuildLog -match 'Duplicate target paths') { throw "Demo build failure: Hugo reported duplicate target paths.`n$demoBuildLog" }
 
-& hugo --source $exampleSite --baseURL "https://FeiNiaoBF.github.io/hugo-theme-inyo/" --minify --printPathWarnings --noBuildLock --destination $pagesOut
-if ($LASTEXITCODE -ne 0) { throw "Pages build failure: Hugo exited with code $LASTEXITCODE." }
+$pagesBuildLog = (& hugo --source $exampleSite --baseURL "https://FeiNiaoBF.github.io/hugo-theme-inyo/" --minify --printPathWarnings --noBuildLock --destination $pagesOut 2>&1 | Out-String)
+if ($LASTEXITCODE -ne 0) { throw "Pages build failure: Hugo exited with code $LASTEXITCODE.`n$pagesBuildLog" }
+if ($pagesBuildLog -match 'Duplicate target paths') { throw "Pages build failure: Hugo reported duplicate target paths.`n$pagesBuildLog" }
 
 $multilingualConfig = "$exampleConfig,$multilingualOverlay"
-& hugo --source $exampleSite --config $multilingualConfig --minify --printPathWarnings --noBuildLock --destination $multilingualOut
-if ($LASTEXITCODE -ne 0) { throw "Multilingual project-site build failure: Hugo exited with code $LASTEXITCODE." }
+$multilingualBuildLog = (& hugo --source $exampleSite --config $multilingualConfig --minify --printPathWarnings --noBuildLock --destination $multilingualOut 2>&1 | Out-String)
+if ($LASTEXITCODE -ne 0) { throw "Multilingual project-site build failure: Hugo exited with code $LASTEXITCODE.`n$multilingualBuildLog" }
+if ($multilingualBuildLog -match 'Duplicate target paths') { throw "Multilingual project-site build failure: Hugo reported duplicate target paths.`n$multilingualBuildLog" }
 
 $markdownFixture = Join-Path $repoRoot "scripts\fixtures\markdown-rendering"
 $markdownOut = Join-Path $tempRoot "markdown-rendering"
@@ -459,6 +462,11 @@ $posts = Join-Path $out "posts\index.html"
 $archives = Join-Path $out "archives\index.html"
 $tags = Join-Path $out "tags\index.html"
 $term = Join-Path $out "tags\inyo\index.html"
+$englishAbout = Join-Path $out "en\about\index.html"
+$japaneseAbout = Join-Path $out "ja\about\index.html"
+$englishRss = Join-Path $out "en\index.xml"
+$japaneseRss = Join-Path $out "ja\index.xml"
+$defaultLanguageRedirect = Join-Path $out "zh-cn\index.html"
 $notFound = Join-Path $out "404.html"
 $pagesHomePage = Join-Path $pagesOut "index.html"
 $pagesArticle = Join-Path $pagesOut "posts\theme-usage\index.html"
@@ -466,6 +474,7 @@ $pagesFeatureArticle = Join-Path $pagesOut "posts\markdown-basics\index.html"
 $multilingualArticle = Join-Path $multilingualOut "zh-cn\posts\markdown-efficient\index.html"
 $multilingualTarget = Join-Path $multilingualOut "zh-cn\posts\katex\index.html"
 $multilingualFeatureArticle = Join-Path $multilingualOut "zh-cn\posts\markdown-basics\index.html"
+$multilingualAbout = Join-Path $multilingualOut "zh-cn\about\index.html"
 $pagesCss = Get-ChildItem (Join-Path $pagesOut "css") -Filter "main*.css" -File | Select-Object -First 1
 $pagesFontCss = Get-ChildItem (Join-Path $pagesOut "css") -Filter "wenkai*.css" -File | Select-Object -First 1
 $css = Join-Path $repoRoot "assets\css\main.css"
@@ -521,6 +530,17 @@ foreach ($demoPage in @(
 )) {
   if (-not (Test-Path $demoPage.Path)) { throw "Demo docs failure: generated page is missing $($demoPage.Name)." }
 }
+Assert-FileExists $posts "Multilingual content failure: default-language posts index is missing."
+Assert-FileExists $about "Multilingual content failure: default-language About page is missing."
+Assert-FileExists $archives "Multilingual content failure: default-language archive page is missing."
+Assert-FileExists $tags "Multilingual content failure: default-language tag index is missing."
+Assert-FileExists $englishAbout "Multilingual content failure: English About page is missing."
+Assert-FileExists $japaneseAbout "Multilingual content failure: Japanese About page is missing."
+Assert-FileExists $englishRss "Multilingual output failure: English RSS is missing."
+Assert-FileExists $japaneseRss "Multilingual output failure: Japanese RSS is missing."
+Assert-Contains $defaultLanguageRedirect 'http-equiv=("|'')?refresh' "Multilingual output failure: default-language subdirectory must only be a redirect."
+Assert-Contains $defaultLanguageRedirect 'https://example\.com/' "Multilingual output failure: default-language redirect must point to the root URL."
+Assert-FileExists $multilingualAbout "Multilingual overlay failure: /zh-cn/about/ is missing."
 Assert-FileMissing $legacyGuide "Demo docs failure: obsolete theme-guide alias page was generated."
 if (-not (Test-Path $archives)) { throw "Archive failure: generated /archives/ page is missing." }
 Assert-Contains $archives '<h1>归档</h1>' "Archive failure: archive page heading is not localized."
@@ -576,6 +596,7 @@ Assert-Contains $markdownBundle 'href=("|'')?/posts/target/#intro' "Markdown fai
 Assert-Contains $markdownBundle 'href=("|'')?/posts/target/\?view=full#intro' "Markdown failure: query must precede fragment in resolved links."
 Assert-Contains $markdownBundle 'width=("|'')?120[^>]*height=("|'')?60' "Markdown failure: page-bundle images must include width and height."
 Assert-Contains $markdownBundle 'title=("|'')?Bundle' "Markdown failure: image titles must be preserved."
+Assert-Contains $markdownBundle 'src=("|'')?/posts/bundle-smoke/image\.png\?size=small#cover[^>]*width=("|'')?120[^>]*height=("|'')?60[^>]*title=("|'')?带参数图标' "Markdown failure: page-bundle image query and fragment must survive resource resolution."
 Assert-Contains $basicsArticle 'class=("|'')?table-scroll' "Markdown failure: generated tables must be wrapped in .table-scroll."
 Assert-Contains $basicsArticle '<thead>' "Markdown failure: table head must render."
 Assert-Contains $basicsArticle '<tbody>' "Markdown failure: table body must render."

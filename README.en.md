@@ -176,12 +176,12 @@ params:
 
 ## Documentation
 
-- [Using Inyo](exampleSite/content/posts/theme-usage.md)
-- [Markdown basics](exampleSite/content/posts/markdown-basics.md)
-- [Efficient Markdown writing](exampleSite/content/posts/markdown-efficient.md)
-- [KaTeX mathematics](exampleSite/content/posts/katex.md)
-- [FAQ](exampleSite/content/posts/faq.md)
-- [Brand design core](exampleSite/content/posts/brand-design.md)
+- [Using Inyo](exampleSite/content/zh-cn/posts/theme-usage.md)
+- [Markdown basics](exampleSite/content/zh-cn/posts/markdown-basics.md)
+- [Efficient Markdown writing](exampleSite/content/zh-cn/posts/markdown-efficient.md)
+- [KaTeX mathematics](exampleSite/content/zh-cn/posts/katex.md)
+- [FAQ](exampleSite/content/zh-cn/posts/faq.md)
+- [Brand design core](exampleSite/content/zh-cn/posts/brand-design.md)
 - [Design document](DESIGN.md)
 - [Changelog](CHANGELOG.md)
 

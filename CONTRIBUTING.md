@@ -50,7 +50,7 @@ hugo server --source exampleSite
 | ----------------- | -------------------------------------------------------------------------------- |
 | Inyo 参数         | `config/_default/`、模板读取点、`exampleSite/hugo.yaml`、README 示例、smoke 断言 |
 | 导航或 URL        | 默认 Demo、consumer fixture、README 特性说明、可移植性测试                       |
-| Demo 文章         | 六篇文章、`exampleSite/content/about.md`、README 文档索引、内容 authoring skill  |
+| Demo 文章         | 六篇文章、`exampleSite/content/zh-cn/about.md`、README 文档索引、内容 authoring skill  |
 | 发布或兼容性      | README 双语、CHANGELOG、workflow、release skill                                  |
 | 设计 token 或动效 | `DESIGN.md`、CSS、必要的 AGENTS/skill 规则和浏览器复核                           |
 

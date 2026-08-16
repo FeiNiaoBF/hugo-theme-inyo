@@ -4,6 +4,7 @@ defaultContentLanguage: "zh-cn"
 
 languages:
   zh-cn:
+    contentDir: "content/zh-cn"
     label: "中文"
     locale: "zh-CN"
     weight: 1
