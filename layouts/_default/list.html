@@ -1,23 +1,31 @@
 {{ define "main" }}
 {{ $title := .Title }}
 {{ $mainSections := site.Params.mainSections | default (slice "posts") }}
-{{ if eq .Section (index $mainSections 0) }}{{ $title = i18n "posts" | default .Title }}{{ end }}
+{{ $isMainSection := and .IsSection (eq .Section (index $mainSections 0)) .Parent.IsHome }}
+{{ if $isMainSection }}{{ $title = i18n "posts" | default .Title }}{{ end }}
 <h1>{{ $title }}</h1>
 {{ with .Content }}
 <div class="prose">{{ . }}</div>
 {{ end }}
 <ul class="catalog">
-  {{ range .Pages }}
-  <li class="catalog-item">
-    <div class="catalog-head">
-      <h2 class="catalog-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-      <div class="catalog-meta">
-        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
-        <span>{{ i18n "reading_time" .ReadingTime }}</span>
+  {{ if $isMainSection }}
+    {{ $entries := partial "catalog/entries.html" (dict "site" site "sections" $mainSections) }}
+    {{ range $entries }}
+      {{ partial "catalog/item.html" (dict "entry" . "level" 2 "showDate" true) }}
+    {{ end }}
+  {{ else }}
+    {{ range .Pages }}
+    <li class="catalog-item">
+      <div class="catalog-head">
+        <h2 class="catalog-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+        <div class="catalog-meta">
+          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
+          <span>{{ i18n "reading_time" .ReadingTime }}</span>
+        </div>
       </div>
-    </div>
-    {{ partial "summary.html" . }}
-  </li>
+      {{ partial "summary.html" . }}
+    </li>
+    {{ end }}
   {{ end }}
 </ul>
 {{ end }}

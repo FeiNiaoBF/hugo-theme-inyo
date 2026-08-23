@@ -1,0 +1,17 @@
+{{- $pages := partial "series/pages.html" . -}}
+{{- $latest := false -}}
+{{- $updated := .Date -}}
+{{- range $pages -}}
+  {{- $candidateUpdated := partial "series/effective-date.html" . -}}
+  {{- if or (not $latest) (gt $candidateUpdated.Unix $updated.Unix) -}}
+    {{- $latest = . -}}
+    {{- $updated = $candidateUpdated -}}
+  {{- end -}}
+{{- end -}}
+{{- return (dict
+  "page" .
+  "pages" $pages
+  "count" (len $pages)
+  "latest" $latest
+  "updated" $updated
+) -}}

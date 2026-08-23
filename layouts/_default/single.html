@@ -1,24 +1,3 @@
 {{ define "main" }}
-{{ $page := . }}
-{{ $tagTaxonomy := site.Params.taxonomy.tag | default "tags" }}
-<article class="post-single">
-  <header class="post-header">
-    <a class="back-link" href="{{ .CurrentSection.RelPermalink }}">← {{ i18n "back" | default "返回" }}</a>
-    <h1>{{ .Title }}</h1>
-    <div class="post-meta">
-      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
-      <span>{{ i18n "reading_time" .ReadingTime }}</span>
-      {{ range $page.GetTerms $tagTaxonomy }}<a class="tag" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
-    </div>
-  </header>
-
-  <div class="prose">
-    {{ .Content }}
-  </div>
-
-  <nav class="post-nav">
-    {{ with .PrevInSection }}<a href="{{ .RelPermalink }}">← {{ i18n "prev" }}: {{ .Title }}</a>{{ end }}
-    {{ with .NextInSection }}<a href="{{ .RelPermalink }}">{{ i18n "next" }}: {{ .Title }} →</a>{{ end }}
-  </nav>
-</article>
+{{ partial "post/single.html" . }}
 {{ end }}

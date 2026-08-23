@@ -1,0 +1,39 @@
+{{- $source := . -}}
+{{- $entries := slice -}}
+{{- $regularPages := where $source.site.RegularPages "Section" "in" $source.sections -}}
+{{- range $regularPages -}}
+  {{- if ne .CurrentSection.Layout "series" -}}
+    {{- $entries = $entries | append (dict
+      "kind" "post"
+      "page" .
+      "latest" false
+      "count" 0
+      "date" .Date
+      "dateKey" .Date.Unix
+      "pinned" (eq .Params.pinned true)
+    ) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- range $sectionName := $source.sections -}}
+  {{- with $source.site.GetPage (printf "/%s" $sectionName) -}}
+    {{- range .Sections -}}
+      {{- if eq .Layout "series" -}}
+        {{- $context := partial "series/context.html" . -}}
+        {{- if gt $context.count 0 -}}
+          {{- $entries = $entries | append (dict
+            "kind" "series"
+            "page" .
+            "latest" $context.latest
+            "count" $context.count
+            "date" $context.updated
+            "dateKey" $context.updated.Unix
+            "pinned" (eq .Params.pinned true)
+          ) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return (sort $entries "dateKey" "desc") -}}

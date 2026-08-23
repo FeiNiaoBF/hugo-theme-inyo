@@ -1,0 +1,42 @@
+{{- $entry := .entry -}}
+{{- $page := $entry.page -}}
+{{- $isSeries := eq $entry.kind "series" -}}
+{{- $dateFormat := i18n "date_format" | default "2006-01-02" -}}
+<li class="catalog-item{{ if $isSeries }} catalog-item--series{{ end }}">
+  <div class="catalog-head">
+    {{- if eq .level 2 }}
+    <h2 class="catalog-title">
+      <a{{ if $isSeries }} class="catalog-series-link"{{ end }} href="{{ $page.RelPermalink }}">
+        {{- if $isSeries -}}
+          {{- partial "series/icon.html" . -}}
+          <span class="catalog-series-name">{{- $page.Title -}}</span>
+        {{- else -}}
+          {{- $page.Title -}}
+        {{- end -}}
+      </a>
+    </h2>
+    {{- else }}
+    <h3 class="catalog-title">
+      <a{{ if $isSeries }} class="catalog-series-link"{{ end }} href="{{ $page.RelPermalink }}">
+        {{- if $isSeries -}}
+          {{- partial "series/icon.html" . -}}
+          <span class="catalog-series-name">{{- $page.Title -}}</span>
+        {{- else -}}
+          {{- $page.Title -}}
+        {{- end -}}
+      </a>
+    </h3>
+    {{- end }}
+    <div class="catalog-meta">
+      {{- if $isSeries }}
+      <span>{{ i18n "series_count" (dict "Count" $entry.count) }}</span><span aria-hidden="true">·</span><time datetime="{{ $entry.date.Format "2006-01-02" }}">{{ i18n "series_updated" (dict "Date" ($entry.date.Format $dateFormat)) }}</time>
+      {{- else }}
+        {{- if .showDate }}
+      <time datetime="{{ $entry.date.Format "2006-01-02" }}">{{ $entry.date.Format $dateFormat }}</time>
+        {{- end }}
+      <span>{{ i18n "reading_time" $page.ReadingTime }}</span>
+      {{- end }}
+    </div>
+  </div>
+  {{ partial "summary.html" $page }}
+</li>

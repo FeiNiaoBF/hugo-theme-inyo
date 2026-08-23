@@ -1,0 +1,43 @@
+{{ $page := . }}
+{{ $tagTaxonomy := site.Params.taxonomy.tag | default "tags" }}
+{{ $isSeries := and .CurrentSection.IsSection (eq .CurrentSection.Layout "series") }}
+{{ $seriesContext := false }}
+{{ $seriesNavigation := false }}
+{{ if $isSeries }}
+  {{ $seriesContext = partial "series/context.html" .CurrentSection }}
+  {{ $seriesNavigation = partial "series/navigation.html" (dict "page" . "context" $seriesContext) }}
+{{ end }}
+<article class="post-single">
+  <header class="post-header">
+    {{ if $isSeries }}
+      <a class="back-link" href="{{ .CurrentSection.RelPermalink }}">{{ i18n "back_to_series" (dict "Series" .CurrentSection.Title) | default (printf "返回「%s」" .CurrentSection.Title) }}</a>
+      <div class="series-context">
+        {{ partial "series/icon.html" . }}
+        <a href="{{ .CurrentSection.RelPermalink }}">{{ .CurrentSection.Title }}</a>
+        <span class="series-progress">{{ i18n "series_progress" (dict "Current" $seriesNavigation.position "Total" $seriesContext.count) }}</span>
+      </div>
+    {{ else }}
+      <a class="back-link" href="{{ .CurrentSection.RelPermalink }}">← {{ i18n "back" | default "返回" }}</a>
+    {{ end }}
+    <h1>{{ .Title }}</h1>
+    <div class="post-meta">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format" | default "2006-01-02") }}</time>
+      <span>{{ i18n "reading_time" .ReadingTime }}</span>
+      {{ range $page.GetTerms $tagTaxonomy }}<a class="tag" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
+    </div>
+  </header>
+
+  <div class="prose">
+    {{ .Content }}
+  </div>
+
+  <nav class="post-nav{{ if $isSeries }} post-nav--series{{ end }}">
+    {{ if $isSeries }}
+      {{ with $seriesNavigation.previous }}<a href="{{ .RelPermalink }}">← {{ i18n "prev" }}: {{ .Title }}</a>{{ end }}
+      {{ with $seriesNavigation.next }}<a href="{{ .RelPermalink }}">{{ i18n "next" }}: {{ .Title }} →</a>{{ end }}
+    {{ else }}
+      {{ with .PrevInSection }}<a href="{{ .RelPermalink }}">← {{ i18n "prev" }}: {{ .Title }}</a>{{ end }}
+      {{ with .NextInSection }}<a href="{{ .RelPermalink }}">{{ i18n "next" }}: {{ .Title }} →</a>{{ end }}
+    {{ end }}
+  </nav>
+</article>

@@ -78,3 +78,18 @@ other = "切换首页诗句"
 
 [tag_cloud]
 other = "标签云"
+
+[series_count]
+other = "{{ .Count }} 篇"
+
+[series_updated]
+other = "更新于 {{ .Date }}"
+
+[series_progress]
+other = "第 {{ .Current }} / {{ .Total }} 篇"
+
+[back_to_series]
+other = "返回「{{ .Series }}」"
+
+[back_to_posts]
+other = "返回博客"

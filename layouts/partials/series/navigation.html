@@ -1,0 +1,17 @@
+{{- $page := .page -}}
+{{- $context := .context -}}
+{{- $position := 0 -}}
+{{- $previous := false -}}
+{{- $next := false -}}
+{{- range $index, $candidate := $context.pages -}}
+  {{- if $candidate.Eq $page -}}
+    {{- $position = add $index 1 -}}
+    {{- if gt $index 0 -}}
+      {{- $previous = index $context.pages (sub $index 1) -}}
+    {{- end -}}
+    {{- if lt (add $index 1) $context.count -}}
+      {{- $next = index $context.pages (add $index 1) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return (dict "position" $position "previous" $previous "next" $next) -}}

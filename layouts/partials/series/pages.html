@@ -1,0 +1,5 @@
+{{- $weighted := where .RegularPages "Weight" "ne" 0 -}}
+{{- $dated := where .RegularPages "Weight" "eq" 0 -}}
+{{- $ordered := $weighted.ByWeight -}}
+{{- $ordered = $ordered | append $dated.ByDate -}}
+{{- return $ordered -}}

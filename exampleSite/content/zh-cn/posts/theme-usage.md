@@ -101,6 +101,28 @@ math: false
 
 `description` 更像文章的名片，会参与页面描述和社交分享；`summary` 是目录里的导读，适合把文章真正的开头交代清楚。`pinned: true` 会让文章进入首页的置顶区域，可以有多篇置顶文章。
 
+## 普通文章与系列
+
+平时写一篇独立文章，仍然使用默认的 `post` 布局：
+
+```shell
+hugo new content posts/my-note.md
+```
+
+默认原型会在 Front Matter 中写入 `layout: post`。要把几篇文章连成一个系列，先为系列建立总览页：
+
+```shell
+hugo new content --kind series posts/my-series/_index.md
+```
+
+`series` 原型只用于目录里的 `_index.md`，它会选择系列总览布局，并让目录下的文章继续使用 `post`。再像普通文章一样创建子篇：
+
+```shell
+hugo new content posts/my-series/01-introduction.md
+```
+
+子篇可以用 `weight` 明确阅读顺序；不写也可以，主题会按日期接在有权重的文章之后。`lastmod` 用来记录文章最近一次更新，系列目录会据此显示最新进展。需要把整个系列放进首页置顶区时，把 `pinned: true` 写在系列的 `_index.md`，不必分散到每一篇子文中。
+
 ## 页面之间怎么走
 
 首页只负责把文章列出来。点击标题进入文章页，文章页会显示正文、日期、阅读时间和标签；点击标签后可以继续查看同一类文章。归档页则把文章按年份收起来，适合回头找旧内容。

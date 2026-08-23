@@ -1,0 +1,5 @@
+{{- $updated := .Lastmod -}}
+{{- if le $updated.Unix 0 -}}
+  {{- $updated = .Date -}}
+{{- end -}}
+{{- return $updated -}}

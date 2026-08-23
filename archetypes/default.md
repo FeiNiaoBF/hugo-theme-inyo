@@ -1,5 +1,6 @@
 ---
 title: '{{ replace .File.ContentBaseName "-" " " | title }}'
+layout: post
 date: {{ .Date }}
 description: ""
 summary: ""

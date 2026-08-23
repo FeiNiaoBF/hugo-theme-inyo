@@ -79,3 +79,19 @@ other = "Show another homepage poem"
 
 [tag_cloud]
 other = "Tag cloud"
+
+[series_count]
+one = "{{ .Count }} article"
+other = "{{ .Count }} articles"
+
+[series_updated]
+other = "Updated {{ .Date }}"
+
+[series_progress]
+other = "{{ .Current }} of {{ .Total }}"
+
+[back_to_series]
+other = "Back to “{{ .Series }}”"
+
+[back_to_posts]
+other = "Back to blog"

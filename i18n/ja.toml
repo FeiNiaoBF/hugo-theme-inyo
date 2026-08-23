@@ -77,3 +77,18 @@ other = "ホームの詩句を切り替える"
 
 [tag_cloud]
 other = "タグクラウド"
+
+[series_count]
+other = "{{ .Count }}本"
+
+[series_updated]
+other = "更新 {{ .Date }}"
+
+[series_progress]
+other = "{{ .Current }} / {{ .Total }}本"
+
+[back_to_series]
+other = "「{{ .Series }}」へ戻る"
+
+[back_to_posts]
+other = "ブログへ戻る"

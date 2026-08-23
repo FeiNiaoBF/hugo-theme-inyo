@@ -1,0 +1,21 @@
+{{ define "main" }}
+{{ $context := partial "series/context.html" . }}
+<section class="series-overview">
+  <header class="series-header">
+    <h1 class="series-title">{{ partial "series/icon.html" . }}<span>{{ .Title }}</span></h1>
+  </header>
+
+  {{ with .Content }}<div class="prose series-introduction">{{ . }}</div>{{ end }}
+
+  <ol class="series-list">
+    {{ range $index, $page := $context.pages }}
+    <li class="series-list-item">
+      <a class="series-list-link" href="{{ $page.RelPermalink }}">
+        <span class="series-list-index">{{ printf "%02d" (add $index 1) }}</span>
+        <span class="series-list-title">{{ $page.Title }}</span>
+      </a>
+    </li>
+    {{ end }}
+  </ol>
+</section>
+{{ end }}
