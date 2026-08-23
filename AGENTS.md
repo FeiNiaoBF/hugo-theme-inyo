@@ -36,6 +36,10 @@
 - `params.taxonomy.tag` 是文章 Front Matter 与 `.GetTerms` 使用的 taxonomy plural 键；`params.navigation.tags` 只负责索引页导航路径。文章标签链接必须使用 term page 的 `.RelPermalink`，禁止 `urlize` 或手工拼接 `/tags/`。
 - 404 的文章入口从 `mainSections[0]` 推导；Markdown 根相对站内内容链接和普通内部社交链接经 `relLangURL` 保留项目子路径与当前语言段。
 - 首页支持多篇 `pinned: true` 文章；置顶文章与普通文章分别按日期倒序。
+- 普通文章默认或显式使用 `layout: post`；系列只由 section `_index.md` 上的 `layout: series` 声明，并且只包含该 section 的直接子文章。
+- 系列阅读顺序为非零 `weight` 升序，随后是未设置或为零的 `weight` 按 `date` 升序；最近更新取子文章 `lastmod`，无有效值时回退 `date`。
+- 系列置顶只读取 `_index.md` 的 `pinned`，忽略子文章的 `pinned`；系列标题前的 icon 与标题整体链接到系列总览，不得改成 badge 或 card，也不得为此新增颜色 token。
+- Home 与 Blog 将每个系列折叠为单一入口；archives 与 tags 保留 individual articles。
 - 归档页使用 Hugo `GroupByDate` 按年份展示日期与标题。
 - 目录摘要使用 Hugo `.Summary`，为空时才回退 `.Description`；保留 140 全宽单位和最多 3 行。
 - SEO description 使用页面 `.Description` → `summary-source.html` → `params.description` → `params.subtitle` →站点标题，不能与目录摘要链混写。
@@ -51,6 +55,9 @@
 - `scripts/fixtures/consumer-site/hugo.yaml`：自定义 `notes` section、`labels` taxonomy、class-based Chroma 和 `/blog/` 子路径的可移植性 fixture。
 - `exampleSite/go.mod` 与 consumer `go.mod` 中的相对 `replace` 仅用于仓库内联调，不能写进用户配置示例。
 - 文章与 `archetypes/default.md` 使用 YAML `---` Front Matter；站点示例使用 `hugo.yaml`；主题默认配置继续使用 TOML。
+- `archetypes/default.md` 显式生成 `layout: post`；`archetypes/series.md` 生成带 `layout: series` 与 `cascade.layout: post` 的 section `_index.md`。作者手写内容时也可以省略普通文章的 `layout`，但不能把 `layout: series` 放在普通文章上。
+- Hugo named layout 的正确 lookup 是 `layouts/_default/post.html` 与 `layouts/_default/series.html`；省略 `layout` 时由 `layouts/_default/single.html` 回退到共享 post partial。禁止误建 `layouts/post/single.html` 或 `layouts/series/list.html`。
+- 系列关系只由 section 目录、`_index.md` 和直接子文章表达；不解析标题，不新增 series taxonomy 或站点级系列参数。
 - 站点覆盖 `markup` 时保留 `_merge: "deep"`，避免覆盖主题的 class-based Chroma 默认值。
 
 ## 文档同步矩阵
@@ -59,7 +66,8 @@
 | --- | --- | --- |
 | 公开参数或默认值 | `config/_default/`、模板读取点、`exampleSite/hugo.yaml`、README 配置示例、相关 skill | `verify-theme.ps1`、`verify-consumer.ps1` |
 | 模板、导航或 URL 行为 | `DESIGN.md`（仅设计变化）、README 特性说明、consumer fixture | 三个 `verify-*.ps1` |
-| Demo 内容结构 | 六篇 Demo 文章、`about.md`、README 文档索引、`inyo-content-authoring` | `verify-theme.ps1` |
+| post/series 内容模型、目录折叠或阅读顺序 | `DESIGN.md` ADR、`AGENTS.md` 产品合同、archetypes、Demo、consumer fixture、README 双语与相关 skills | `verify-theme.ps1`、`verify-consumer.ps1`、`verify-hugo-basic-example.ps1` |
+| Demo 内容结构 | 独立 Demo 文章、系列 `_index.md` 与直接子文章、`about.md`、README 文档索引、`inyo-content-authoring` | `verify-theme.ps1` |
 | 兼容性、CI 或发布流程 | `theme.toml`、workflow、README 双语、`CONTRIBUTING.md`、`CHANGELOG.md`、`inyo-theme-release` | CI 与全部本地门禁 |
 | 设计 token 或动效 | `DESIGN.md`、`assets/css/main.css`、必要的 AGENTS/skill 约束 | 颜色、a11y、Hero smoke + 浏览器复核 |
 
@@ -69,9 +77,9 @@ README 面向主题用户，CONTRIBUTING 面向贡献者，AGENTS 面向代理�
 
 ## 项目 skills 路由
 
-- 模板、CSS、配置或交互：`inyo-theme-development`。
-- Demo 文章、About、Front Matter 或 Markdown 展示：`inyo-content-authoring`。
-- README、CHANGELOG、CI、Pages、consumer 或发布资料：`inyo-theme-release`。
+- 模板、CSS、配置、交互、post/series lookup 或目录折叠：`inyo-theme-development`。
+- Demo 文章、About、Front Matter、series `_index.md`、阅读顺序或 Markdown 展示：`inyo-content-authoring`。
+- README、CHANGELOG、CI、Pages、consumer、系列公开合同或发布资料：`inyo-theme-release`。
 - 分组提交、commit 质量、SemVer Tag 或经明确授权的 push：`inyo-git-release`。
 - 选色与对比度：按需组合 `xxd-palette-builder`、`xxd-accessible-color`、`xxd-existing-design-audit` 与 `color-harmony-oklch`。
 

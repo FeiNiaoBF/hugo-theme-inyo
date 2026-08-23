@@ -34,6 +34,7 @@ Inyo 当前处于早期可用阶段，适合个人 Blog、作品记录和中文�
 - 纸墨双主题：亮色纸面、暗色墨面，颜色集中在 CSS token 中管理
 - 首页诗词 Hero：诗句与作者出处，点击后沿圆角边框完成朱红双翼墨线反馈
 - 长文阅读布局：稳定的正文宽度、摘要、代码块和 Markdown 渲染
+- 普通文章与系列：普通文章使用默认 `post` 布局，系列以一个总览入口组织连续阅读，同时保留子篇的归档与标签入口
 - 单一博客结构：首页、博客、标签、归档、关于；单篇文章作为博客详情页，About 与其他主导航项保持一致
 - 支持多篇置顶：在文章 Front Matter 设置 `pinned: true`，首页置顶区按日期倒序展示
 - 可移植导航：文章 section、标签 taxonomy、归档和 About 路径均可配置
@@ -172,9 +173,55 @@ params:
 
 [`exampleSite/hugo.yaml`](exampleSite/hugo.yaml) 是用于展示完整能力的 Demo 配置，不要求用户原样复制。主题默认值位于 `config/_default/`，用户站点只需覆盖自己的身份信息和需要修改的参数。Demo 文章使用 YAML Front Matter；主题参数的最终事实以默认配置和模板读取点为准，设计约束见 `DESIGN.md`。
 
+## 普通文章与系列
+
+目录中的系列入口使用左侧 series icon、系列名称、篇数、更新时间和可选的两行简介，不显示最新文章标题。
+
+普通文章默认使用 `post` 布局，省略 `layout` 即可；需要显式声明时，在文章 Front Matter 中使用：
+
+```yaml
+layout: post
+```
+
+系列使用 Hugo 的 branch bundle，不需要新增 taxonomy。一个系列由 `_index.md` 和同目录下的子篇组成：
+
+```text
+content/posts/my-series/_index.md
+content/posts/my-series/01-first.md
+content/posts/my-series/02-second.md
+```
+
+在 `_index.md` 中声明系列布局。`pinned` 属于整个系列，应写在这里；`cascade` 让子篇显式使用普通文章布局：
+
+```yaml
+---
+title: "我的系列"
+layout: series
+pinned: true
+cascade:
+  layout: post
+---
+```
+
+子篇可以通过 `weight` 控制阅读顺序，并用 `lastmod` 声明最近更新：
+
+```yaml
+---
+title: "第一篇"
+date: 2026-08-10
+weight: 10
+lastmod: 2026-08-18
+---
+```
+
+阅读顺序先按非零 `weight` 升序排列；未设置 `weight` 或设为 `0` 的子篇排在其后，再按 `date` 升序排列。`lastmod` 决定系列的最新更新时间；没有 `lastmod` 时回退到文章日期。首页与博客目录只显示一条系列入口，归档和标签页仍保留每篇子文章。系列置顶只读取 `_index.md` 的 `pinned`，不读取子篇的置顶状态。
+
+系列总览与普通文章保持相同阅读宽度，只显示系列图标与标题、可选的 `_index.md` 正文简介，以及按顺序排列的“`01` + 标题”整行链接。系列子篇顶部通过“返回「系列名称」”回到总览，并保留阅读进度和前后篇导航。
+
 ## 文档
 
 - [用 Inyo 写一篇文章](exampleSite/content/zh-cn/posts/theme-usage.md)：安装主题、创建文章和使用置顶
+- [系列写作 Demo 总览](exampleSite/content/zh-cn/posts/series-writing/_index.md)：系列入口、阅读顺序与篇间导航
 - [Markdown 基础](exampleSite/content/zh-cn/posts/markdown-basics.md)：标题、图片、代码、表格和链接
 - [Markdown 高效写作](exampleSite/content/zh-cn/posts/markdown-efficient.md)：摘要、长文组织和链接边界
 - [KaTeX 数学格式](exampleSite/content/zh-cn/posts/katex.md)：页面级数学公式示例

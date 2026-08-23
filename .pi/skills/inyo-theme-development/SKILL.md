@@ -47,6 +47,16 @@ Do not reintroduce removed `heroImage` parameters or add generic Hugo options th
 - Pinned posts (`pinned: true`) appear before normal posts; each collection is date-descending.
 - Archives use `GroupByDate` and remain a low-noise title/date list.
 
+### Post and series layouts
+
+- Hugo named layout lookup maps article `layout: post` to `layouts/_default/post.html` and series section `layout: series` to `layouts/_default/series.html`.
+- Keep `layouts/_default/single.html` as the omitted-layout fallback. Both it and `_default/post.html` delegate article rendering to `layouts/partials/post/single.html`.
+- **Catalog folding / 系列折叠** applies only to Home and the top-level Blog catalog: represent a series section once and omit its child articles there. Archives, taxonomy pages, and feeds continue to expose individual articles.
+- A series contains only its direct article children. Order nonzero `weight` values ascending, then append zero or missing weights by `date` ascending; use the same ordered collection for the overview, progress, and previous/next navigation.
+- Derive each child update from `lastmod`, falling back to `date` when `lastmod` is unavailable, and use the latest effective child update as the series update.
+- Read series `pinned` from its `_index.md`; child `pinned` values do not promote or duplicate the folded series catalog entry.
+- Verify the canonical Demo at `exampleSite/content/zh-cn/posts/series-writing/` and portability at `scripts/fixtures/consumer-site/content/notes/series-smoke/`, including custom sections, project subpaths, ordering, update fallback, pinning, and catalog folding.
+
 ### Summary and SEO
 
 - Catalog source: Hugo `.Summary` → `.Description`; then apply the existing 140-unit truncation and three-line clamp.

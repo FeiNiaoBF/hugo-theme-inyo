@@ -14,7 +14,7 @@
 | `xxd-accessible-color` | WCAG 对比度检查 + 同库替代色修复 | 文字/按钮/图表可读性校验 |
 | `xxd-existing-design-audit` | 盘点旧色资产，判定保留/合并/替换/移除 | 改版/设计系统清理 |
 | `inyo-theme-development` | 执行 Inyo 模板、CSS、token 与运行时约束 | 开发模板、样式或交互时 |
-| `inyo-content-authoring` | 维护六篇 Demo 文章、About、YAML Front Matter 与 Markdown 展示 | 写作或重构示例内容时 |
+| `inyo-content-authoring` | 维护六篇独立文章 + 一个两篇系列、About、YAML Front Matter 与 Markdown 展示 | 写作或重构示例内容时 |
 | `inyo-theme-release` | 检查分发元数据、consumer、Pages、文档和版本基线 | 发布、兼容性或开源入口变更时 |
 | `color-harmony-oklch` | OKLCH 和谐分析、目标对比度搜索与 742 色排序 | 主题或 UI 选色时 |
 
@@ -40,7 +40,7 @@ pwsh -File scripts/verify-hugo-basic-example.ps1
 git diff --check
 ```
 
-三个 Inyo 专用 skills 必须与以下事实保持同步：Hugo Extended `0.164.0`、Go `1.26.1`、`exampleSite/hugo.yaml`、`config/_default/`、六篇 Demo 文章、首页 Hero 资源边界，以及三个 `scripts/verify-*.ps1` 门禁。具体规则以 `AGENTS.md` 和 `DESIGN.md` 为准。
+三个 Inyo 专用 skills 必须与以下事实保持同步：Hugo Extended `0.164.0`、Go `1.26.1`、`exampleSite/hugo.yaml`、`config/_default/`、六篇独立文章 + 一个两篇系列、首页 Hero 资源边界，以及三个 `scripts/verify-*.ps1` 门禁。具体规则以 `AGENTS.md` 和 `DESIGN.md` 为准。
 
 ## 与 Inyo 主题的关系
 

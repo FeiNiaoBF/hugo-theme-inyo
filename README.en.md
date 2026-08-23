@@ -29,6 +29,7 @@ Live demo: [FeiNiaoBF.github.io/hugo-theme-inyo](https://FeiNiaoBF.github.io/hug
 - Paper-and-ink light and dark themes driven by CSS tokens
 - Homepage poetry hero with a restrained red double-wing border animation
 - Long-form reading layout with summaries, code blocks, and Markdown rendering
+- Posts and series: regular posts use the default `post` layout, while a series provides one overview for sequential reading without hiding its child posts from archives and tags
 - A focused blog structure: Home, Blog, Tags, Archives, and About; articles remain detail pages, with About aligned to the primary navigation
 - Multiple pinned posts via `pinned: true`, shown before the latest-post stream
 - Portable navigation for custom content sections, taxonomy, archive, and About paths
@@ -174,9 +175,55 @@ params:
 
 [`exampleSite/hugo.yaml`](exampleSite/hugo.yaml) is the complete demo configuration, not a file users must copy verbatim. Runtime defaults remain in `config/_default/`; a consumer site only needs to override its identity and the options it changes. Demo articles use YAML Front Matter. The final parameter contract is defined by the defaults and their template consumers; design constraints live in `DESIGN.md`.
 
+## Posts and series
+
+Series catalog entries use a left series icon, the series name, article count, update date, and an optional two-line introduction; the latest article title is not repeated.
+
+Regular articles use the `post` layout by default, so `layout` may be omitted. To declare it explicitly, add this line to the article front matter:
+
+```yaml
+layout: post
+```
+
+A series is a Hugo branch bundle and does not require a new taxonomy. Its `_index.md` and child posts live in the same directory:
+
+```text
+content/posts/my-series/_index.md
+content/posts/my-series/01-first.md
+content/posts/my-series/02-second.md
+```
+
+Declare the series layout in `_index.md`. The `pinned` value belongs to the whole series and should be set here; `cascade` explicitly gives child pages the regular post layout:
+
+```yaml
+---
+title: "My series"
+layout: series
+pinned: true
+cascade:
+  layout: post
+---
+```
+
+Child posts can use `weight` for reading order and `lastmod` for their latest update:
+
+```yaml
+---
+title: "Part one"
+date: 2026-08-10
+weight: 10
+lastmod: 2026-08-18
+---
+```
+
+Nonzero `weight` values come first in ascending order. Posts with no `weight`, or with `weight: 0`, follow in ascending `date` order. `lastmod` determines the series' latest update, falling back to the post date when it is absent. Home and the main Blog list show one entry for the series, while Archives and Tags retain every child post. Series pinning reads `pinned` only from `_index.md`, not from child posts.
+
+The series overview uses the same reading width as a regular post and shows only the series icon and title, optional `_index.md` body copy, and ordered full-row links containing a two-digit number such as `01` plus the article title. Each child post links back with the series name while retaining reading progress and previous/next navigation.
+
 ## Documentation
 
 - [Using Inyo](exampleSite/content/zh-cn/posts/theme-usage.md)
+- [Series writing demo overview](exampleSite/content/zh-cn/posts/series-writing/_index.md)
 - [Markdown basics](exampleSite/content/zh-cn/posts/markdown-basics.md)
 - [Efficient Markdown writing](exampleSite/content/zh-cn/posts/markdown-efficient.md)
 - [KaTeX mathematics](exampleSite/content/zh-cn/posts/katex.md)

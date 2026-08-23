@@ -152,6 +152,18 @@
 - **来源优先级**：Hugo `.Summary`（`<!--more-->` → Front Matter `summary` → 自动摘要）→ `.Description` 兜底
 - 超限追加 `…`；首页 tags 组/untagged 组/列表页三处统一调用
 
+### 6.5.6 普通文章与系列
+
+- **普通文章（post）**：`layout: post` 是文章 archetype 的默认显式值；作者省略 `layout` 时，`_default/single.html` 仍回退到同一个 post partial，普通文章的页面结构和视觉不发生分叉。
+- **系列（series）**：只有 section 的 `_index.md` 使用 `layout: series`，系列内容只收录该 section 的直接子文章；子文章继续按 post 渲染，不递归吸收更深层目录。
+- **阅读顺序**：先按非零 `weight` 升序，再把未设置或为零的 `weight` 按 `date` 升序接在其后。系列的最近更新时间取所有直接子文章中最大的 `lastmod`，文章未提供有效 `lastmod` 时回退 `date`。
+- **置顶边界**：系列是否置顶只读取 `_index.md` 的 `pinned`；子文章的 `pinned` 不改变 Home 与 Blog 的系列入口位置。
+- **目录视觉**：Home 与 Blog 的系列入口沿用普通目录的单轴构图：系列名称、普通文章标题和摘要从同一条左轴开始，metadata 保持普通目录的右侧槽位；series icon 退到标题左侧 gutter 作为系列标记，不占用标题列。只有 icon 与系列名称组成的标题行链接到系列总览；不显示最新文章标题，不引入 card、阴影或新的颜色 token。
+- **系列图标动效**：series icon 使用固定 `16×16` viewBox、`1px` 描边的几何线装书册，以单线书脊和两个装订点减轻视觉重量，右侧两层开放式书页各有两条短页线。所属标题区域在 `hover` 或键盘焦点时让封面绕书脊旋转 `-15deg`，内页同时横移 `0.75px`、页线以 `220ms` 淡入；外部尺寸不变，三处使用位置共用同一 SVG 与状态规则。动效纯 CSS 实现，`prefers-reduced-motion: reduce` 下保持闭合静态，图标继续 `aria-hidden` 并继承 `currentColor`。
+- **总览视觉**：系列总览与普通文章同宽，H1 由线性 series icon 与系列标题组成；正文简介可选，文章目录只显示两位序号与标题，并把整行作为链接。目录以留白分隔，不显示返回博客、系列类型、篇数、最近更新、文章日期、阅读时间或摘要。
+- **详情行为**：系列子文章在标题上方使用“返回「系列名称」”链接回到总览，同时保留阅读进度和按系列顺序计算的前后篇。
+- **浏览合同**：Home 与 Blog 将每个系列折叠为单一入口；archives 与 tags 保留 individual articles。
+
 ## 7. ADR 记录
 
 ### ADR-1: 配色方法论（OKLCH + Cohen-Or + WCAG + 742 点名）
@@ -190,6 +202,16 @@
 - **配色**: 网页内联版圆盘/墨鱼/浅色鱼使用 `--seal-disc` / `--seal-ink` / `--seal-light`，朱砂环使用 `--cinnabar`，亮暗模式自适应；鱼眼经典对位（黑鱼白点/白鱼黑点）
 - **favicon**: 无 CSS 变量上下文，继续使用品牌固定色版 `img/seal-yang.svg`（复用原文件名，内容已换）；这是明确记录的唯一固定品牌色例外
 - **社交分享图**: 默认 `ogImage` 使用 `img/seal-yang-og.png`，避免社交平台对 SVG 支持不一致；该 PNG 是固定品牌色静态输出，不进入运行时 CSS token 系统
+
+### ADR-10: section + layout 内容模型
+- **状态**: 已接受
+- **背景**: 仅靠 `xxx(1)`、`xxx(2)` 标题或人工维护普通文章目录，无法让主题稳定区分系列边界、阅读顺序和总览入口；新增 taxonomy 或站点级系列参数又会把同一内容关系拆到多处管理。
+- **决策**: 以 Hugo section 表达系列边界，以 named layout 表达页面角色。普通文章默认或显式使用 `layout: post`；省略 `layout` 时由 `_default/single.html` 回退到 post partial。只有系列 section 的 `_index.md` 使用 `layout: series`，且只管理其直接子文章。
+- **排序与更新**: 阅读顺序先取非零 `weight` 升序，再取未设置或为零的 `weight` 并按 `date` 升序；系列最近更新优先使用子文章 `lastmod`，无有效值时回退 `date`。
+- **置顶**: 系列级 `pinned` 只写在 `_index.md` 并由目录读取，子文章的 `pinned` 不参与系列入口排序。
+- **视觉与导航**: Home 与 Blog 目录中，series icon 与系列名称组成指向系列总览的标题链接；标题文字和摘要保持普通文章的左轴，metadata 保持普通目录的右侧槽位，icon 只在左侧 gutter 中提供系列识别。icon 是固定尺寸的几何线装书册，标题 hover 或键盘焦点时以纯 CSS 打开封面并显露内页线，reduced motion 下保持闭合；总览只保留 icon 标题、可选简介以及“序号 + 标题”的整行文章链接，以留白而非分隔线组织内容；子文章通过包含系列名的返回链接、进度与前后篇完成系列导航。不使用 badge 或 card，也不新增颜色 token。
+- **集合合同**: Home 与 Blog 将每个系列折叠为单一入口；archives 与 tags 保留 individual articles。
+- **结果**: 内容关系由目录结构与 Front Matter 就地管理，不解析标题、不增加 series taxonomy，也不增加新的站点配置参数。
 
 ## 8. 首页诗句 Hero
 

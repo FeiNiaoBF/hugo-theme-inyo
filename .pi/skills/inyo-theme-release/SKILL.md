@@ -30,9 +30,10 @@ Keep the public project entry points and release machinery aligned with the them
 
 - README is the user entry point: what Inyo is, supported versions, copyable installation, minimal YAML, Demo, feature overview, docs links, validation, roadmap, contribution, acknowledgements, and license.
 - `README.md` and `README.en.md` must match semantically. Keep the centered language switch near the top of each file.
+- `README.md` 与 `README.en.md` 的系列（series）合同及 archetype 示例必须保持同步。
 - Installation defaults to `github.com/FeiNiaoBF/hugo-theme-inyo@latest`. Document Modules and classic `themes/` as alternatives, never as simultaneous requirements.
 - Link detailed configuration to `exampleSite/hugo.yaml` and defaults in `config/_default/`; do not create a duplicate full parameter table.
-- The Demo documentation index contains exactly `theme-usage.md`, `markdown-basics.md`, `markdown-efficient.md`, `katex.md`, `faq.md`, and `brand-design.md`.
+- The Demo documentation index contains six root-level independent articles—`theme-usage.md`, `markdown-basics.md`, `markdown-efficient.md`, `katex.md`, `faq.md`, and `brand-design.md`—plus the `series-writing/_index.md` series overview with direct children `series-writing/01-boundary.md` and `series-writing/02-navigation.md`.
 - CONTRIBUTING explains contributor setup, synchronization responsibilities, validation, and artifact hygiene.
 - CHANGELOG follows Keep a Changelog, preserves released history, and records only implemented changes under `Unreleased`.
 - User-facing Markdown uses triple-backtick fences; generic command blocks use `shell`.
