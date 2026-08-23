@@ -297,6 +297,8 @@ Assert-Contains $postPartial '<nav\s+class="post-nav[^"{]*\{\{\s*if\s+\$isSeries
 Assert-Contains $notFoundTemplate 'site\.Params\.mainSections' "Navigation failure: 404 article entry must use mainSections."
 Assert-NotContains $notFoundTemplate '"posts/"\s*\|\s*relLangURL' "Navigation failure: 404 article entry still hard-codes the posts path."
 Assert-Contains $listTemplate 'site\.Params\.mainSections' "Navigation failure: section heading detection must use mainSections."
+Assert-Contains $listTemplate '\$blogSection\s*:=\s*index\s+\$mainSections\s+0' "Navigation failure: Blog catalog must resolve its single configured main section."
+Assert-Contains $listTemplate 'sections"\s*\(slice\s+\$blogSection\)' "Navigation failure: Blog catalog must not collect entries from every configured main section."
 Assert-FileExists $archiveTemplate "Archive failure: layouts/archives/list.html is missing."
 Assert-Contains $archiveTemplate 'GroupByDate' "Archive failure: archive template must group articles by date."
 Assert-FileExists $archiveContent "Archive failure: exampleSite/content/zh-cn/archives/_index.md is missing."
