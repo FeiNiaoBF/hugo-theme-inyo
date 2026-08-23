@@ -4,6 +4,15 @@
 
 ## Unreleased
 
+暂无变更。
+
+## v0.5.0 - 2026-08-23
+
+### Added
+
+- 新增 Hugo section 驱动的 `post` / `series` 内容模型：普通文章默认使用 `layout: post`，系列由 `layout: series` 的 section 组织；首页与博客目录将系列子文章折叠为单个系列入口，并支持按系列 `pinned` 置顶。
+- 新增系列总览、文章统计、最近更新时间、阅读进度与前后篇导航，以及普通文章和系列 archetype；系列阅读顺序由 `weight` 控制，更新时间由 `lastmod`（回退至文章日期）确定。
+
 ## v0.4.0 - 2026-08-16
 
 ### Added
