@@ -17,6 +17,21 @@ function Assert-NotContains($Path, $Pattern, $Message) {
   if ($text -match $Pattern) { throw $Message }
 }
 
+function Assert-MatchCount($Path, $Pattern, $Expected, $Message) {
+  $text = Get-Content -Raw $Path
+  $actual = [regex]::Matches($text, $Pattern).Count
+  if ($actual -ne $Expected) { throw "$Message Expected $Expected, got $actual." }
+}
+
+function Assert-InOrder($Path, $Patterns, $Message) {
+  $text = Get-Content -Raw $Path
+  foreach ($pattern in $Patterns) {
+    $match = [regex]::Match($text, $pattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    if (-not $match.Success) { throw $Message }
+    $text = $text.Substring($match.Index + $match.Length)
+  }
+}
+
 function Assert-FileExists($Path, $Message) {
   if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw $Message }
 }
@@ -44,6 +59,12 @@ function Assert-PngDimensions($Path, $MinimumWidth, $MinimumHeight, $ExactWidth,
 
 function Assert-FileMissing($Path, $Message) {
   if (Test-Path -LiteralPath $Path) { throw $Message }
+}
+
+function Assert-SelectorInMedia($Path, $ConditionPattern, $Selector, $Message) {
+  $selectorPattern = [regex]::Escape($Selector)
+  $pattern = "(?s)@media\s*\($ConditionPattern\)\s*\{(?:\s*[^{}]+\{[^{}]*\})*?\s*[^{}]*$selectorPattern[^{}]*\{"
+  Assert-Contains $Path $pattern $Message
 }
 
 function Assert-ExternalTargetsSafe($Path, $Message) {
@@ -116,6 +137,7 @@ $themeScreenshot = Join-Path $repoRoot "images\screenshot.png"
 $themeThumbnail = Join-Path $repoRoot "images\tn.png"
 $socialImage = Join-Path $repoRoot "static\img\seal-yang-og.png"
 $defaultArchetype = Join-Path $repoRoot "archetypes\default.md"
+$seriesArchetype = Join-Path $repoRoot "archetypes\series.md"
 $consumerSite = Join-Path $repoRoot "scripts\fixtures\consumer-site"
 $consumerConfig = Join-Path $consumerSite "hugo.yaml"
 $legacyConsumerConfig = Join-Path $consumerSite "hugo.toml"
@@ -127,12 +149,25 @@ $headPartial = Join-Path $repoRoot "layouts\partials\head.html"
 $baseof = Join-Path $repoRoot "layouts\_default\baseof.html"
 $indexTemplate = Join-Path $repoRoot "layouts\index.html"
 $singleTemplate = Join-Path $repoRoot "layouts\_default\single.html"
+$postLayout = Join-Path $repoRoot "layouts\_default\post.html"
+$postPartial = Join-Path $repoRoot "layouts\partials\post\single.html"
+$seriesTemplate = Join-Path $repoRoot "layouts\_default\series.html"
+$wrongSeriesTemplate = Join-Path $repoRoot "layouts\series\list.html"
 $notFoundTemplate = Join-Path $repoRoot "layouts\404.html"
 $listTemplate = Join-Path $repoRoot "layouts\_default\list.html"
 $archiveTemplate = Join-Path $repoRoot "layouts\archives\list.html"
+$seriesPagesPartial = Join-Path $repoRoot "layouts\partials\series\pages.html"
+$seriesEffectiveDatePartial = Join-Path $repoRoot "layouts\partials\series\effective-date.html"
+$seriesContextPartial = Join-Path $repoRoot "layouts\partials\series\context.html"
+$seriesNavigationPartial = Join-Path $repoRoot "layouts\partials\series\navigation.html"
+$seriesIconPartial = Join-Path $repoRoot "layouts\partials\series\icon.html"
+$catalogEntriesPartial = Join-Path $repoRoot "layouts\partials\catalog\entries.html"
 $archiveContent = Join-Path $exampleSite "content\zh-cn\archives\_index.md"
 $wenkaiCss = Join-Path $repoRoot "assets\css\wenkai.css"
 $demoPosts = Join-Path $exampleSite "content\zh-cn\posts"
+$demoSeries = Join-Path $demoPosts "series-writing\_index.md"
+$demoSeriesFirst = Join-Path $demoPosts "series-writing\01-boundary.md"
+$demoSeriesSecond = Join-Path $demoPosts "series-writing\02-navigation.md"
 $aboutDoc = Join-Path $exampleSite "content\zh-cn\about.md"
 $themeUsageDoc = Join-Path $demoPosts "theme-usage.md"
 $heroPoemsData = Join-Path $repoRoot "data\inyo\hero_poems.toml"
@@ -189,7 +224,25 @@ Assert-Contains $readmeEn '(?s)<h3\s+align="center">\s*<a\s+href="README\.md">�
 foreach ($publicReadme in @($readme, $readmeEn)) {
   Assert-Contains $publicReadme 'taxonomy:\s*\r?\n\s+tag:\s*"tags"' "Documentation failure: README configuration must document params.taxonomy.tag."
   Assert-Contains $publicReadme 'markup:\s*\r?\n\s+_merge:\s*"deep"' "Documentation failure: README configuration must preserve markup deep merge."
+  Assert-Contains $publicReadme '(?m)^\s*layout:\s*post\s*$' "Series documentation failure: $publicReadme must document layout: post."
+  Assert-Contains $publicReadme '(?m)^\s*layout:\s*series\s*$' "Series documentation failure: $publicReadme must document layout: series."
+  Assert-Contains $publicReadme '_index\.md' "Series documentation failure: $publicReadme must document the series _index.md."
+  Assert-Contains $publicReadme '(?i)\bweight\b' "Series documentation failure: $publicReadme must document series weight ordering."
+  Assert-Contains $publicReadme '(?i)\blastmod\b' "Series documentation failure: $publicReadme must document series lastmod updates."
 }
+foreach ($architectureDoc in @($designDoc, $agentsDoc)) {
+  Assert-Contains $architectureDoc '(?is)(?:Home|首页).*?(?:Blog|博客(?:目录)?).*?(?:系列|series).*?(?:折叠|聚合|fold).*?(?:单一入口|一个入口|single entry)' "Series documentation failure: $architectureDoc must state that Home and Blog fold each series into one entry."
+  Assert-Contains $architectureDoc '(?is)(?:archives?|归档).*?(?:tags?|标签).*?(?:单篇|独立文章|individual articles?)' "Series documentation failure: $architectureDoc must state that archives and tags retain individual articles."
+}
+Assert-Contains $designDoc '(?im)^#{2,}\s+ADR-10\b.*section\s*\+\s*layout' "Series documentation failure: DESIGN.md must record ADR-10 for the section + layout content model."
+Assert-Contains $piReadme '(?s)六篇.*?独立文章.*?一个.*?两篇.*?系列' "Series documentation failure: .pi/README.md must describe six independent articles plus one two-article series."
+Assert-Contains $inyoSkill '_default/post\.html' "Series documentation failure: inyo-theme-development must mention _default/post.html."
+Assert-Contains $inyoSkill '_default/series\.html' "Series documentation failure: inyo-theme-development must mention _default/series.html."
+Assert-Contains $inyoSkill '(?i)(?:catalog\s+folding|系列折叠)' "Series documentation failure: inyo-theme-development must document catalog folding."
+Assert-Contains $contentSkill 'series-writing/_index\.md' "Series documentation failure: inyo-content-authoring must mention series-writing/_index.md."
+Assert-Contains $contentSkill '(?m)^\s*layout:\s*post\s*$' "Series documentation failure: inyo-content-authoring must document layout: post."
+Assert-Contains $contentSkill '(?m)^\s*layout:\s*series\s*$' "Series documentation failure: inyo-content-authoring must document layout: series."
+Assert-Contains $releaseSkill '(?im)^.*README\.md.*README\.en\.md.*(?:系列|series).*(?:archetype).*(?:同步|synchron)' "Series documentation failure: inyo-theme-release must require bilingual README series contracts and archetype examples to stay synchronized."
 Assert-Contains $contributing 'scripts/verify-theme\.ps1' "Documentation failure: CONTRIBUTING.md is missing the theme verification command."
 Assert-Contains $contributing 'zhongguo-traditional-colors' "Documentation failure: CONTRIBUTING.md is missing the acknowledgements section."
 Assert-Contains $changelog '(?m)^## Unreleased\s*$' "Documentation failure: CHANGELOG.md is missing the Unreleased section."
@@ -230,11 +283,17 @@ Assert-Contains $baseof '<div class="identity-lockup">' "Responsive identity fai
 Assert-Contains $baseof '(?s)<div class="identity-toolbar">.*?<nav class="identity-nav".*?<div class="identity-meta">' "Responsive identity failure: navigation and controls must share one toolbar."
 Assert-Contains $baseof '(?s)</aside>\s*<main class="content".*?</main>\s*<footer class="shell-footer">' "Responsive footer failure: the semantic footer must follow the main content."
 Assert-NotContains $baseof 'identity-foot' "Responsive footer failure: footer content must not remain inside the identity rail."
-Assert-Contains $singleTemplate 'site\.Params\.taxonomy\.tag' "Taxonomy failure: article terms must use the configured taxonomy key."
-Assert-Contains $singleTemplate '\.GetTerms\s+\$tagTaxonomy' "Taxonomy failure: article terms must resolve through Hugo term pages."
-Assert-Contains $singleTemplate '\.RelPermalink' "Taxonomy failure: article term links must use the term page permalink."
-Assert-NotContains $singleTemplate '\|\s*urlize' "Taxonomy failure: article term links must not synthesize slugs with urlize."
-Assert-NotContains $singleTemplate '"tags/"\s*\|\s*relLangURL' "Taxonomy failure: article term links still hard-code the tags path."
+Assert-FileExists $postLayout "Post layout failure: layouts/_default/post.html is missing."
+Assert-FileExists $postPartial "Post layout failure: layouts/partials/post/single.html is missing."
+Assert-Contains $postLayout 'partial\s+"post/single\.html"' "Post layout failure: layouts/_default/post.html must use the shared post partial."
+Assert-Contains $singleTemplate 'partial\s+"post/single\.html"' "Post layout failure: layouts/_default/single.html must preserve the default article fallback through the shared post partial."
+Assert-Contains $postPartial 'site\.Params\.taxonomy\.tag' "Taxonomy failure: article terms must use the configured taxonomy key."
+Assert-Contains $postPartial '\.GetTerms\s+\$tagTaxonomy' "Taxonomy failure: article terms must resolve through Hugo term pages."
+Assert-Contains $postPartial '\.RelPermalink' "Taxonomy failure: article term links must use the term page permalink."
+Assert-NotContains $postPartial '\|\s*urlize' "Taxonomy failure: article term links must not synthesize slugs with urlize."
+Assert-NotContains $postPartial '"tags/"\s*\|\s*relLangURL' "Taxonomy failure: article term links still hard-code the tags path."
+Assert-Contains $postPartial '\.CurrentSection\.Layout' "Post layout failure: shared post rendering does not detect series membership through CurrentSection.Layout."
+Assert-Contains $postPartial '<nav\s+class="post-nav[^"{]*\{\{\s*if\s+\$isSeries\s*\}\}[^"{]*post-nav--series' "Series article failure: shared post rendering must add post-nav--series only for series navigation."
 Assert-Contains $notFoundTemplate 'site\.Params\.mainSections' "Navigation failure: 404 article entry must use mainSections."
 Assert-NotContains $notFoundTemplate '"posts/"\s*\|\s*relLangURL' "Navigation failure: 404 article entry still hard-codes the posts path."
 Assert-Contains $listTemplate 'site\.Params\.mainSections' "Navigation failure: section heading detection must use mainSections."
@@ -242,12 +301,17 @@ Assert-FileExists $archiveTemplate "Archive failure: layouts/archives/list.html 
 Assert-Contains $archiveTemplate 'GroupByDate' "Archive failure: archive template must group articles by date."
 Assert-FileExists $archiveContent "Archive failure: exampleSite/content/zh-cn/archives/_index.md is missing."
 Assert-Contains $indexTemplate '(?s)pinned.*?latest|latest.*?pinned' "Homepage failure: pinned and latest collections are not both present."
-Assert-Contains $indexTemplate 'Params\.pinned' "Homepage failure: homepage does not read the pinned front matter field."
+Assert-Contains $catalogEntriesPartial 'Params\.pinned' "Homepage failure: catalog entries do not read the pinned front matter field."
+Assert-Contains $indexTemplate 'partial\s+"catalog/entries\.html"' "Homepage failure: homepage does not consume the mixed catalog entries."
 Assert-Contains $wenkaiCss 'url\(''\.\./fonts/' "Asset failure: self-hosted font URLs must be relative to the generated CSS directory."
 Assert-NotContains $wenkaiCss 'url\(''/fonts/' "Asset failure: self-hosted font CSS still assumes a root deployment path."
 
 # P1 authoring and clean-consumer contracts.
 Assert-FileExists $defaultArchetype "Archetype failure: archetypes/default.md is missing."
+Assert-Contains $defaultArchetype '(?m)^layout:\s*post\s*$' "Archetype failure: ordinary content must explicitly use post layout."
+Assert-FileExists $seriesArchetype "Archetype failure: archetypes/series.md is missing."
+Assert-Contains $seriesArchetype '(?m)^layout:\s*series\s*$' "Archetype failure: series archetype must select the series layout."
+Assert-Contains $seriesArchetype '(?ms)^cascade:\s*\r?\n\s+layout:\s*post\s*$' "Archetype failure: series children must inherit post layout."
 foreach ($field in @("title", "date", "description", "summary", "draft", "math", "categories")) {
   Assert-Contains $defaultArchetype ("(?m)^" + [regex]::Escape($field) + "\s*:") "Archetype failure: default.md is missing YAML field $field."
 }
@@ -301,7 +365,7 @@ $themeParamConsumers = @(
   @{ Name = "subtitle"; Path = $headPartial; Pattern = 'site\.Params\.subtitle' },
   @{ Name = "mainSections"; Path = $baseof; Pattern = 'site\.Params\.mainSections' },
   @{ Name = "ogImage"; Path = $headPartial; Pattern = 'site\.Params\.ogImage' },
-  @{ Name = "taxonomy.tag"; Path = $singleTemplate; Pattern = 'site\.Params\.taxonomy\.tag' },
+  @{ Name = "taxonomy.tag"; Path = $postPartial; Pattern = 'site\.Params\.taxonomy\.tag' },
   @{ Name = "navigation.tags"; Path = $baseof; Pattern = 'site\.Params\.navigation\.tags' },
   @{ Name = "navigation.about"; Path = $baseof; Pattern = 'site\.Params\.navigation\.about' },
   @{ Name = "navigation.archives"; Path = $baseof; Pattern = 'site\.Params\.navigation\.archives' },
@@ -386,6 +450,19 @@ $demoNameDiff = @(Compare-Object -ReferenceObject $expectedDemoNames -Difference
 if ($demoNameDiff.Count -gt 0) {
   throw "Demo docs failure: exampleSite/content/zh-cn/posts must contain exactly: $($expectedDemoNames -join ', '). Actual: $($actualDemoNames -join ', ')."
 }
+$demoSeriesFiles = @($demoSeries, $demoSeriesFirst, $demoSeriesSecond)
+foreach ($demoSeriesFile in $demoSeriesFiles) {
+  Assert-FileExists $demoSeriesFile "Demo series failure: required source file is missing: $demoSeriesFile"
+  Assert-Contains $demoSeriesFile '(?s)^---\r?\n.*?\r?\n---\r?\n' "Demo series failure: $demoSeriesFile must use YAML front matter."
+  Assert-NotContains $demoSeriesFile '(?m)^\+\+\+$' "Demo series failure: $demoSeriesFile must not use TOML front matter."
+}
+Assert-Contains $demoSeries '(?m)^layout:\s*series\s*$' "Demo series failure: overview must use the series layout."
+Assert-Contains $demoSeries '(?ms)^cascade:\s*\r?\n\s+layout:\s*post\s*$' "Demo series failure: children must inherit the post layout."
+foreach ($demoSeriesArticle in @($demoSeriesFirst, $demoSeriesSecond)) {
+  Assert-Contains $demoSeriesArticle '(?m)^layout:\s*post\s*$' "Demo series failure: child article must use the post layout."
+  Assert-Contains $demoSeriesArticle '(?m)^weight:\s*\d+\s*$' "Demo series failure: child article is missing its reading weight."
+  Assert-Contains $demoSeriesArticle '(?m)^lastmod:\s*\S+\s*$' "Demo series failure: child article is missing lastmod."
+}
 $oldDemoNames = @(
   "configuration-reference", "customization", "front-matter", "getting-started",
   "markdown-style-guide", "paper-and-ink", "release-checklist", "showa-warmth", "theme-guide"
@@ -429,6 +506,41 @@ foreach ($staleHeroPattern in @('heroImage', 'hero-beauty', 'inky-overlay', '墨
   }
 }
 
+foreach ($path in @($seriesPagesPartial, $seriesEffectiveDatePartial, $seriesContextPartial, $seriesNavigationPartial, $catalogEntriesPartial)) {
+  Assert-FileExists $path "Series failure: required data partial is missing: $path"
+}
+Assert-FileExists $seriesTemplate "Series overview failure: layouts/_default/series.html is missing."
+Assert-FileMissing $wrongSeriesTemplate "Series overview failure: layouts/series/list.html is the wrong Hugo layout path."
+Assert-Contains $seriesTemplate 'partial\s+"series/context\.html"' "Series overview failure: template does not use the shared series context."
+Assert-Contains $seriesTemplate '\.Content' "Series overview failure: authored series content is not rendered."
+Assert-Contains $seriesTemplate 'partial\s+"series/icon\.html"' "Series overview failure: title is missing the series icon."
+Assert-Contains $seriesTemplate 'class="series-list-link"' "Series overview failure: article rows are not full-row links."
+Assert-NotContains $seriesTemplate '\.Parent\.RelPermalink' "Series overview failure: removed main-section return link remains in the template."
+Assert-NotContains $seriesTemplate 'i18n\s+"series_count"' "Series overview failure: removed article count remains in the template."
+Assert-NotContains $seriesTemplate 'i18n\s+"series_updated"' "Series overview failure: removed update date remains in the template."
+Assert-Contains $seriesPagesPartial '\.RegularPages' "Series failure: ordering must use direct regular pages."
+Assert-Contains $seriesPagesPartial '\.ByWeight' "Series failure: weighted pages must use Hugo ByWeight."
+Assert-Contains $seriesPagesPartial '\.ByDate' "Series failure: unweighted pages must use ascending publication date."
+Assert-Contains $seriesEffectiveDatePartial '\.Lastmod' "Series failure: effective update must prefer Hugo Lastmod."
+Assert-Contains $seriesEffectiveDatePartial '\.Date' "Series failure: effective update must fall back to Date."
+Assert-Contains $seriesIconPartial 'stroke="currentColor"' "Series icon failure: SVG stroke must inherit currentColor."
+Assert-Contains $seriesIconPartial 'aria-hidden="true"' "Series icon failure: decorative SVG must be hidden from assistive technology."
+Assert-Contains $seriesIconPartial 'focusable="false"' "Series icon failure: decorative SVG must not receive focus."
+Assert-Contains $seriesIconPartial 'viewBox="0 0 16 16"' "Series icon failure: the thread-bound book must keep the fixed 16 by 16 viewBox."
+Assert-Contains $seriesIconPartial 'stroke-linecap="round"' "Series icon failure: thread-bound book strokes must use rounded caps."
+Assert-Contains $seriesIconPartial 'stroke-linejoin="round"' "Series icon failure: thread-bound book strokes must use rounded joins."
+Assert-Contains $seriesIconPartial 'class="series-icon__page series-icon__page--back"' "Series icon failure: the back page layer is missing."
+Assert-Contains $seriesIconPartial 'class="series-icon__inner-page"' "Series icon failure: the inner page group is missing."
+Assert-Contains $seriesIconPartial 'class="series-icon__cover"' "Series icon failure: the animated cover group is missing."
+Assert-Contains $seriesIconPartial 'class="series-icon__spine"' "Series icon failure: the fixed left spine is missing."
+Assert-Contains $seriesIconPartial 'class="series-icon__spine" d="M3\.35 2\.45v8\.9"' "Series icon failure: the spine must remain a lightweight single line."
+Assert-MatchCount $seriesIconPartial 'class="series-icon__binding"' 2 "Series icon failure: the thread-bound book must have exactly two binding points."
+Assert-MatchCount $seriesIconPartial 'class="series-icon__page-line"' 4 "Series icon failure: each of the two page layers must have two content lines."
+Assert-Contains $designDoc '(?s)线装书册.*?220ms.*?prefers-reduced-motion' "Series icon documentation failure: DESIGN.md must record the approved thread-bound book motion and reduced-motion fallback."
+Assert-Contains $catalogEntriesPartial '\.CurrentSection\.Layout' "Catalog failure: series children are not excluded through their current section."
+Assert-Contains $catalogEntriesPartial 'site\.Params|\.sections|sections' "Catalog failure: collection does not consume configured main sections."
+Assert-NotContains $catalogEntriesPartial '"posts"' "Catalog failure: collection hard-codes the posts section."
+
 try {
 New-Item -ItemType Directory -Path $tempRoot | Out-Null
 $demoBuildLog = (& hugo --source $exampleSite --minify --printPathWarnings --noBuildLock --destination $out 2>&1 | Out-String)
@@ -454,6 +566,9 @@ $article = Join-Path $out "posts\katex\index.html"
 $basicsArticle = Join-Path $out "posts\markdown-basics\index.html"
 $efficientArticle = Join-Path $out "posts\markdown-efficient\index.html"
 $themeUsage = Join-Path $out "posts\theme-usage\index.html"
+$seriesOverview = Join-Path $out "posts\series-writing\index.html"
+$seriesFirstArticle = Join-Path $out "posts\series-writing\01-boundary\index.html"
+$seriesSecondArticle = Join-Path $out "posts\series-writing\02-navigation\index.html"
 $faqArticle = Join-Path $out "posts\faq\index.html"
 $brandDesign = Join-Path $out "posts\brand-design\index.html"
 $legacyGuide = Join-Path $out "posts\theme-guide\index.html"
@@ -462,6 +577,8 @@ $posts = Join-Path $out "posts\index.html"
 $archives = Join-Path $out "archives\index.html"
 $tags = Join-Path $out "tags\index.html"
 $term = Join-Path $out "tags\inyo\index.html"
+$hugoTerm = Join-Path $out "tags\hugo\index.html"
+$defaultRss = Join-Path $out "index.xml"
 $englishAbout = Join-Path $out "en\about\index.html"
 $japaneseAbout = Join-Path $out "ja\about\index.html"
 $englishRss = Join-Path $out "en\index.xml"
@@ -471,10 +588,16 @@ $notFound = Join-Path $out "404.html"
 $pagesHomePage = Join-Path $pagesOut "index.html"
 $pagesArticle = Join-Path $pagesOut "posts\theme-usage\index.html"
 $pagesFeatureArticle = Join-Path $pagesOut "posts\markdown-basics\index.html"
+$pagesPosts = Join-Path $pagesOut "posts\index.html"
+$pagesSeriesOverview = Join-Path $pagesOut "posts\series-writing\index.html"
+$pagesSeriesFirst = Join-Path $pagesOut "posts\series-writing\01-boundary\index.html"
+$pagesSeriesSecond = Join-Path $pagesOut "posts\series-writing\02-navigation\index.html"
 $multilingualArticle = Join-Path $multilingualOut "zh-cn\posts\markdown-efficient\index.html"
 $multilingualTarget = Join-Path $multilingualOut "zh-cn\posts\katex\index.html"
 $multilingualFeatureArticle = Join-Path $multilingualOut "zh-cn\posts\markdown-basics\index.html"
 $multilingualAbout = Join-Path $multilingualOut "zh-cn\about\index.html"
+$multilingualSeriesFirst = Join-Path $multilingualOut "zh-cn\posts\series-writing\01-boundary\index.html"
+$multilingualSeriesSecond = Join-Path $multilingualOut "zh-cn\posts\series-writing\02-navigation\index.html"
 $pagesCss = Get-ChildItem (Join-Path $pagesOut "css") -Filter "main*.css" -File | Select-Object -First 1
 $pagesFontCss = Get-ChildItem (Join-Path $pagesOut "css") -Filter "wenkai*.css" -File | Select-Object -First 1
 $css = Join-Path $repoRoot "assets\css\main.css"
@@ -495,6 +618,32 @@ $imageHook = Join-Path $repoRoot "layouts\_default\_markup\render-image.html"
 $tableHook = Join-Path $repoRoot "layouts\_default\_markup\render-table.html"
 $markdownBundle = Join-Path $markdownOut "posts\bundle-smoke\index.html"
 
+Assert-Contains $css '(?s)\.series-list-link\s*\{[^}]*display:\s*grid' "Series overview failure: full-row link must own the directory grid."
+Assert-NotContains $css '(?s)\.series-list\s*\{[^}]*border-(?:top|bottom)' "Series overview failure: series list still has a divider."
+Assert-NotContains $css '(?s)\.series-list-item\s*\{[^}]*border-(?:top|bottom)' "Series overview failure: series rows still have dividers."
+Assert-NotContains $css '(?s)\.catalog-item--series\s*\{[^}]*display:\s*grid' "Catalog series failure: series entries must share the regular catalog flow instead of creating a second grid."
+Assert-NotContains $css '(?s)\.catalog-item--series\s+\.catalog-head\s*\{[^}]*display:\s*contents' "Catalog series failure: series headings must remain aligned through the regular catalog head."
+Assert-NotContains $css '(?s)\.catalog-item--series\s+\.catalog-meta\s*\{[^}]*grid-column' "Catalog series failure: series metadata must use the regular right-side metadata slot."
+Assert-Contains $css '(?s)\.catalog-item--series\s+\.catalog-summary\s*\{[^}]*-webkit-line-clamp:\s*2' "Catalog series failure: the series introduction must retain a two-line clamp without changing its left axis."
+Assert-Contains $css '(?s)\.catalog-series-link\s*\{[^}]*display:\s*inline[^}]*position:\s*relative' "Catalog series failure: the series link must preserve the regular title text axis."
+Assert-Contains $css '(?s)\.catalog-series-link\s+\.series-icon\s*\{[^}]*position:\s*absolute[^}]*right:\s*calc\(100%\s*\+\s*0\.35em\)' "Catalog series failure: the icon must sit in the left gutter instead of consuming a title column."
+Assert-Contains $css '(?s)@media\s*\(hover:\s*hover\).*?\.series-list-link:hover\s+\.series-list-title' "Series overview failure: hover underline must be gated behind hover capability."
+Assert-Contains $css '(?s)\.series-icon__cover\s*\{[^}]*transform-origin:\s*4\.75px\s+7\.5px;[^}]*transition:\s*transform\s+220ms\s+ease;' "Series icon failure: the cover must animate around the fixed left spine in 220ms."
+Assert-Contains $css '(?s)\.series-icon\s*\{[^}]*stroke-width:\s*1;' "Series icon failure: the lightweight book must use a one-pixel stroke."
+Assert-Contains $css '(?s)\.series-icon__inner-page\s*\{[^}]*transition:\s*transform\s+220ms\s+ease;' "Series icon failure: the inner page must share the cover timing."
+Assert-Contains $css '(?s)\.series-icon__page-lines--inner\s*\{[^}]*opacity:\s*0;[^}]*transition:\s*opacity\s+220ms\s+ease,\s*transform\s+220ms\s+ease;' "Series icon failure: inner page lines must fade into the opened book."
+foreach ($seriesIconTrigger in @(
+  ".catalog-series-link:hover .series-icon__cover",
+  ".series-title:hover .series-icon__cover",
+  ".series-context:hover .series-icon__cover"
+)) {
+  Assert-SelectorInMedia $css 'hover:\s*hover' $seriesIconTrigger "Series icon failure: $seriesIconTrigger must be gated behind @media (hover: hover)."
+}
+Assert-Contains $css '(?s)\.catalog-series-link:focus-visible\s+\.series-icon__cover,.*?\.series-context:focus-within\s+\.series-icon__cover\s*\{[^}]*transform:\s*rotate\(-15deg\);' "Series icon failure: keyboard focus must open the lightweight book by fifteen degrees."
+Assert-Contains $css '(?s)\.catalog-series-link:focus-visible\s+\.series-icon__inner-page,.*?\.series-context:focus-within\s+\.series-icon__inner-page\s*\{[^}]*transform:\s*translateX\(0\.75px\);' "Series icon failure: keyboard focus must separate the inner page from the cover."
+Assert-Contains $css '(?s)@media\s*\(prefers-reduced-motion:\s*reduce\).*?\.series-icon__cover[^}]*\{[^}]*transition:\s*none;[^}]*transform:\s*none;' "Series icon failure: reduced motion must keep the cover static."
+Assert-Contains $css '(?s)@media\s*\(prefers-reduced-motion:\s*reduce\).*?\.series-icon__inner-page[^}]*\{[^}]*transition:\s*none;[^}]*transform:\s*none;' "Series icon failure: reduced motion must keep the inner page static."
+Assert-Contains $css '(?s)@media\s*\(prefers-reduced-motion:\s*reduce\).*?\.series-icon__page-lines--inner\s*\{[^}]*opacity:\s*0;[^}]*transform:\s*none;' "Series icon failure: reduced motion must keep inner page lines in the closed state."
 Assert-Contains $css '(?s)\.shell-footer\s*\{[^}]*position:\s*fixed;[^}]*max-height:\s*7em;[^}]*overflow-y:\s*auto;' "Responsive footer failure: desktop footer must stay bounded at the rail bottom."
 Assert-Contains $css '(?s)\.identity-toolbar\s*\{[^}]*overflow-y:\s*auto;' "Responsive identity failure: the desktop toolbar must scroll above the bounded footer."
 Assert-Contains $css '(?s)@media\s*\(max-width:\s*1000px\).*?\.shell-footer\s*\{[^}]*max-height:\s*6\.5em;.*?\.identity-nav a::after\s*\{[^}]*height:\s*2px;' "Responsive tablet failure: the 14em rail must bound its footer and use the reduced active underline."
@@ -504,6 +653,38 @@ Assert-Contains $css '(?s)\.theme-toggle\s*\{[^}]*width:\s*1\.75rem;[^}]*height:
 Assert-Contains $css '(?s)@media\s*\(hover:\s*hover\).*?\.identity-nav a:hover::after' "Interaction failure: navigation underline hover must be gated by pointer capability."
 Assert-Contains $css '(?s)@media\s*\(hover:\s*hover\).*?\.theme-toggle:hover' "Interaction failure: theme-toggle hover must be gated by pointer capability."
 Assert-NotContains $css '(?s)\[data-theme="dark"\]\s+\.identity-nav a(?:::\w+|\.is-active)[^{]*\{[^}]*(?:display:\s*none|font-weight:\s*700)' "Navigation failure: dark mode must not change the active-state visual channel."
+$seriesCssClasses = @(
+  ".series-icon",
+  ".catalog-series-link",
+  ".series-overview",
+  ".series-title",
+  ".series-context",
+  ".series-progress",
+  ".series-list",
+  ".series-list-link",
+  ".series-list-title",
+  ".series-list-index"
+)
+foreach ($seriesClass in $seriesCssClasses) {
+  $classPattern = "(?m)^[^{}\r\n]*" + [regex]::Escape($seriesClass) + "(?:\s*,|\s*\{)"
+  Assert-Contains $css $classPattern "Series CSS failure: assets/css/main.css is missing $seriesClass."
+}
+Assert-Contains $css '(?m)^\s*\.post-nav--series(?:\s*,|\s*\{)' "Series CSS failure: assets/css/main.css is missing .post-nav--series."
+foreach ($hoverSelector in @(
+  ".catalog-series-link:hover",
+  ".series-context a:hover",
+  ".series-list-link:hover .series-list-title",
+  ".post-nav a:hover"
+)) {
+  Assert-SelectorInMedia $css 'hover:\s*hover' $hoverSelector "Series CSS failure: $hoverSelector must be inside @media (hover: hover)."
+}
+Assert-SelectorInMedia $css 'max-width:\s*480px' ".series-list-link" "Series CSS failure: .series-list-link must have a max-width: 480px responsive rule."
+Assert-Contains $css '(?s)@media\s*\(max-width:\s*480px\)\s*\{.*?\.post-nav--series\s*\{[^}]*flex-direction:\s*column;[^}]*align-items:\s*stretch;' "Series CSS failure: mobile navigation movement must be scoped to .post-nav--series."
+Assert-Contains $css '(?s)@media\s*\(max-width:\s*480px\)\s*\{.*?\.post-nav--series\s+a\s*\{[^}]*flex-basis:\s*auto;' "Series CSS failure: mobile link sizing must be scoped to .post-nav--series."
+Assert-Contains $css '(?s)@media\s*\(max-width:\s*480px\)\s*\{.*?\.post-nav--series\s+a:last-child\s*\{[^}]*text-align:\s*left;' "Series CSS failure: mobile last-link alignment must be scoped to .post-nav--series."
+Assert-NotContains $css '(?ms)@media\s*\(max-width:\s*480px\)\s*\{.*?^\s*\.post-nav\s*\{[^}]*flex-direction:\s*column;' "Series CSS failure: mobile navigation movement must not alter every .post-nav."
+Assert-NotContains $css '(?ms)@media\s*\(max-width:\s*480px\)\s*\{.*?^\s*\.post-nav\s+a\s*\{[^}]*flex-basis:\s*auto;' "Series CSS failure: mobile link sizing must not alter every .post-nav."
+Assert-NotContains $css '(?ms)@media\s*\(max-width:\s*480px\)\s*\{.*?^\s*\.post-nav\s+a:last-child\s*\{[^}]*text-align:\s*left;' "Series CSS failure: mobile last-link alignment must not alter every .post-nav."
 $cssText = Get-Content -Raw $css
 $lightPaperRaised = Get-CssTokenHex $cssText ":root" "paper-2"
 $lightLinkRaised = Get-CssTokenHex $cssText ":root" "link-raised"
@@ -530,10 +711,40 @@ foreach ($demoPage in @(
 )) {
   if (-not (Test-Path $demoPage.Path)) { throw "Demo docs failure: generated page is missing $($demoPage.Name)." }
 }
+foreach ($seriesPage in @($seriesOverview, $seriesFirstArticle, $seriesSecondArticle)) {
+  Assert-FileExists $seriesPage "Demo series failure: generated series page is missing."
+}
+Assert-Contains $seriesOverview 'class=("|'')?series-overview\b' "Demo series failure: generated overview is missing series-overview."
+Assert-Contains $seriesOverview '(?s)<h1\b[^>]*class=("|'')?series-title\b[^>]*>\s*<svg\b[^>]*class=("|'')?series-icon\b[^>]*>.*?</svg>\s*<span>把文章连成一条路</span>\s*</h1>' "Demo series failure: overview icon and title must share the H1."
+Assert-NotContains $seriesOverview 'class=("|'')?series-kicker\b' "Demo series failure: overview still renders the removed series kicker."
+Assert-NotContains $seriesOverview 'class=("|'')?series-stats\b' "Demo series failure: overview still renders series count or update metadata."
+Assert-NotContains $seriesOverview 'class=("|'')?catalog-meta\b' "Demo series failure: overview article rows still render date or reading-time metadata."
+Assert-NotContains $seriesOverview 'class=("|'')?catalog-summary\b' "Demo series failure: overview article rows still render summaries."
+Assert-NotContains $seriesOverview 'class=("|'')?back-link\b' "Demo series failure: overview still renders the removed blog return link."
+Assert-Contains $seriesOverview 'class=("|'')?[^>]*\bseries-introduction\b' "Demo series failure: authored overview introduction is missing."
+Assert-MatchCount $seriesOverview 'class=("|'')?series-list-link\b' 2 "Demo series failure: each overview article must have one full-row link."
+Assert-Contains $seriesOverview '(?s)<a\b(?=[^>]*class=("|'')?series-list-link\b)(?=[^>]*href=("|'')?/posts/series-writing/01-boundary/)[^>]*>\s*<span\b[^>]*class=("|'')?series-list-index\b[^>]*>01</span>\s*<span\b[^>]*class=("|'')?series-list-title\b[^>]*>先写下系列的边界</span>\s*</a>' "Demo series failure: first overview row must link its number and title as one target."
+Assert-MatchCount $homePage 'href=("|'')?/posts/series-writing/' 1 "Demo series failure: homepage must link the overview once."
+Assert-MatchCount $posts 'href=("|'')?/posts/series-writing/' 1 "Demo series failure: posts page must link the overview once."
+foreach ($catalogPage in @($homePage, $posts)) {
+  Assert-NotContains $catalogPage 'href=("|'')?/posts/series-writing/(?:01-boundary|02-navigation)/' "Demo series failure: child articles leaked into a catalog."
+  Assert-Contains $catalogPage 'class=("|'')?[^>]*\bcatalog-item--series\b' "Demo series failure: folded series entry is missing."
+  Assert-Contains $catalogPage '(?s)catalog-series-link[^>]*>.*?series-name[^>]*>把文章连成一条路' "Demo series failure: series name must be the catalog title."
+  Assert-Contains $catalogPage '2\s*篇' "Demo series failure: series article count is missing from the catalog metadata."
+  Assert-Contains $catalogPage '更新于 2026年8月20日' "Demo series failure: series update date is missing from the catalog metadata."
+  Assert-NotContains $catalogPage '把文章连成一条路：让更新顺序来自内容本身' "Demo series failure: latest article title still competes with the series name."
+}
+Assert-InOrder $seriesOverview @('先写下系列的边界', '让更新顺序来自内容本身') "Demo series failure: overview reading order is incorrect."
+Assert-Contains $seriesSecondArticle '第 2 / 2 篇' "Demo series failure: second article progress is missing."
+Assert-Contains $seriesSecondArticle 'href=("|'')?/posts/series-writing/01-boundary/' "Demo series failure: second article previous link is missing."
+Assert-Contains $seriesSecondArticle 'href=("|'')?/posts/series-writing/' "Demo series failure: second article overview link is missing."
+Assert-Contains $seriesSecondArticle '(?s)<a\b(?=[^>]*class=("|'')?back-link\b)(?=[^>]*href=("|'')?/posts/series-writing/)[^>]*>\s*返回「把文章连成一条路」\s*</a>' "Demo series failure: series return link must include the series title."
 Assert-FileExists $posts "Multilingual content failure: default-language posts index is missing."
 Assert-FileExists $about "Multilingual content failure: default-language About page is missing."
 Assert-FileExists $archives "Multilingual content failure: default-language archive page is missing."
 Assert-FileExists $tags "Multilingual content failure: default-language tag index is missing."
+Assert-FileExists $hugoTerm "Demo series failure: generated Hugo tag term is missing."
+Assert-FileExists $defaultRss "Multilingual output failure: default-language root RSS is missing."
 Assert-FileExists $englishAbout "Multilingual content failure: English About page is missing."
 Assert-FileExists $japaneseAbout "Multilingual content failure: Japanese About page is missing."
 Assert-FileExists $englishRss "Multilingual output failure: English RSS is missing."
@@ -550,6 +761,11 @@ Assert-Contains $archivesTemplate '\$year\s*=\s*replace\s+\$year\s+"0"\s+"〇"' 
 Assert-NotContains $archivesTemplate 'archivePage\.Lang' "Archive failure: Chinese numeral year conversion must not be locale-gated."
 Assert-Contains $archives 'class=("|'''')?archive-list__title' "Archive failure: archive rows must render titles before dates."
 Assert-Contains $archives '>[0-9]{2}/[0-9]{2}<' "Archive failure: Chinese archive rows must render compact dates."
+foreach ($seriesChild in @("01-boundary", "02-navigation")) {
+  Assert-Contains $archives ("href=(`"|')?/posts/series-writing/" + $seriesChild + "/") "Demo series failure: archive must retain each series child article."
+  Assert-Contains $hugoTerm ("href=(`"|')?/posts/series-writing/" + $seriesChild + "/") "Demo series failure: the Hugo tag term must retain each series child article."
+  Assert-Contains $defaultRss ("https://example\.com/posts/series-writing/" + $seriesChild + "/") "Demo series failure: default-language RSS must retain each series child permalink."
+}
 Assert-Contains $css '(?s)\.archive-year__suffix\s*\{[^}]*background:\s*var\(--cinnabar\)' "Archive failure: the Chinese year suffix must use the cinnabar seal role."
 Assert-Contains $css '(?s)\.archive-year__suffix\s*\{[^}]*border-radius:\s*50%' "Archive failure: the Chinese year suffix must be circular."
 
@@ -577,6 +793,10 @@ Assert-Contains $pagesHomePage 'href=("|'')?/hugo-theme-inyo/archives/' "Pages f
 Assert-Contains $pagesArticle 'href=("|'')?/hugo-theme-inyo/(?:tags|about|posts)/' "Pages failure: article navigation lost the project subpath."
 Assert-Contains $pagesArticle 'href=("|'')?/hugo-theme-inyo/index\.xml' "Pages failure: internal RSS link lost the project subpath."
 Assert-Contains $pagesFeatureArticle 'src=("|'')?/hugo-theme-inyo/img/seal-yang\.svg' "Pages failure: Markdown image lost the project subpath."
+foreach ($pagesSeriesPage in @($pagesHomePage, $pagesPosts, $pagesSeriesOverview, $pagesSeriesFirst, $pagesSeriesSecond)) {
+  Assert-Contains $pagesSeriesPage 'href=("|'')?/hugo-theme-inyo/posts/series-writing/' "Pages series failure: a series link lost the project prefix."
+  Assert-NotContains $pagesSeriesPage 'href=("|'')?/posts/series-writing/' "Pages series failure: a series link bypasses the project prefix."
+}
 Assert-NotContains $pagesHomePage 'href=("|'')?/(?:css|fonts|img|posts|tags|archives|about)/' "Pages failure: homepage contains a root-relative URL that bypasses the project subpath."
 Assert-NotContains $pagesArticle 'href=("|'')?/(?:css|fonts|img|posts|tags|archives|about|index\.xml)/' "Pages failure: article page contains a root-relative URL that bypasses the project subpath."
 Assert-NotContains $pagesFeatureArticle 'src=("|'')?/(?:img|fonts)/' "Pages failure: Markdown image contains a root-relative asset URL."
@@ -611,6 +831,8 @@ Assert-Contains $multilingualArticle '(?s)<p class=("|'')?rail-social[^>]*>.*?<a
 Assert-Contains $multilingualArticle 'href=("|'')?//example\.org[^>]*target=("|'')?_blank' "Multilingual failure: protocol-relative external link behavior changed."
 Assert-Contains $multilingualArticle 'href=("|'')?#%e5%85%88%e5%86%99%e9%a6%96%e9%a1%b5%e6%91%98%e8%a6%81' "Multilingual failure: fragment-only heading links changed unexpectedly."
 Assert-Contains $multilingualFeatureArticle 'src=("|'')?/project/img/seal-yang\.svg' "Multilingual failure: static Markdown image incorrectly gained a language prefix."
+Assert-Contains $multilingualSeriesFirst 'href=("|'')?/project/zh-cn/posts/series-writing/02-navigation/' "Multilingual series failure: authored next link lost the project or language prefix."
+Assert-Contains $multilingualSeriesSecond 'href=("|'')?/project/zh-cn/posts/series-writing/' "Multilingual series failure: authored overview link lost the project or language prefix."
 
 # P2 Task 1: runtime color token discipline and the documented favicon exception.
 $componentCss = ([regex]::Match((Get-Content -Raw $css), '(?s)/\* ---------- 5\. 组件 ---------- \*/.*')).Value
@@ -713,7 +935,8 @@ Assert-Contains $headingHook 'i18n\s+"heading_anchor"' "P2 failure: heading anch
 $requiredI18nKeys = @(
   "home", "posts", "archives", "pinned", "latest", "about", "prev", "back", "next", "read_more", "tag", "tags",
   "date_format", "archive_date_format", "archive_year_suffix", "reading_time", "no_posts", "skip_to_content", "toggle_theme",
-  "site_navigation", "language", "heading_anchor", "hero_poetry_label", "tag_count", "tag_cloud", "notfound_msg", "notfound_hint"
+  "site_navigation", "language", "heading_anchor", "hero_poetry_label", "tag_count", "tag_cloud", "notfound_msg", "notfound_hint",
+  "series_count", "series_updated", "series_progress", "back_to_series", "back_to_posts"
 )
 foreach ($locale in @("zh-cn", "en", "ja")) {
   $localePath = Join-Path $repoRoot "i18n\$locale.toml"
