@@ -6,6 +6,12 @@
 
 暂无变更。
 
+## v0.5.1 - 2026-08-23
+
+### Fixed
+
+- 修复配置多个 `mainSections` 时 Blog 目录错误聚合其它主 section 内容的问题；Blog 现在只读取 `mainSections[0]`，首页仍可聚合全部主 section。
+
 ## v0.5.0 - 2026-08-23
 
 ### Added
