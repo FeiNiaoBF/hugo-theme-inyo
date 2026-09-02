@@ -2,9 +2,11 @@
 
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 与 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## Unreleased
+## v0.5.2 - 2026-09-01
 
-暂无变更。
+### Added
+
+- KaTeX 行内公式支持 `$...$` 单美元定界符：auto-render 的 delimiter 列表新增 `{\$,\$}` 并置于 `$$` 之后，存量以 `$...$` 书写的文章无需修改即可渲染；`$$...$$` 与 `\(...\)` 行为不变。
 
 ## v0.5.1 - 2026-08-23
 
