@@ -5,4 +5,4 @@
     {{- $attrs = printf "%s %s=\"%s\"" $attrs $key ($value | htmlEscape) -}}
   {{- end -}}
 {{- end -}}
-<h{{ .Level }} id="{{ .Anchor }}"{{ $attrs | safeHTMLAttr }}>{{ .Text | safeHTML }}<a class="heading-anchor" href="#{{ .Anchor }}" aria-label="{{ i18n "heading_anchor" (.Text | plainify) }}">#</a></h{{ .Level }}>
+<h{{ .Level }} id="{{ .Anchor }}"{{ $attrs | safeHTMLAttr }}>{{ .Text | safeHTML }}<a class="heading-anchor" href="#{{ .Anchor }}" aria-label="{{ i18n "heading_anchor" (.Text | plainify) }}"><span aria-hidden="true">#</span></a></h{{ .Level }}>

@@ -3,12 +3,7 @@
     静态资源 (/img/...): 保持现有子路径处理
     外部 URL (http/https///data): 不处理
     title: Markdown 写法 .Title 优先
-    loading/decoding: 首图 eager，后续 lazy */ -}}
-{{- $lazy := "loading=\"lazy\" decoding=\"async\"" -}}
-{{- if not (.Page.Scratch.Get "inyo-first-img") -}}
-  {{- $lazy = "decoding=\"async\"" -}}
-  {{- .Page.Scratch.Set "inyo-first-img" true -}}
-{{- end -}}
+    loading/尺寸: 默认 lazy；页面资源与 static 位图自动读取尺寸；站点启用 Markdown attributes 后可用单独一行的 {loading=eager width=1200 height=630} 覆盖 */ -}}
 {{- $destination := .Destination -}}
 {{- $lowerDestination := lower $destination -}}
 {{- $isExternal := or (hasPrefix $lowerDestination "http://") (hasPrefix $lowerDestination "https://") (hasPrefix $lowerDestination "//") (hasPrefix $lowerDestination "data:") -}}
@@ -40,10 +35,24 @@
       {{- $src = urls.JoinPath (urls.Parse site.BaseURL).Path (strings.TrimPrefix "/" $assetPath) -}}
       {{- with $imageURL.RawQuery }}{{ $src = printf "%s?%s" $src . }}{{ end -}}
       {{- with $imageURL.Fragment }}{{ $src = printf "%s#%s" $src . }}{{ end -}}
+      {{- $staticPath := printf "static/%s" (strings.TrimPrefix "/" $assetPath) -}}
+      {{- $ext := lower (path.Ext $assetPath) -}}
+      {{- if and (in (slice ".avif" ".bmp" ".gif" ".heic" ".heif" ".jpeg" ".jpg" ".png" ".tif" ".tiff" ".webp") $ext) (os.FileExists $staticPath) -}}
+        {{- $cfg := images.Config $staticPath -}}
+        {{- $width = printf " width=\"%d\"" $cfg.Width -}}
+        {{- $height = printf " height=\"%d\"" $cfg.Height -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
+{{- $loading := "lazy" -}}
+{{- range $key, $value := .Attributes -}}
+  {{- if eq (lower $key) "width" }}{{ $width = printf " width=\"%s\"" ($value | htmlEscape) }}{{ end -}}
+  {{- if eq (lower $key) "height" }}{{ $height = printf " height=\"%s\"" ($value | htmlEscape) }}{{ end -}}
+  {{- if eq (lower $key) "loading" }}{{ $loading = lower ($value | htmlEscape) }}{{ end -}}
+{{- end -}}
+{{- if not (in (slice "lazy" "eager") $loading) }}{{ $loading = "lazy" }}{{ end -}}
 {{- $title := "" -}}
 {{- with .Title }}{{ $title = printf " title=\"%s\"" (. | htmlEscape) }}{{ end -}}
-{{- $img := printf "<img src=\"%s\" alt=\"%s\"%s%s%s %s>" ($src | safeURL) (.Text | plainify | htmlEscape) $width $height $title $lazy -}}
+{{- $img := printf "<img src=\"%s\" alt=\"%s\"%s%s%s loading=\"%s\" decoding=\"async\">" ($src | safeURL) (.Text | plainify | htmlEscape) $width $height $title $loading -}}
 {{- $img | safeHTML -}}

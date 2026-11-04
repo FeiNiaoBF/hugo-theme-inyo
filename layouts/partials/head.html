@@ -11,7 +11,7 @@
     root.setAttribute('data-theme', theme);
   })();
 </script>
-<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
+<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} | {{ site.Title }}{{ end }}</title>
 
 {{/* ==== SEO 元数据（Google / OGP / Twitter）==== */}}
 {{ $summaryText := partial "summary-source.html" . }}
@@ -20,6 +20,14 @@
 {{ $desc := truncate 155 (or $pageDescription (or $summaryText $siteDescription)) }}
 {{ with $desc }}<meta name="description" content="{{ . }}">{{ end }}
 <link rel="canonical" href="{{ .Permalink }}">
+{{- with .OutputFormats.Get "rss" }}
+<link rel="alternate" {{ printf "type=%q" .MediaType.Type | safeHTMLAttr }} href="{{ .Permalink }}" title="{{ site.Title }}">
+{{- end }}
+{{- range .AllTranslations }}
+<link rel="alternate" hreflang="{{ .Language.Locale | default .Language.Lang }}" href="{{ .Permalink }}">
+{{- else }}
+<link rel="alternate" hreflang="{{ .Language.Locale | default .Language.Lang }}" href="{{ .Permalink }}">
+{{- end }}
 
 {{/* Open Graph（ogp.me 协议）*/}}
 <meta property="og:site_name" content="{{ site.Title }}">
@@ -27,7 +35,7 @@
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
 {{ with $desc }}<meta property="og:description" content="{{ . }}">{{ end }}
-{{ $ogImage := site.Params.ogImage | default "img/seal-yang.svg" }}
+{{ $ogImage := site.Params.ogImage | default "img/seal-yang-og.png" }}
 {{ with $ogImage }}
 <meta property="og:image" content="{{ . | absURL }}">
 <meta property="og:image:alt" content="{{ site.Title }}">
@@ -69,6 +77,25 @@
 {{ $crumb = $crumb | append (dict "@type" "ListItem" "position" (add (len $crumb) 1) "name" .Title "item" .Permalink) }}
 <script type="application/ld+json">
 {{ dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $crumb | jsonify | safeJS }}
+</script>
+{{ end }}
+
+{{ if and .IsPage (not .Date.IsZero) }}
+{{ $articleSchema := dict
+  "@context" "https://schema.org"
+  "@type" "BlogPosting"
+  "headline" .Title
+  "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
+  "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+  "author" (dict "@type" "Person" "name" $authorName)
+  "publisher" (dict "@type" "Organization" "name" site.Title)
+  "mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink)
+  "inLanguage" (site.Language.Locale | default site.Language.Lang)
+}}
+{{ with $desc }}{{ $articleSchema = merge $articleSchema (dict "description" .) }}{{ end }}
+{{ with $ogImage }}{{ $articleSchema = merge $articleSchema (dict "image" (. | absURL)) }}{{ end }}
+<script type="application/ld+json">
+{{ $articleSchema | jsonify | safeJS }}
 </script>
 {{ end }}
 

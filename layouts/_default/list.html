@@ -1,6 +1,7 @@
 {{ define "main" }}
 {{ $title := .Title }}
-{{ $mainSections := site.Params.mainSections | default (slice "posts") }}
+{{ $mainSections := site.MainSections }}
+{{ if not $mainSections }}{{ $mainSections = slice "posts" }}{{ end }}
 {{ $blogSection := index $mainSections 0 }}
 {{ $isMainSection := and .IsSection (eq .Section $blogSection) .Parent.IsHome }}
 {{ if $isMainSection }}{{ $title = i18n "posts" | default .Title }}{{ end }}
@@ -15,7 +16,20 @@
       {{ partial "catalog/item.html" (dict "entry" . "level" 2 "showDate" true) }}
     {{ end }}
   {{ else }}
-    {{ range .Pages }}
+    {{ range .Sections }}
+    <li class="catalog-item">
+      <div class="catalog-head">
+        <h2 class="catalog-title">
+          <a{{ if eq .Layout "series" }} class="catalog-series-link"{{ end }} href="{{ .RelPermalink }}">
+            {{- if eq .Layout "series" }}{{ partial "series/icon.html" . }}{{ end -}}
+            <span{{ if eq .Layout "series" }} class="catalog-series-name"{{ end }}>{{ .Title }}</span>
+          </a>
+        </h2>
+      </div>
+      {{ if .Content }}{{ partial "summary.html" . }}{{ end }}
+    </li>
+    {{ end }}
+    {{ range .RegularPages }}
     <li class="catalog-item">
       <div class="catalog-head">
         <h2 class="catalog-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>

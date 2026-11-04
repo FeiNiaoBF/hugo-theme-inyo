@@ -1,6 +1,8 @@
 baseURL: "https://example.com/"
 title: "Inyo 陰陽"
 defaultContentLanguage: "zh-cn"
+mainSections:
+  - "posts"
 
 languages:
   zh-cn:
@@ -28,13 +30,11 @@ module:
 
 params:
   description: "Inyo 是一个以纸墨、阴阳和中文阅读体验为核心的 Hugo 主题。"
-  subtitle: "纸墨二元 · 落字有间"
+  subtitle: "纸墨二元，落字有间"
   author: "Inyo"
   font: "wenkai"
   webfonts: true
   math: false
-  mainSections:
-    - "posts"
   ogImage: "img/seal-yang-og.png"
 
   taxonomy:

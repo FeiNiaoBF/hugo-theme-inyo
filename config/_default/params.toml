@@ -4,7 +4,6 @@ math = false
 webfonts = true
 description = ""
 subtitle = ""
-mainSections = ["posts"]
 ogImage = "img/seal-yang-og.png"
 
 [taxonomy]

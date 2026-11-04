@@ -53,7 +53,7 @@ function Assert-FileMissing($Path, $Message) {
 Assert-FileExists $consumerConfig "Consumer failure: fixture hugo.yaml is missing."
 Assert-FileMissing $legacyConsumerConfig "Consumer failure: fixture hugo.toml must be removed after the YAML migration."
 Assert-Contains $consumerConfig '(?ms)^module:\s*\r?\n\s{2}imports:\s*\r?\n\s{4}-\s*path:\s*"github\.com/FeiNiaoBF/hugo-theme-inyo"\s*$' "Consumer failure: YAML fixture is missing the module import."
-Assert-Contains $consumerConfig '(?ms)^params:\s*.*?^\s{2}mainSections:\s*\r?\n\s{4}-\s*"notes"\s*$' "Consumer failure: YAML fixture must use notes as its main section."
+Assert-Contains $consumerConfig '(?m)^mainSections:\s*\r?\n\s{2}-\s*"notes"\s*$' "Consumer failure: YAML fixture must use notes as its main section."
 Assert-Contains $consumerConfig '(?ms)^taxonomies:\s*\r?\n\s{2}tag:\s*"labels"\s*$' "Consumer failure: YAML fixture must use labels as its tag taxonomy."
 Assert-Contains $consumerConfig '(?ms)^params:\s*.*?^\s{2}taxonomy:\s*\r?\n\s{4}tag:\s*"labels"\s*$' "Consumer failure: params.taxonomy.tag must identify the labels taxonomy."
 Assert-Contains $consumerConfig '(?ms)^markup:\s*.*?^\s{2}_merge:\s*"deep"\s*$' "Consumer failure: markup must deep-merge theme Chroma defaults."
@@ -130,7 +130,7 @@ try {
   Assert-MatchCount $homePage 'href=("|'')?/notes/series-smoke/' 1 "Series failure: homepage must contain one series entry."
   Assert-MatchCount $notes 'href=("|'')?/notes/series-smoke/' 1 "Series failure: notes list must contain one series entry."
   $seriesAnchor = '(?s)<a\b(?=[^>]*class=("|'''')?catalog-series-link\b)(?=[^>]*href=("|'''')?/notes/series-smoke/)[^>]*>\s*<svg\b[^>]*class=("|'''')?series-icon\b[^>]*>.*?</svg>\s*<span\b[^>]*class=("|'''')?catalog-series-name\b[^>]*>Portable Systems Notes</span>\s*</a>'
-  $seriesMeta = '(?s)<div\s+class=("|'''')?catalog-meta("|'''')?>\s*<span>4 articles</span>\s*<span[^>]*>·</span>\s*<time\b[^>]*>Updated 2026-08-18</time>\s*</div>'
+  $seriesMeta = '(?s)<div\s+class=("|'''')?catalog-meta("|'''')?>\s*<span>4 articles</span>\s*<time\b[^>]*>Updated 2026-08-18</time>\s*</div>'
   Assert-Contains $homePage $seriesAnchor "Series failure: homepage series icon and name must share one overview link."
   Assert-Contains $notes $seriesAnchor "Series failure: notes series icon and name must share one overview link."
   Assert-Contains $homePage $seriesMeta "Series failure: homepage series metadata is missing or out of order."

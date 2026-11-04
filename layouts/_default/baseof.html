@@ -17,7 +17,8 @@
       </div>
 
       {{ $cur := .RelPermalink }}
-      {{ $mainSections := site.Params.mainSections | default (slice "posts") }}
+      {{ $mainSections := site.MainSections }}
+      {{ if not $mainSections }}{{ $mainSections = slice "posts" }}{{ end }}
       {{ $mainSection := index $mainSections 0 }}
       {{ $postsPage := site.GetPage (printf "/%s" $mainSection) }}
       {{ $tagsPath := site.Params.navigation.tags | default "tags" }}
@@ -37,7 +38,10 @@
 
         <div class="identity-meta">
           {{ partial "lang.html" . }}
-          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="{{ i18n "toggle_theme" | default "Toggle theme" }}" aria-pressed="false">☯</button>
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="{{ i18n "toggle_theme" | default "Toggle theme" }}" aria-pressed="false">
+            <svg class="theme-toggle__icon theme-toggle__icon--moon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6Z" /></svg>
+            <svg class="theme-toggle__icon theme-toggle__icon--sun" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="3.2" /><path d="M8 1.4v1.6M8 13v1.6M1.4 8h1.6M13 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M12.6 3.4l-1.1 1.1M4.5 11.5l-1.1 1.1" /></svg>
+          </button>
         </div>
       </div>
     </aside>

@@ -2,14 +2,14 @@ baseURL: "https://consumer.example/"
 title: "Consumer Fixture"
 defaultContentLanguage: "en"
 enableRobotsTXT: true
+mainSections:
+  - "notes"
 
 module:
   imports:
     - path: "github.com/FeiNiaoBF/hugo-theme-inyo"
 
 params:
-  mainSections:
-    - "notes"
   description: "A clean consumer site used to verify Inyo portability."
 
   taxonomy:
