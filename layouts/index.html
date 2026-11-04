@@ -27,25 +27,11 @@
     <span class="hero__quote">{{ $initial.text }}</span>
     <span class="hero__source">—— {{ $initial.source }}</span>
   </span>
-  <svg
-    class="hero__stroke"
-    viewBox="0 0 100 100"
-    preserveAspectRatio="none"
-    aria-hidden="true"
-    focusable="false">
-    <path
-      class="hero__stroke-line hero__stroke-line--left"
-      d="M 50 99 L 10 99 Q 2 99 2 91 L 2 9 Q 2 1 10 1 L 50 1"
-      pathLength="1" />
-    <path
-      class="hero__stroke-line hero__stroke-line--right"
-      d="M 50 99 L 90 99 Q 98 99 98 91 L 98 9 Q 98 1 90 1 L 50 1"
-      pathLength="1" />
-  </svg>
 </button>
 <script type="application/json" id="hero-poetry-data">{{ $poems | jsonify | safeJS }}</script>
 
-{{ $mainSections := site.Params.mainSections | default (slice "posts") }}
+{{ $mainSections := site.MainSections }}
+{{ if not $mainSections }}{{ $mainSections = slice "posts" }}{{ end }}
 {{ $entries := partial "catalog/entries.html" (dict "site" site "sections" $mainSections) }}
 {{ if eq (len $entries) 0 }}
 <p class="home-empty">{{ i18n "no_posts" }}</p>

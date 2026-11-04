@@ -4,23 +4,13 @@
 <div class="prose">{{ . }}</div>
 {{ end }}
 
-{{ $mainSections := site.Params.mainSections | default (slice "posts") }}
+{{ $mainSections := site.MainSections }}
+{{ if not $mainSections }}{{ $mainSections = slice "posts" }}{{ end }}
 {{ $pages := where site.RegularPages "Section" "in" $mainSections }}
 {{ range $pages.GroupByDate "2006" "desc" }}
 <section class="archive-group">
-  {{ $year := .Key }}
-  {{ $year = replace $year "0" "〇" }}
-  {{ $year = replace $year "1" "一" }}
-  {{ $year = replace $year "2" "二" }}
-  {{ $year = replace $year "3" "三" }}
-  {{ $year = replace $year "4" "四" }}
-  {{ $year = replace $year "5" "五" }}
-  {{ $year = replace $year "6" "六" }}
-  {{ $year = replace $year "7" "七" }}
-  {{ $year = replace $year "8" "八" }}
-  {{ $year = replace $year "9" "九" }}
   <h2 class="archive-year">
-    <span class="archive-year__digits">{{ $year }}</span>
+    <span class="archive-year__digits">{{ .Key }}</span>
     {{ with i18n "archive_year_suffix" }}<span class="archive-year__suffix">{{ . }}</span>{{ end }}
   </h2>
   <ul class="archive-list">

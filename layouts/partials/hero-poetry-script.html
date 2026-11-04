@@ -6,13 +6,7 @@
 
     var quote = hero.querySelector('.hero__quote');
     var source = hero.querySelector('.hero__source');
-    var stroke = hero.querySelector('.hero__stroke');
-    var strokePaths = stroke ? {
-      left: stroke.querySelector('.hero__stroke-line--left'),
-      right: stroke.querySelector('.hero__stroke-line--right')
-    } : null;
     var label = hero.getAttribute('data-label') || '';
-    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var poems;
 
     try {
@@ -30,48 +24,6 @@
     };
     var currentKey = clean(quote.textContent) + '|' + clean(source.textContent).replace(/^——\s*/, '');
     var busy = false;
-    var feedbackTimer = 0;
-
-    var syncStrokeGeometry = function () {
-      if (!stroke || !strokePaths || !strokePaths.left || !strokePaths.right) return;
-
-      var bounds = hero.getBoundingClientRect();
-      var width = Math.max(1, bounds.width);
-      var height = Math.max(1, bounds.height);
-      var inset = 0.75;
-      var styles = window.getComputedStyle(hero);
-      var radius = parseFloat(styles.borderTopLeftRadius) || 0;
-      radius = Math.max(0, Math.min(radius, (width / 2) - inset, (height / 2) - inset));
-
-      var leftPath = [
-        'M', width / 2, height - inset,
-        'L', radius + inset, height - inset,
-        'Q', inset, height - inset, inset, height - radius - inset,
-        'L', inset, radius + inset,
-        'Q', inset, inset, radius + inset, inset,
-        'L', width / 2, inset
-      ].join(' ');
-      var rightPath = [
-        'M', width / 2, height - inset,
-        'L', width - radius - inset, height - inset,
-        'Q', width - inset, height - inset, width - inset, height - radius - inset,
-        'L', width - inset, radius + inset,
-        'Q', width - inset, inset, width - radius - inset, inset,
-        'L', width / 2, inset
-      ].join(' ');
-
-      stroke.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
-      strokePaths.left.setAttribute('d', leftPath);
-      strokePaths.right.setAttribute('d', rightPath);
-    };
-
-    syncStrokeGeometry();
-    if (typeof window.ResizeObserver === 'function') {
-      var strokeResizeObserver = new window.ResizeObserver(syncStrokeGeometry);
-      strokeResizeObserver.observe(hero);
-    } else {
-      window.addEventListener('resize', syncStrokeGeometry, { passive: true });
-    }
 
     var normalizePoem = function (payload) {
       var poem = payload && payload.data ? payload.data : payload;
@@ -115,52 +67,13 @@
 
     var beginFeedback = function () {
       hero.classList.add('is-fetching');
-      if (reduceMotion) return;
-
-      hero.classList.remove('is-ink-rising');
-      void hero.offsetWidth;
-      hero.classList.add('is-ink-rising');
-
-      if (feedbackTimer) window.clearTimeout(feedbackTimer);
-      feedbackTimer = window.setTimeout(function () {
-        hero.classList.remove('is-ink-rising');
-        feedbackTimer = 0;
-      }, 760);
-    };
-
-    var revealPoem = function (poem, done) {
-      if (!poem) {
-        done();
-        return;
-      }
-      if (reduceMotion) {
-        setPoem(poem);
-        done();
-        return;
-      }
-
-      hero.classList.remove('is-leaving', 'is-entering');
-      void hero.offsetWidth;
-      hero.classList.add('is-leaving');
-
-      window.setTimeout(function () {
-        setPoem(poem);
-        hero.classList.remove('is-leaving');
-        hero.classList.add('is-entering');
-      }, 160);
-
-      window.setTimeout(function () {
-        hero.classList.remove('is-entering');
-        done();
-      }, 500);
     };
 
     var finish = function (poem) {
-      revealPoem(poem || localPoem(), function () {
-        hero.classList.remove('is-fetching');
-        busy = false;
-        hero.setAttribute('aria-busy', 'false');
-      });
+      if (poem) setPoem(poem);
+      hero.classList.remove('is-fetching');
+      busy = false;
+      hero.setAttribute('aria-busy', 'false');
     };
 
     var requestPoem = function () {

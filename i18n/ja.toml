@@ -68,10 +68,10 @@ other = "{{ . }}へのリンク"
 other = "{{ .Count }}件の記事"
 
 [notfound_msg]
-other = "この頁は散り失せ、墨はまだ落ちていない。"
+other = "ページが見つかりません。"
 
 [notfound_hint]
-other = "リンクが変わったか、或いは文はまだ硯のほとりにある。"
+other = "リンクが切れているか、内容が削除された可能性があります。"
 [hero_poetry_label]
 other = "ホームの詩句を切り替える"
 

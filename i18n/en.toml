@@ -70,10 +70,10 @@ one = "{{ .Count }} article"
 other = "{{ .Count }} articles"
 
 [notfound_msg]
-other = "This page has drifted away, like ink not yet set."
+other = "Page not found."
 
 [notfound_hint]
-other = "The link may have changed, or the writing still sits at the inkstone."
+other = "The link may be broken, or the content has been removed."
 [hero_poetry_label]
 other = "Show another homepage poem"
 

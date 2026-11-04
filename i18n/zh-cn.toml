@@ -69,10 +69,10 @@ one = "{{ .Count }} 篇文章"
 other = "{{ .Count }} 篇文章"
 
 [notfound_msg]
-other = "此页纸已散佚，笔墨未落。"
+other = "页面不存在。"
 
 [notfound_hint]
-other = "链接可能已更改，或内容尚在砚台边。"
+other = "链接可能已失效，或内容已被移除。"
 [hero_poetry_label]
 other = "切换首页诗句"
 

@@ -29,7 +29,7 @@
     {{- end }}
     <div class="catalog-meta">
       {{- if $isSeries }}
-      <span>{{ i18n "series_count" (dict "Count" $entry.count) }}</span><span aria-hidden="true">·</span><time datetime="{{ $entry.date.Format "2006-01-02" }}">{{ i18n "series_updated" (dict "Date" ($entry.date.Format $dateFormat)) }}</time>
+      <span>{{ i18n "series_count" (dict "Count" $entry.count) }}</span><time datetime="{{ $entry.date.Format "2006-01-02" }}">{{ i18n "series_updated" (dict "Date" ($entry.date.Format $dateFormat)) }}</time>
       {{- else }}
         {{- if .showDate }}
       <time datetime="{{ $entry.date.Format "2006-01-02" }}">{{ $entry.date.Format $dateFormat }}</time>
