@@ -22,8 +22,8 @@
 
 ## 设计铁律
 
-1. 运行时颜色来自 `assets/css/main.css` 的 CSS token。新增颜色先更新 `DESIGN.md`，并验证正文对比度至少 `4.5:1`、大文本至少 `3:1`。
-2. 暗色抬升面 `--paper-2` 上如需链接，必须先定义专用角色 token 并映射到 `DESIGN.md` 记录的舌红，不能直接使用对比度不足的 `--cinnabar`；浅档表面色只用于弱化文字、边框或装饰。
+1. 运行时颜色来自 `assets/css/main.css` 的 CSS token（Radix sand / tomato / indigo）。新增颜色先更新 `DESIGN.md`，并验证正文对比度至少 `4.5:1`、大文本至少 `3:1`。
+2. 暗色抬升面 `--paper-2` 上如需链接，必须使用 `DESIGN.md` 记录的 `--link-raised`（tomato-11），不能直接使用 `--cinnabar`；浅档表面色只用于弱化文字、边框或装饰。
 3. 正文、导航、页脚和标签索引永远横排，禁止恢复 `writing-mode: vertical-rl`。
 4. 新样式同时覆盖亮色纸面和暗色墨面；暗色差异通过 `[data-theme="dark"]` 或既有角色 token 表达。
 5. hover 反馈必须由 `@media (hover: hover)` 门控；非必要动画必须提供 `prefers-reduced-motion` 降级。
@@ -32,9 +32,9 @@
 ## 当前产品合同
 
 - 信息架构固定为：首页、博客、标签、归档、关于；路径并不固定。
-- 博客入口读取 `params.mainSections[0]`；标签、归档和 About 导航分别读取 `params.navigation.tags`、`archives`、`about`。
+- 博客入口读取 Hugo 顶层 `mainSections` 的首项（`.Site.MainSections`）；标签、归档和 About 导航分别读取 `params.navigation.tags`、`archives`、`about`。
 - `params.taxonomy.tag` 是文章 Front Matter 与 `.GetTerms` 使用的 taxonomy plural 键；`params.navigation.tags` 只负责索引页导航路径。文章标签链接必须使用 term page 的 `.RelPermalink`，禁止 `urlize` 或手工拼接 `/tags/`。
-- 404 的文章入口从 `mainSections[0]` 推导；Markdown 根相对站内内容链接和普通内部社交链接经 `relLangURL` 保留项目子路径与当前语言段。
+- 404 的文章入口从顶层 `mainSections` 的首项推导；Markdown 根相对站内内容链接和普通内部社交链接经 `relLangURL` 保留项目子路径与当前语言段。
 - 首页支持多篇 `pinned: true` 文章；置顶文章与普通文章分别按日期倒序。
 - 普通文章默认或显式使用 `layout: post`；系列只由 section `_index.md` 上的 `layout: series` 声明，并且只包含该 section 的直接子文章。
 - 系列阅读顺序为非零 `weight` 升序，随后是未设置或为零的 `weight` 按 `date` 升序；最近更新取子文章 `lastmod`，无有效值时回退 `date`。
@@ -44,7 +44,7 @@
 - 目录摘要使用 Hugo `.Summary`，为空时才回退 `.Description`；保留 140 全宽单位和最多 3 行。
 - SEO description 使用页面 `.Description` → `summary-source.html` → `params.description` → `params.subtitle` →站点标题，不能与目录摘要链混写。
 - 首页诗词初始使用 `data/inyo/hero_poems.toml`；远程 API 默认关闭，只在主动交互时请求，失败静默回退本地数据。
-- 点击反馈为朱红双翼墨线沿 Hero 圆角边框从底部中央上行，在顶部中央合墨；非首页不得输出诗词数据、API 地址或交互脚本。
+- 点击反馈仅为 `is-fetching` 边框状态，诗句一次替换，不做描边或文字出入场动画；非首页不得输出诗词数据、API 地址或交互脚本。
 
 ## 配置与内容边界
 

@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 0.7 seconds
-Output:
 # Inyo 陰陽
 
 [![Verify theme](https://github.com/FeiNiaoBF/hugo-theme-inyo/actions/workflows/verify-theme.yml/badge.svg)](https://github.com/FeiNiaoBF/hugo-theme-inyo/actions/workflows/verify-theme.yml)
@@ -32,7 +29,7 @@ Inyo 当前处于早期可用阶段，适合个人 Blog、作品记录和中文�
 ## 特性
 
 - 纸墨双主题：亮色纸面、暗色墨面，颜色集中在 CSS token 中管理
-- 首页诗词 Hero：诗句与作者出处，点击后沿圆角边框完成朱红双翼墨线反馈
+- 首页诗词 Hero：诗句与作者出处，点击后一次换句，仅用边框状态提示加载
 - 长文阅读布局：稳定的正文宽度、摘要、代码块和 Markdown 渲染
 - 普通文章与系列：普通文章使用默认 `post` 布局，系列以一个总览入口组织连续阅读，同时保留子篇的归档与标签入口
 - 单一博客结构：首页、博客、标签、归档、关于；单篇文章作为博客详情页，About 与其他主导航项保持一致
@@ -80,7 +77,7 @@ module:
 params:
   description: "我的个人博客。"
   author: "你的名字"
-  subtitle: "纸墨二元 · 落字有间"
+  subtitle: "纸墨二元，落字有间"
 ```
 
 启动本地预览：
@@ -133,13 +130,14 @@ theme:
 主题默认配置位于 [`config/_default/params.toml`](config/_default/params.toml) 和 [`config/_default/markup.toml`](config/_default/markup.toml)。站点只需要覆盖自己的身份信息和需要改变的选项：
 
 ```yaml
+mainSections:
+  - "posts"
+
 params:
   description: "一个使用 Inyo 构建的长文博客。"
   font: "wenkai"
   math: false
-  mainSections:
-    - "posts"
-  subtitle: "纸墨二元 · 落字有间"
+  subtitle: "纸墨二元，落字有间"
   author: "你的名字"
 
   taxonomy:
@@ -158,7 +156,7 @@ markup:
   _merge: "deep"
 ```
 
-`params.taxonomy.tag` 是文章 Front Matter 使用的 taxonomy plural 键，`params.navigation.tags` 只是标签索引页路径。若将标签 taxonomy 改为 `labels`，请同时设置 Hugo 的 `taxonomies.tag: "labels"`、`params.taxonomy.tag: "labels"` 和相应导航路径。站点覆盖 `markup` 时必须保留 `_merge: "deep"`，否则会覆盖主题的 class-based Chroma 配色默认值。
+`mainSections` 是 Hugo 顶层配置，不属于 `params`；主题通过 `.Site.MainSections` 读取它。`params.taxonomy.tag` 是文章 Front Matter 使用的 taxonomy plural 键，`params.navigation.tags` 只是标签索引页路径。若将标签 taxonomy 改为 `labels`，请同时设置 Hugo 的 `taxonomies.tag: "labels"`、`params.taxonomy.tag: "labels"` 和相应导航路径。站点覆盖 `markup` 时必须保留 `_merge: "deep"`，否则会覆盖主题的 class-based Chroma 配色默认值。
 
 ```yaml
 taxonomies:

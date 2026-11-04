@@ -27,7 +27,7 @@ Live demo: [FeiNiaoBF.github.io/hugo-theme-inyo](https://FeiNiaoBF.github.io/hug
 ## Features
 
 - Paper-and-ink light and dark themes driven by CSS tokens
-- Homepage poetry hero with a restrained red double-wing border animation
+- Homepage poetry hero that swaps to another poem on click, with a quiet pending border state
 - Long-form reading layout with summaries, code blocks, and Markdown rendering
 - Posts and series: regular posts use the default `post` layout, while a series provides one overview for sequential reading without hiding its child posts from archives and tags
 - A focused blog structure: Home, Blog, Tags, Archives, and About; articles remain detail pages, with About aligned to the primary navigation
@@ -136,12 +136,13 @@ If you fork the repository, open `Settings → Pages`, select `GitHub Actions` a
 Runtime defaults live in [`config/_default/params.toml`](config/_default/params.toml) and [`config/_default/markup.toml`](config/_default/markup.toml). Configure site identity and only override the options you need:
 
 ```yaml
+mainSections:
+  - "posts"
+
 params:
   description: "My long-form blog."
   font: "wenkai"
   math: false
-  mainSections:
-    - "posts"
   author: "Your Name"
 
   taxonomy:
@@ -160,7 +161,7 @@ markup:
   _merge: "deep"
 ```
 
-`params.taxonomy.tag` is the taxonomy plural key used in article front matter, while `params.navigation.tags` is only the taxonomy index path. To rename the tag taxonomy to `labels`, align Hugo's `taxonomies.tag: "labels"`, `params.taxonomy.tag: "labels"`, and the navigation path. Keep `markup._merge: "deep"` whenever the site overrides `markup`, or the theme's class-based Chroma defaults will be replaced.
+`mainSections` is a top-level Hugo setting, not a `params` entry; the theme reads it through `.Site.MainSections`. `params.taxonomy.tag` is the taxonomy plural key used in article front matter, while `params.navigation.tags` is only the taxonomy index path. To rename the tag taxonomy to `labels`, align Hugo's `taxonomies.tag: "labels"`, `params.taxonomy.tag: "labels"`, and the navigation path. Keep `markup._merge: "deep"` whenever the site overrides `markup`, or the theme's class-based Chroma defaults will be replaced.
 
 ```yaml
 taxonomies:

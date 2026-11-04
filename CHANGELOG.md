@@ -2,6 +2,24 @@
 
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 与 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## Unreleased
+
+### Changed
+
+- 配色迁移到 Radix Colors（sand / tomato / indigo），亮暗 token 一一对应，移除旧传统色命名体系。
+- 收敛视觉：移除 Hero 双翼描边与文字出入场、系列图标翻书动画、归档中文数字年份与朱红圆印章、引用块左侧色条。
+- 字号收敛为 12/14/16/28 四档，发丝线统一 0.5px，动效统一为 250ms ease-out。
+- 简化首页诗词脚本与系列图标，删除未使用的 `layouts/partials/header.html`。
+- 404 文案改为直白说明；移除页面标题与目录元信息中的「·」分隔。
+
+### Fixed
+
+- `mainSections` 迁移到 Hugo 顶层配置，模板改用 `.Site.MainSections`；首页 RSS 同步按主 section 过滤。
+- 标题锚点改为 `aria-hidden` 的独立字形并禁止随标题复制；`mailto:` 链接不再新开标签页。
+- 图片默认 `loading="lazy"`，移除首图 eager 启发式；页面资源与 static 位图自动输出固有尺寸。
+- 非主 section 列表改用 `.RegularPages` 并单独渲染子 section，避免系列条目显示「阅读约 0 分钟」。
+- 补齐 `hreflang`、RSS autodiscovery 与 `BlogPosting` JSON-LD；OG 默认图回退改为 PNG。
+
 ## v0.5.2 - 2026-09-01
 
 ### Added

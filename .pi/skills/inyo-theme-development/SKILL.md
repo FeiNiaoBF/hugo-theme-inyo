@@ -41,7 +41,7 @@ Do not reintroduce removed `heroImage` parameters or add generic Hugo options th
 ### Navigation and content collections
 
 - The navigation roles are Home, Blog, Tags, Archives, and About; their paths remain configurable.
-- Resolve Blog from `site.Params.mainSections[0]` and Tags/Archives/About from `site.Params.navigation`.
+- Resolve Blog from `site.MainSections[0]` and Tags/Archives/About from `site.Params.navigation`.
 - Resolve article terms with the taxonomy plural key in `site.Params.taxonomy.tag`, then use Hugo term pages and `.RelPermalink`; `site.Params.navigation.tags` is only the index navigation path.
 - Resolve the 404 article entry from `mainSections[0]`. Root-relative authored content links and ordinary internal social links use `relLangURL` so project and language prefixes survive.
 - Pinned posts (`pinned: true`) appear before normal posts; each collection is date-descending.
@@ -78,7 +78,7 @@ Do not reintroduce removed `heroImage` parameters or add generic Hugo options th
 - Only the homepage may contain local poem JSON, API details, or the interaction script.
 - Initial content is local; remote requests happen only after activation and must fail back silently.
 - Keep the current native button, busy protection, timeout, API adapter, and live-region behavior.
-- Immediate feedback is the **朱红双翼墨线** tracing the rounded Hero border from the bottom center to the **顶部中央**. It runs once and is disabled under reduced motion.
+- Immediate feedback is the `is-fetching` border state only; the poem swaps once. Do not reintroduce decorative stroke, path, or text entrance animation.
 
 ## Verification
 
